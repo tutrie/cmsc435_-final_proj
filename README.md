@@ -14,5 +14,5 @@ This will create a local database that you can use for testing the application.
 
 You can run the server locally by running
 ```bash
-pythong manage.py runserver
+python manage.py runserver
 ```
