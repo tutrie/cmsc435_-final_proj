@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.deletion import CASCADE
 from company.models import Company
 
+
 # Create your models here.
 class RawReport(models.Model):
     company = models.ForeignKey(Company, on_delete=CASCADE)

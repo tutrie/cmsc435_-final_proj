@@ -4,3 +4,5 @@
 *.sqlite3
 .idea/workspace.xml
 **/__pycache__/
+**/.idea/
+EdgarScraper/EdgarScraper/__pycache__/
