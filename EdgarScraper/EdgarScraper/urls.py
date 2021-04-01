@@ -18,11 +18,13 @@ from django.urls import path, include
 from rest_framework import routers
 
 from company.views import CompanyViewSet
-from raw_report.views import RawReportViewSet
+from report_schema.views import RawReportViewSet, GeneratedReportViewSet
 
 router = routers.DefaultRouter()
 router.register(r'companies', CompanyViewSet)
 router.register(r'raw-reports', RawReportViewSet)
+router.register(r'generated-reports', GeneratedReportViewSet)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
