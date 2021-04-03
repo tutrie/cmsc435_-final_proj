@@ -42,7 +42,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     'company',
-    'raw_report'
+    'report_schema'
 ]
 
 INSTALLED_APPS = THIRD_PARTY_APPS + LOCAL_APPS
