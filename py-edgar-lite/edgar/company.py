@@ -46,3 +46,13 @@ class Company:
                             for elem in self._document_urls]
         return self._excel_urls
 
+    def download_file(self, url, cid) -> bool:
+        if not cid == self.cik:
+            return False
+
+        req = requests.get(url, allow_redirects=True)
+        # may need to append .xlsx to end of file name
+        file = open('report_' + self.name + '.xlsx', 'wb')
+        file.write(req.content)
+        file.close()
+        return True

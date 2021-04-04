@@ -22,6 +22,15 @@ class CompanyTestCase(unittest.TestCase):
 
     def test_get_company_excel_reports_from_10K(self):
         company = Company("Oracle Corp", "0001341439")
+        # company.get_all_filings()
         result = company.get_company_excel_reports_from_10K()
         self.assertEqual(result, ORACLE_10K_EXCEL)
         print("got here")
+
+    def test_download_url(self):
+        company = Company("Oracle Corp", "0001341439")
+        # download file
+        url = "https://www.sec.gov/Archives/edgar/data/1341439/000119312506151154/Financial_Report.xlsx"
+        self.assertEqual(True, company.download_file(url, '0001341439'))
+        self.assertEqual(False, company.download_file(url, '0123456789'))
+        # delete downloaded files

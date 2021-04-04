@@ -5,7 +5,8 @@ from tqdm import tqdm
 import requests
 from fuzzywuzzy import process, fuzz
 
-class Edgar():
+
+class Edgar:
 
     def __init__(self):
         all_companies_page = requests.get("https://www.sec.gov/Archives/edgar/cik-lookup-data.txt")
