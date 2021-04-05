@@ -21,9 +21,9 @@ from company.views import CompanyViewSet
 from report_schema.views import RawReportViewSet, GeneratedReportViewSet
 
 router = routers.DefaultRouter()
-router.register(r'companies', CompanyViewSet)
-router.register(r'raw-reports', RawReportViewSet)
-router.register(r'generated-reports', GeneratedReportViewSet)
+router.register(r'companies', CompanyViewSet, basename='companies')
+router.register(r'raw-reports', RawReportViewSet, basename='raw-reports')
+router.register(r'generated-reports', GeneratedReportViewSet, basename='generated-reports')
 
 
 urlpatterns = [
