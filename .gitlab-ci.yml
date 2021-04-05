@@ -35,6 +35,11 @@ build-django-backend:
     - python EdgarScraper/manage.py migrate
     - echo "Django backed setup complete!"
 
+test-django-backend:
+  stage: test
+  script:
+    - python manage.py test
+
 test-job1:
   stage: test
   script:
