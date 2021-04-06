@@ -106,7 +106,3 @@ class Company:
                 if idx[2] == quarter:
                     return idx[0]
         return None
-
-company = Company("Oracle Corp", "0001341439")
-company.get_company_excel_reports_from("10-K")
-print(company.get_10k_year(None))
