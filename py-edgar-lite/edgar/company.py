@@ -88,11 +88,11 @@ class Company:
 
     # return all existing 10-K and 10-Q's
     def get_form_types(self):
-        return self.form_type
+        return self._excel_urls
 
     # return 10-K
     def get_10k_year(self, year):
-        tenK_lst = self.form_type['10-K']
+        tenK_lst = self._excel_urls['10-K']
         for idx in tenK_lst:
             if idx[1] == year:
                 return idx[0]
@@ -100,7 +100,7 @@ class Company:
 
     # return 10-Q
     def get_10Q_year(self, year, quarter):
-        tenQ_lst = self.form_type['10-Q']
+        tenQ_lst = self._excel_urls['10-Q']
         for idx in tenQ_lst:
             if idx[1] == year:
                 if idx[2] == quarter:
