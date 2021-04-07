@@ -3,6 +3,7 @@ from rest_framework import serializers
 from .models import RawReport, GeneratedReport
 from company_schema.serializers import CompanySerializer
 
+
 class RawReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = RawReport

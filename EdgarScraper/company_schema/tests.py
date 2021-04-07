@@ -6,12 +6,12 @@ import json
 from .models import Company
 from .serializers import CompanySerializer
 
-# Create your tests here.
+
 class CompanyAPITest(TestCase):
     def test_can_create_company(self):
-        created_company = Company.objects.create(
-            name = 'Google',
-            cik = '123456'
+        Company.objects.create(
+            name='Google',
+            cik='123456'
         )
 
         self.assertTrue(Company.objects.all())
@@ -29,14 +29,14 @@ class CompanyAPITest(TestCase):
         company.save()
 
         Company.objects.get(name='Google').delete()
-        
+
         self.assertFalse(Company.objects.all())
 
-    def test_GET_valid_company(self):
+    def test_get_valid_company(self):
         client = Client()
         company_to_get = Company.objects.create(
-            name = 'Google',
-            cik = '123456'
+            name='Google',
+            cik='123456'
         )
 
         response = client.get(
@@ -49,11 +49,11 @@ class CompanyAPITest(TestCase):
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_GET_non_exist_company(self):
+    def test_get_non_exist_company(self):
         client = Client()
         Company.objects.create(
-            name = 'Google',
-            cik = '123456'
+            name='Google',
+            cik='123456'
         )
 
         response = client.get(
@@ -62,7 +62,7 @@ class CompanyAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_POST_valid_company(self):
+    def test_post_valid_company(self):
         client = Client()
         payload = {
             'name': 'Google',
@@ -76,8 +76,8 @@ class CompanyAPITest(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-    
-    def test_POST_invalid_company(self):
+
+    def test_post_invalid_company(self):
         client = Client()
         payload_1 = {
             'name': '',
@@ -112,11 +112,11 @@ class CompanyAPITest(TestCase):
         self.assertEqual(response_2.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_3.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_PUT_valid_company(self):
+    def test_put_valid_company(self):
         client = Client()
         initial_company = Company.objects.create(
-            name = 'Google',
-            cik = '123456'
+            name='Google',
+            cik='123456'
         )
         payload = {
             'name': 'Microsoft',
@@ -132,11 +132,11 @@ class CompanyAPITest(TestCase):
         self.assertEqual(str(Company.objects.get(pk='Microsoft')), 'Microsoft')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_PUT_invalid_company(self):
+    def test_put_invalid_company(self):
         client = Client()
         initial_company = Company.objects.create(
-            name = 'Google',
-            cik = '123456'
+            name='Google',
+            cik='123456'
         )
         payload_1 = {
             'name': '',
@@ -171,11 +171,11 @@ class CompanyAPITest(TestCase):
         self.assertEqual(response_2.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_3.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_DELETE_existing_company(self):
+    def test_delete_existing_company(self):
         client = Client()
         initial_company = Company.objects.create(
-            name = 'Google',
-            cik = '123456'
+            name='Google',
+            cik='123456'
         )
 
         response = client.delete(
@@ -184,11 +184,11 @@ class CompanyAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-    def test_DELETE_not_exist_company(self):
+    def test_delete_not_exist_company(self):
         client = Client()
-        initial_company = Company.objects.create(
-            name = 'Google',
-            cik = '123456'
+        Company.objects.create(
+            name='Google',
+            cik='123456'
         )
 
         response = client.delete(
