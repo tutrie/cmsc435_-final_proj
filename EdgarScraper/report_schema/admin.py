@@ -8,4 +8,4 @@ class RawReportAdmin(admin.ModelAdmin):
 
 @admin.register(GeneratedReport)
 class RawReportAdmin(admin.ModelAdmin):
-    list_display = ('name', 'user', 'url')
+    list_display = ('name', 'created_by', 'path')

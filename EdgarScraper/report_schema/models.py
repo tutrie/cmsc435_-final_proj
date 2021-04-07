@@ -26,8 +26,8 @@ class RawReport(models.Model):
 
 class GeneratedReport(models.Model):
     name = models.CharField(max_length=100)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE)
-    url = models.URLField()
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE, related_name='created_by')
+    path = models.FilePathField(path=f'./', allow_folders=True) # TODO Need to create regular expression to use with match field and set the right path.
 
     def __str__(self):
-        return f'Report created by {self.user}, named: {self.name}'
+        return f'Report created by {self.created_by}, named: {self.name}'

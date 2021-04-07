@@ -23,6 +23,6 @@ class GeneratedReportSerializer(serializers.ModelSerializer):
         model = GeneratedReport
         fields = (
             'name',
-            'user',
-            'url'
+            'created_by',
+            'path'
         )
