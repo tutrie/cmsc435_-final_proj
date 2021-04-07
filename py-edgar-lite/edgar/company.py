@@ -60,6 +60,8 @@ class Company:
 
         self._document_urls = [BASE_URL + elem.attrib["href"]
                                for elem in page.xpath("//*[@id='documentsbutton']") if elem.attrib.get("href")]
+
+        counter_qtr = 3
         # add to the form_type dict
         for elem in self._document_urls:
             # split the original document url by '/', replace the last element with 'Financial_Report.xlsx'
@@ -68,6 +70,18 @@ class Company:
                 # The 10K entry is formatted as (url, year)
                 entry = [new_url, get_10k_year(new_url)]
             else:
+
+                # year_seq = get_10Q_year_seq_number(new_url)
+                # # The 10Q entry is formatted as {year: [url, quarter]}
+                # # edge case i cant figure out :/
+                # if year_seq[0] == '2021':
+                #     entry = {year_seq[0]: [new_url, '1']}
+                # else:
+                #     entry = {year_seq[0]: [new_url, str(counter_qtr)]}
+                #     if counter_qtr == 3:
+                #         counter_qtr = 1
+                #     else:
+                #         counter_qtr = counter_qtr + 1
                 year_seq = get_10Q_year_seq_number(new_url)
                 # The 10Q entry is formatted as (url, year, quarter)
                 entry = (new_url, year_seq[0], year_seq[1])
@@ -99,6 +113,18 @@ class Company:
         return None
 
     # return 10-Q
+    # def get_10Q_year(self, year, quarter):
+    #     tenQ_lst = self._excel_urls['10-Q']
+    #     print(tenQ_lst)
+    #     for idx in tenQ_lst:
+    #         if idx.get(year) is None:
+    #             continue
+    #         else:
+    #             print(idx[year][1])
+    #             if idx[year][1] == quarter:
+    #                 return idx[year][0]
+    #     return None
+        # return 10-Q
     def get_10Q_year(self, year, quarter):
         tenQ_lst = self._excel_urls['10-Q']
         for idx in tenQ_lst:
@@ -106,3 +132,10 @@ class Company:
                 if idx[2] == quarter:
                     return idx[0]
         return None
+
+
+company = Company("Oracle Corp", "0001341439")
+company.get_company_excel_reports_from("10-Q")
+print(company.get_form_types())
+result = company.get_10Q_year('2020', '2')
+print(result)
