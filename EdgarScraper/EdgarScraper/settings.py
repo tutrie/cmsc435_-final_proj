@@ -41,7 +41,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    'company',
+    'company_schema',
     'report_schema'
 ]
 

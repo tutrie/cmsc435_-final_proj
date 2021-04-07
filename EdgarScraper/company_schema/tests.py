@@ -57,7 +57,7 @@ class CompanyAPITest(TestCase):
         )
 
         response = client.get(
-            reverse('companies-detail', kwargs={'pk': 10})
+            reverse('companies-detail', kwargs={'pk': 'Facebook'})
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -129,7 +129,7 @@ class CompanyAPITest(TestCase):
             content_type='application/json'
         )
 
-        self.assertEqual(str(Company.objects.get(pk=initial_company.pk)), 'Microsoft')
+        self.assertEqual(str(Company.objects.get(pk='Microsoft')), 'Microsoft')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_PUT_invalid_company(self):

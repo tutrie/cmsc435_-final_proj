@@ -12,6 +12,12 @@ python manage.py migrate
 ```
 This will create a local database that you can use for testing the application.
 
+You should also create a local superuser so that you can login to the admin panel
+```bash
+python manage.py createsuperuser --email admin@example.com
+```
+Follow the prompts to create a username and password.
+
 You can run the server locally by running
 ```bash
 python manage.py runserver
