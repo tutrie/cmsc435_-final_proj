@@ -84,47 +84,52 @@ class CompanyTestCase(unittest.TestCase):
         result = company.get_company_excel_reports_from("10-K")
         self.assertEqual(result, ORACLE_10K_EXCEL)
 
-    def test_download_url(self):
+    def test_get_company_excel_reports_from_10Q(self):
         company = Company("Oracle Corp", "0001341439")
-        # download file
-        url = "https://www.sec.gov/Archives/edgar/data/1341439/000119312506151154/Financial_Report.xlsx"
-        self.assertEqual(True, company.download_file(url, '0001341439'))
-        self.assertEqual(False, company.download_file(url, '0123456789'))
-        # delete downloaded files
+        result = company.get_company_excel_reports_from("10-Q")
+        print(result)
 
-    def test_correct_return_10k(self):
-        length_10k_values = len(GET_FORMS_ONLY_10K['10-K'])
-        company = Company("Oracle Corp", "0001341439")
-        company.get_company_excel_reports_from("10-K")
-        result = company.get_form_types()
-        self.assertEqual(result, GET_FORMS_ONLY_10K)
-        result = company.get_10k_year('2020')
-        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][0])
-        result = company.get_10k_year('2019')
-        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][1])
-        result = company.get_10k_year('2018')
-        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][2])
-        result = company.get_10k_year('2007')
-        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][length_10k_values - 2])
-        result = company.get_10k_year('2006')
-        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][length_10k_values - 1])
-
-    def test_incorrect_return_10k(self):
-        company = Company("Oracle Corp", "0001341439")
-        company.get_company_excel_reports_from("10-K")
-        result = company.get_10k_year('1988')
-        self.assertEqual(result, None)
-        result = company.get_10k_year('2025')
-        self.assertEqual(result, None)
-        result = company.get_10k_year('2001')
-        self.assertEqual(result, None)
-        result = company.get_10k_year('hello')
-        self.assertEqual(result, None)
-        result = company.get_10k_year(True)
-        self.assertEqual(result, None)
-        result = company.get_10k_year(None)
-        self.assertEqual(result, None)
-        result = company.get_10k_year(2.4)
-        self.assertEqual(result, None)
-        result = company.get_10k_year(2018)
-        self.assertEqual(result, None)
+    # def test_download_url(self):
+    #     company = Company("Oracle Corp", "0001341439")
+    #     # download file
+    #     url = "https://www.sec.gov/Archives/edgar/data/1341439/000119312506151154/Financial_Report.xlsx"
+    #     self.assertEqual(True, company.download_file(url, '0001341439'))
+    #     self.assertEqual(False, company.download_file(url, '0123456789'))
+    #     # delete downloaded files
+    #
+    # def test_correct_return_10k(self):
+    #     length_10k_values = len(GET_FORMS_ONLY_10K['10-K'])
+    #     company = Company("Oracle Corp", "0001341439")
+    #     company.get_company_excel_reports_from("10-K")
+    #     result = company.get_form_types()
+    #     self.assertEqual(result, GET_FORMS_ONLY_10K)
+    #     result = company.get_10k_year('2020')
+    #     self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][0])
+    #     result = company.get_10k_year('2019')
+    #     self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][1])
+    #     result = company.get_10k_year('2018')
+    #     self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][2])
+    #     result = company.get_10k_year('2007')
+    #     self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][length_10k_values - 2])
+    #     result = company.get_10k_year('2006')
+    #     self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][length_10k_values - 1])
+    #
+    # def test_incorrect_return_10k(self):
+    #     company = Company("Oracle Corp", "0001341439")
+    #     company.get_company_excel_reports_from("10-K")
+    #     result = company.get_10k_year('1988')
+    #     self.assertEqual(result, None)
+    #     result = company.get_10k_year('2025')
+    #     self.assertEqual(result, None)
+    #     result = company.get_10k_year('2001')
+    #     self.assertEqual(result, None)
+    #     result = company.get_10k_year('hello')
+    #     self.assertEqual(result, None)
+    #     result = company.get_10k_year(True)
+    #     self.assertEqual(result, None)
+    #     result = company.get_10k_year(None)
+    #     self.assertEqual(result, None)
+    #     result = company.get_10k_year(2.4)
+    #     self.assertEqual(result, None)
+    #     result = company.get_10k_year(2018)
+    #     self.assertEqual(result, None)

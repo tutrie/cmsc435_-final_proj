@@ -27,7 +27,7 @@ class Company:
         self._document_urls = []
         # [url, year]
         # [url, year, quarterNumber]
-        self._excel_urls = {'10-K': [], '10-Q': []}
+        self._excel_urls = {'10-K': [], '10-Q': {}}
 
     @property
     def document_urls(self):
@@ -47,6 +47,33 @@ class Company:
         page = self._get(url)
         return html.fromstring(page.content)
 
+    # How often should we update the report, or should we just redo the scraping each time we call the function?
+    def _get_company_10_K_excel_report(self):
+        """
+        Parse the company's 10-K excel report urls.
+        """
+        for elem in self._document_urls:
+            # split the original document url by '/', replace the last element with 'Financial_Report.xlsx'
+            new_url = '/'.join(elem.split('/')[:-1] + ["Financial_Report.xlsx"])
+            entry = [new_url, get_10k_year(new_url)]
+            self._excel_urls["10-K"].append(entry)
+
+    def _get_company_10_Q_excel_report(self):
+        """
+        Parse the company's 10-Q excel report urls.
+        """
+        for elem in self._document_urls:
+            # split the original document url by '/', replace the last element with 'Financial_Report.xlsx'
+            new_url = '/'.join(elem.split('/')[:-1] + ["Financial_Report.xlsx"])
+            year, quarter_seq = get_10Q_year_seq_number(new_url)
+            url_lst = self._excel_urls["10-Q"].get(year, [])
+            # The 10Q entry is formatted as (url, quarter_seq)
+            url_lst.append(new_url, quarter_seq)
+
+            self._excel_urls["10-Q"][year] = url_lst
+
+        
+
     def get_company_excel_reports_from(self, report_type) -> List[str]:
         """
         Retrieve the company's excel format 10-K or 10-Q report
@@ -61,32 +88,10 @@ class Company:
         self._document_urls = [BASE_URL + elem.attrib["href"]
                                for elem in page.xpath("//*[@id='documentsbutton']") if elem.attrib.get("href")]
 
-        counter_qtr = 3
-        # add to the form_type dict
-        for elem in self._document_urls:
-            # split the original document url by '/', replace the last element with 'Financial_Report.xlsx'
-            new_url = '/'.join(elem.split('/')[:-1] + ["Financial_Report.xlsx"])
-            if report_type == '10-K':
-                # The 10K entry is formatted as (url, year)
-                entry = [new_url, get_10k_year(new_url)]
-            else:
-
-                # year_seq = get_10Q_year_seq_number(new_url)
-                # # The 10Q entry is formatted as {year: [url, quarter]}
-                # # edge case i cant figure out :/
-                # if year_seq[0] == '2021':
-                #     entry = {year_seq[0]: [new_url, '1']}
-                # else:
-                #     entry = {year_seq[0]: [new_url, str(counter_qtr)]}
-                #     if counter_qtr == 3:
-                #         counter_qtr = 1
-                #     else:
-                #         counter_qtr = counter_qtr + 1
-                year_seq = get_10Q_year_seq_number(new_url)
-                # The 10Q entry is formatted as (url, year, quarter)
-                entry = (new_url, year_seq[0], year_seq[1])
-
-            self._excel_urls[report_type].append(entry)
+        if report_type == "10-K":
+            self._get_company_10_K_excel_report()
+        else:
+            self._get_company_10_Q_excel_report()
 
         return self._excel_urls[report_type]
 
