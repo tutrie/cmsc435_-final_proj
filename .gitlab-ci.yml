@@ -38,7 +38,7 @@ build-django-backend:
 test-django-backend:
   stage: test
   script:
-    - python manage.py test
+    - python EdgarScraper/manage.py test
 
 test-job1:
   stage: test
