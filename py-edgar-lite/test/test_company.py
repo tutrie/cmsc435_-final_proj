@@ -6,7 +6,6 @@ from urllib.parse import parse_qs
 
 from edgar.company import Company
 
-
 ORACLE_10K_EXCEL = [
     ['https://www.sec.gov/Archives/edgar/data/1341439/000156459020030125/Financial_Report.xlsx', '2020'],
     ['https://www.sec.gov/Archives/edgar/data/1341439/000156459019023119/Financial_Report.xlsx', '2019'],
@@ -63,7 +62,7 @@ ORACLE_10Q_EXCEL = {
         ('https://www.sec.gov/Archives/edgar/data/1341439/000119312511081178/Financial_Report.xlsx', '081178'),
         ('https://www.sec.gov/Archives/edgar/data/1341439/000119312511255436/Financial_Report.xlsx', '255436'),
         ('https://www.sec.gov/Archives/edgar/data/1341439/000119312511351954/Financial_Report.xlsx', '351954')],
-     '2010': [
+    '2010': [
         ('https://www.sec.gov/Archives/edgar/data/1341439/000119312510070192/Financial_Report.xlsx', '070192'),
         ('https://www.sec.gov/Archives/edgar/data/1341439/000119312510219697/Financial_Report.xlsx', '219697'),
         ('https://www.sec.gov/Archives/edgar/data/1341439/000119312510285703/Financial_Report.xlsx', '285703')],
@@ -72,29 +71,29 @@ ORACLE_10Q_EXCEL = {
         ('https://www.sec.gov/Archives/edgar/data/1341439/000119312509257212/Financial_Report.xlsx', '257212')]}
 
 GET_FORMS_ONLY_10K = {'10-K':
-    [['https://www.sec.gov/Archives/edgar/data/1341439/000156459020030125/Financial_Report.xlsx',
-    '2020'],
-    ['https://www.sec.gov/Archives/edgar/data/1341439/000156459019023119/Financial_Report.xlsx',
-    '2019'],
-    ['https://www.sec.gov/Archives/edgar/data/1341439/000119312518201034/Financial_Report.xlsx',
-    '2018'],
-    ['https://www.sec.gov/Archives/edgar/data/1341439/000119312517214833/Financial_Report.xlsx',
-    '2017'],
-    ['https://www.sec.gov/Archives/edgar/data/1341439/000119312516628942/Financial_Report.xlsx',
-    '2016'],
-    ['https://www.sec.gov/Archives/edgar/data/1341439/000119312515235239/Financial_Report.xlsx',
-    '2015'],
-    ['https://www.sec.gov/Archives/edgar/data/1341439/000119312514251351/Financial_Report.xlsx',
-    '2014'],
-    ['https://www.sec.gov/Archives/edgar/data/1341439/000119312513272832/Financial_Report.xlsx',
-    '2013'],
-    ['https://www.sec.gov/Archives/edgar/data/1341439/000119312512284007/Financial_Report.xlsx',
-    '2012'],
-    ['https://www.sec.gov/Archives/edgar/data/1341439/000119312511174819/Financial_Report.xlsx',
-    '2011'],
-    ['https://www.sec.gov/Archives/edgar/data/1341439/000119312510151896/Financial_Report.xlsx',
-    '2010']],
-    '10-Q': {}}
+                          [['https://www.sec.gov/Archives/edgar/data/1341439/000156459020030125/Financial_Report.xlsx',
+                            '2020'],
+                           ['https://www.sec.gov/Archives/edgar/data/1341439/000156459019023119/Financial_Report.xlsx',
+                            '2019'],
+                           ['https://www.sec.gov/Archives/edgar/data/1341439/000119312518201034/Financial_Report.xlsx',
+                            '2018'],
+                           ['https://www.sec.gov/Archives/edgar/data/1341439/000119312517214833/Financial_Report.xlsx',
+                            '2017'],
+                           ['https://www.sec.gov/Archives/edgar/data/1341439/000119312516628942/Financial_Report.xlsx',
+                            '2016'],
+                           ['https://www.sec.gov/Archives/edgar/data/1341439/000119312515235239/Financial_Report.xlsx',
+                            '2015'],
+                           ['https://www.sec.gov/Archives/edgar/data/1341439/000119312514251351/Financial_Report.xlsx',
+                            '2014'],
+                           ['https://www.sec.gov/Archives/edgar/data/1341439/000119312513272832/Financial_Report.xlsx',
+                            '2013'],
+                           ['https://www.sec.gov/Archives/edgar/data/1341439/000119312512284007/Financial_Report.xlsx',
+                            '2012'],
+                           ['https://www.sec.gov/Archives/edgar/data/1341439/000119312511174819/Financial_Report.xlsx',
+                            '2011'],
+                           ['https://www.sec.gov/Archives/edgar/data/1341439/000119312510151896/Financial_Report.xlsx',
+                            '2010']],
+                      '10-Q': {}}
 
 
 class CompanyTestCase(unittest.TestCase):
@@ -137,7 +136,7 @@ class CompanyTestCase(unittest.TestCase):
         url = "https://www.sec.gov/Archives/edgar/data/1341439/000119312506151154/Financial_Report.xlsx"
         self.assertEqual(True, company.download_file(url, '0001341439'))
         self.assertEqual(False, company.download_file(url, '0123456789'))
-        # delete downloaded files
+        # delete downloaded files??
 
     # There's some minor thing need to update in these two test
     def test_correct_return_10k(self):
