@@ -53,6 +53,11 @@ test-job2:
     - echo "which simulates a test that runs 20 seconds longer than test-job1"
     - sleep 20
 
+test-django-backend:
+  stage: test
+  script:
+    - python EdgarScraper/manage.py test
+
 deploy-prod:
   stage: deploy
   script:
