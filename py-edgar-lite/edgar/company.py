@@ -19,6 +19,13 @@ def get_10Q_year_seq_number(url):
     return ['20' + url[7][10:12], url[7][12:]]
 
 
+def get_accession_number(interactive_url):
+    parsed = urlparse.urlparse(interactive_url)
+    accession_num = parse_qs(parsed.query)['accession_number']
+
+    return accession_num[0]
+
+
 class Company:
 
     def __init__(self, name, cik, timeout=10):
@@ -58,7 +65,7 @@ class Company:
         processed = 0
 
         for document_url in self._document_urls:
-            accession_num = self.get_accession_number(self._interactive_urls[processed])
+            accession_num = get_accession_number(self._interactive_urls[processed])
             # Check if the document_url corresponds to the interactive_url, means the document has excel report
             if re.search(accession_num, document_url) is None:
                 continue
@@ -80,7 +87,7 @@ class Company:
         processed = 0
 
         for document_url in self._document_urls:
-            accession_num = self.get_accession_number(self._interactive_urls[processed])
+            accession_num = get_accession_number(self._interactive_urls[processed])
             # Check if the document_url corresponds to the interactive_url, means the document has excel report
             if re.search(accession_num, document_url) is None:
                 continue
@@ -104,7 +111,6 @@ class Company:
             # [first_quater, second_quater, ]
             url_lst.sort(key=lambda x: x[1])
 
-
     def get_company_excel_reports_from(self, report_type) -> List[str]:
         """
         Retrieve the company's excel format 10-K or 10-Q report
@@ -121,7 +127,7 @@ class Company:
                                for elem in page.xpath("//*[@id='documentsbutton']") if elem.attrib.get("href")]
         # https://www.sec.gov/cgi-bin/viewer?action=view&cik=1018724&accession_number=0001018724-20-000030&xbrl_type=v
         self._interactive_urls = [BASE_URL + elem.attrib["href"]
-                               for elem in page.xpath("//*[@id='interactiveDataBtn']") if elem.attrib.get("href")]
+                                  for elem in page.xpath("//*[@id='interactiveDataBtn']") if elem.attrib.get("href")]
 
         if report_type == "10-K":
             self._get_company_10_K_excel_report()
@@ -153,18 +159,6 @@ class Company:
         return None
 
     # return 10-Q
-    # def get_10Q_year(self, year, quarter):
-    #     tenQ_lst = self._excel_urls['10-Q']
-    #     print(tenQ_lst)
-    #     for idx in tenQ_lst:
-    #         if idx.get(year) is None:
-    #             continue
-    #         else:
-    #             print(idx[year][1])
-    #             if idx[year][1] == quarter:
-    #                 return idx[year][0]
-    #     return None
-        # return 10-Q
     def get_10Q_year(self, year, quarter):
         tenQ_lst = self._excel_urls['10-Q']
         for idx in tenQ_lst:
@@ -172,10 +166,3 @@ class Company:
                 if idx[2] == quarter:
                     return idx[0]
         return None
-
-    def get_accession_number(self, interactive_url):
-        parsed = urlparse.urlparse(interactive_url)
-        accession_num = parse_qs(parsed.query)['accession_number']
-
-        return accession_num[0]
-
