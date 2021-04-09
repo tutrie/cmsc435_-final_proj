@@ -9,11 +9,12 @@ build-start:
     - echo "Hello, $GITLAB_USER_LOGIN!"
 
 build-django-backend:
+  stage: build
   script:
     - echo "Hello, $GITLAB_USER_LOGIN!"
     - pip install virtualenv
-    - virtualenv newenv
     - cd Backend
+    - virtualenv newenv
     - source newenv/bin/activate
     - pip install django
     - pip install djangorestframework
