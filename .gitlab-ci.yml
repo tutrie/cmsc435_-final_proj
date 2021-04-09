@@ -2,14 +2,7 @@ image: python:latest
 
 # Change pip's cache directory to be inside the project directory since we can
 # only cache local items.
-
-build-start:
-  stage: build
-  script:
-    - echo "Hello, $GITLAB_USER_LOGIN!"
-
 build-django-backend:
-  stage: build
   script:
     - echo "Hello, $GITLAB_USER_LOGIN!"
     - pip install virtualenv
@@ -20,6 +13,11 @@ build-django-backend:
     - pip install djangorestframework
     - python manage.py migrate
     - echo "Django backed setup complete!"
+
+build-start:
+  stage: build
+  script:
+    - echo "Hello, $GITLAB_USER_LOGIN!"
 
 test-django-backend:
   stage: test
