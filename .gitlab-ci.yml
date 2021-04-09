@@ -13,10 +13,11 @@ build-django-backend:
     - echo "Hello, $GITLAB_USER_LOGIN!"
     - pip install virtualenv
     - virtualenv newenv
+    - cd Backend
     - source newenv/bin/activate
     - pip install django
     - pip install djangorestframework
-    - python Backend/manage.py migrate
+    - python manage.py migrate
     - echo "Django backed setup complete!"
 
 test-django-backend:
