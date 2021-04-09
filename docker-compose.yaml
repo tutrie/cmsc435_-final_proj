@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+    postgres-db:
+        image: postgres:latest
+        container_name: postgres-db
+        volumes:
+          - pgdata:/var/lib/postgresql/data
+        env_file:
+            - ./.env/postgres.env
+        restart: always
+        ports:
+            - "5432:5432"
+        networks:
+            - main
+    web:
+        container_name: django-server
+        build: ./Backend
+        image: django-server:latest
+        command: python3 manage.py runserver 0.0.0.0:8000
+        volumes:
+            - web-django:/Backend/code
+        env_file:
+            - ./.env/django.env
+        ports:
+            - "8000:8000"
+        depends_on:
+            - postgres-db
+        restart: always
+        networks:
+            - main
+
+volumes:
+    pgdata:
+    web-django:
+
+networks:
+    main:

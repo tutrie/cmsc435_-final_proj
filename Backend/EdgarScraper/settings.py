@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'u28%n=7i#o8r05cx_++m--1c)_m&l9=!nv8#@qg^91-&czq4oe'
+SECRET_KEY = os.environ.get("SECRET_KEY", "u28%n=7i#o8r05cx_++m--1c)_m&l9=!nv8#@qg^91-&czq4oe")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = [] if not any(ALLOWED_HOSTS) else ALLOWED_HOSTS
 
 
 # Application definition
@@ -82,12 +84,26 @@ WSGI_APPLICATION = 'EdgarScraper.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+         # Add the docker environment SQL_ENGINE variable or for local development use sqlite3 engine
+        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"), 
+         
+         # Add the docker environment SQL_DATABASE variable or use the local sqlite database soruce
+        "NAME": os.environ.get("SQL_DATABASE", os.path.join(BASE_DIR, "db.sqlite3")),
+         
+         # Add the docker SQL_USER environment variable or on need password for sqlite3
+        "USER": os.environ.get("SQL_USER", ""),
+         
+         # Add the docker SQL_PASSWORD environment variable or on need password for sqlite3
+        "PASSWORD": os.environ.get("SQL_PASSWORD", ""),
+         
+         # Add the docker SQL_HOST environment variable or on need host for sqlite3
+        "HOST": os.environ.get("SQL_HOST", ""),
+         
+         # Add the docker SQL_HOST environment variable or on need port for sqlite3
+        "PORT": os.environ.get("SQL_PORT", ""),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
