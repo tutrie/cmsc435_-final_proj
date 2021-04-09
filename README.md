@@ -30,11 +30,16 @@ First, get the containers up and running
 docker-compose up
 ```
 
+# If the images need to be built, run this instead
+```bash
+docker-compose up --build
+```
+
 If you are unable to login to admin using the credentials below, run the following commands in a new terminal. This will set up a new admin superuser for testing
 
 ```bash
 docker exec -it django-server bash
-python3 manage.py createsuperuser --emain admin@admin.com
+python3 manage.py createsuperuser --email admin@admin.com
 username: admin
 password: admin
 ```
