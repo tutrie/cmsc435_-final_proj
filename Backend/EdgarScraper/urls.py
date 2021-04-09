@@ -17,8 +17,9 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 
-from company_schema.views import CompanyViewSet
-from report_schema.views import RawReportViewSet, GeneratedReportViewSet
+from company_schema.models import CompanyViewSet
+from report_schema.raw_report.models import RawReportViewSet
+from report_schema.generated_report.models import GeneratedReportViewSet
 
 router = routers.DefaultRouter()
 router.register(r'companies', CompanyViewSet, basename='companies')
