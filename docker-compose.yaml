@@ -1,35 +1,32 @@
-version: '3'
+version: '3.9'
 
 services:
-    postgres:
+    postgres-db:
         image: postgres:latest
         container_name: postgres-db
         volumes:
           - pgdata:/var/lib/postgresql/data
-        environment:
-          - POSTGRES_DB='postgres'
-          - POSTGRES_USER='postgres'
-          - POSTGRES_PASSWORD='postgres'
+        env_file:
+            - ./.env/postgres.env
         restart: always
         ports:
             - "5432:5432"
         networks:
             - main
     web:
-        container_name: Django-Server
+        container_name: django-server
         build: ./Backend
-        command: bash -c "python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
+        image: django-server:latest
+        command: python3 manage.py runserver 0.0.0.0:8000
+        volumes:
+            - web-django:/Backend/code
         env_file:
-            - project.env
+            - ./.env/django.env
         ports:
             - "8000:8000"
-        volumes:
-            - web-django:/Backend
         depends_on:
-            - postgres
+            - postgres-db
         restart: always
-        links:
-            - postgres:postgres
         networks:
             - main
 
