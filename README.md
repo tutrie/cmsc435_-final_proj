@@ -22,3 +22,19 @@ You can run the server locally by running
 ```bash
 python manage.py runserver
 ```
+
+## Run using Docker
+
+First, get the containers up and running
+```bash
+docker-compose up
+```
+
+If you are unable to login to admin using the credentials below, run the following commands in a new terminal. This will set up a new admin superuser for testing
+
+```bash
+docker exec -it django-server bash
+python3 manage.py createsuperuser --emain admin@admin.com
+username: admin
+password: admin
+```
