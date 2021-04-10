@@ -1,47 +1,47 @@
 # EDGAR-Lite
-A small library for 10-Q and 10-K form url retrevial from SEC's edgar.
+Edgar-Lite is a small library you can use to retrieve financial data from the SEC Edgar Website.  With Edgar-Lite API you can download excel documents for any company's 10-Q and 10-K data through a python program.
 
 ## Environment Setup
-Be sure to run the following commands in terminal to install the required dependencies:
+Run the following commands in your terminal to install the required dependencies for Edgar-Lite:
 ```bash
 pip install requests
 pip install lxml
 ```
 
 ## Example
-To get all urls to a company's 10-K excel reports, run
+
+### Import Edgar
+
+Import the Edgar-Lite library into your python program:
 
 ``` python
 from edgar.company import Company
+```
+
+### Create Companies
+
+Create a company object for any company that you are interested in retrieving data for by using the Company class with the company's name and CIK number as parameters:
+
+``` python
 company = Company("Oracle Corp", "0001341439")
+```
+
+### Retrieve Urls
+To retrieve a list of urls to access company excel reports use the get_company_excel_reports_from() method with the name of the report you want. ('10-K' or '10-Q')
+
+``` python
 urls = company.get_company_excel_reports_from("10-K")
 ```
 
-To get the url of a company's 2019 10-K excel report, run
+To get the url of a company's report from a specific quarter use get_10k_year('year_number','quarter_number') or get_10q_year('year_number','quarter_number')
 
 ``` python
-from edgar.company import Company
-company = Company("Oracle Corp", "0001341439")
-company.get_company_excel_reports_from("10-K")
-url = company.get_10k_year('2019')
+url = company.get_10k_year('2019', '3')
 ```
 
-To get all urls of a company's 10-Q excel report, run
+## Note
+For the 4th quarter of any given year is entailed the 10-K form for that year.  Additionally, some auto generated reports may not be present thus the URL has no downloadable content.
 
-``` python
-from edgar.company import Company
-company = Company("Oracle Corp", "0001341439")
-urls = company.get_company_excel_reports_from("10-Q")
-```
-
-To get the url of a company's 2019's first quarter 10-Q excel report, run
-
-``` python
-from edgar.company import Company
-company = Company("Oracle Corp", "0001341439")
-company.get_company_excel_reports_from("10-Q")
-url = company.get_10k_year('2019', '1')
-```
 
 ## API
 
@@ -91,5 +91,4 @@ Returns the url of the 10-Q excel report of a given company at a specified year 
 Running every test cases at once will cause some tests fail randomly, which is due to the fact that the tests were run 
 concurrently. It will be more consistent to run each one by one. 
 
-## Note
-For the 4th quarter of any given year is entailed the 10-K form for that year.  Additionally, some auto generated reports may not be present thus the URL has no downloadable content.  
+  
