@@ -32,7 +32,7 @@ To retrieve a list of urls to access company excel reports use the get_company_e
 urls = company.get_company_excel_reports_from("10-K")
 ```
 
-To get the url of a company's report from a specific quarter use get_10k_year('year_number','quarter_number') or get_10q_year('year_number','quarter_number')
+To get the url of a company's report from a specific quarter use get_10k_year('year_number','quarter_number') or get_10q_year_quarter('year_number','quarter_number')
 
 ``` python
 url = company.get_10k_year('2019', '3')
@@ -102,7 +102,22 @@ company.get_filings_url('10-K', '10')
 urls = company.get_company_excel_reports_from('10-K')
 # download excel documents from the urls
 for url in urls:
-    company.download_file(url)
+    company.download_file(url[0])
+```
+
+Use Edgar-Lite to get a specific quarter of a year's 10-Q report for Oracle as excel documents:
+
+``` python
+#import Company class from edgar library
+from edgar.company import Company
+#create Company object for Oracle
+company = Company("Oracle Corp", "0001341439")
+#save url for page of 10-Q filings in the database
+company.get_filings_url('10-Q')
+# get urls from page
+urls = company.get_company_excel_reports_from('10-Q')
+# download first quarter of 2019's excel documents from the url
+company.download_file(urls['2019']['1'])
 ```
 
 
