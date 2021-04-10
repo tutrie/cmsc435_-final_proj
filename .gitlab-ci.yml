@@ -17,7 +17,10 @@ test-django-backend:
     - pip install django
     - pip install djangorestframework
     - python manage.py migrate
-    - python manage.py test
+    - coverage run --source='.' manage.py test
+    - coverage report
+    - coverage erase
+
 
 test-job1:
   stage: test
