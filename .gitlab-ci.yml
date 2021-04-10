@@ -22,12 +22,6 @@ test-django-backend:
     - coverage report
     - coverage erase
 
-
-test-job1:
-  stage: test
-  script:
-    - echo "This job tests something"
-
 deploy-prod:
   stage: deploy
   script:
