@@ -7,8 +7,7 @@ Run the following commands in your terminal to install the required dependencies
 pip install requests
 pip install lxml
 ```
-
-## Example
+## API
 
 ### Import Edgar
 
@@ -39,25 +38,22 @@ To get the url of a company's report from a specific quarter use get_10k_year('y
 url = company.get_10k_year('2019', '3')
 ```
 
-## Note
+### Note
 For the 4th quarter of any given year is entailed the 10-K form for that year.  Additionally, some auto generated reports may not be present thus the URL has no downloadable content.
 
+#### Methods
 
-## API
+`Company(name="", cik="", timeout="")`
 
-### Company
-```python
-Company(name, cik, timeout=10)
-```
+Returns a company object that you use to retrieve filings
 * name (company name)
 * cik (company CIK number)
 * timeout (optional) (default: 10)
 
-#### Methods
 
 `get_filings_url(self, filing_type="", prior_to="", ownership="include", no_of_entries=100) -> str`
 
-Returns a url to fetch filings data
+Returns a url to fetch filings data and saves that url in the database to access reports from later
 * filing_type: The type of document you want. i.e. 10-K, 10-Q. If not specified, it'll return all documents
 * prior_to: Time prior which documents are to be retrieved. If not specified, it'll return all documents
 * ownership: defaults to include. Options are include, exclude, only.
@@ -70,7 +66,7 @@ Returns the urls of all the documents in the specified report_type. i.e. 10-K, 1
 * report_type: the type of report to retrieve
 
 
-`download_file(self, url, cik)`
+`download_file(self, url)`
 
 Download the document from the url if the cid correspond to the current company.
 * url: The url of the forms that need to download
@@ -90,5 +86,31 @@ Returns the url of the 10-Q excel report of a given company at a specified year 
 ## Testing
 Running every test cases at once will cause some tests fail randomly, which is due to the fact that the tests were run 
 concurrently. It will be more consistent to run each one by one. 
+
+## Examples 
+
+Use Edgar-Lite to get 10-K report for Oracle over the past 10 years as excel documents:
+
+``` python
+#import Company class from edgar library
+from edgar.company import Company
+#create Company object for Oracle
+company = Company("Oracle Corp", "0001341439")
+#save url for page that provides past 10 years of 10-K filings in the database
+company.get_filings_url('10-K', '10')
+#get urls from page
+urls = company.get_company_excel_reports_from('10-K')
+# download excel documents from the urls
+for url in urls:
+    company.download_file(url)
+```
+
+
+
+
+
+
+
+
 
   
