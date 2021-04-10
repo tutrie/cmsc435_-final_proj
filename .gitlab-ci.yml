@@ -11,6 +11,7 @@ test-django-backend:
   stage: test
   script:
     - pip install virtualenv
+    - pip install coverage
     - cd Backend
     - virtualenv newenv
     - source newenv/bin/activate
