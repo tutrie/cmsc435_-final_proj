@@ -138,7 +138,6 @@ class CompanyTestCase(unittest.TestCase):
         self.assertEqual(False, company.download_file(url, '0123456789'))
         # delete downloaded files??
 
-    # There's some minor thing need to update in these two test
     def test_correct_return_10k(self):
         length_10k_values = len(GET_FORMS_ONLY_10K['10-K'])
         company = Company("Oracle Corp", "0001341439")
@@ -146,15 +145,11 @@ class CompanyTestCase(unittest.TestCase):
         result = company.get_form_types()
         self.assertEqual(result, GET_FORMS_ONLY_10K)
         result = company.get_10k_year('2020')
-        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][0])
+        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][0][0])
         result = company.get_10k_year('2019')
-        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][1])
+        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][1][0])
         result = company.get_10k_year('2018')
-        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][2])
-        result = company.get_10k_year('2007')
-        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][length_10k_values - 2])
-        result = company.get_10k_year('2006')
-        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][length_10k_values - 1])
+        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K'][2][0])
 
     def test_incorrect_return_10k(self):
         company = Company("Oracle Corp", "0001341439")
@@ -176,7 +171,7 @@ class CompanyTestCase(unittest.TestCase):
         result = company.get_10k_year(2018)
         self.assertEqual(result, None)
 
-    def test_incorrect_return_10k(self):
+    def test_incorrect_return_10q(self):
         company = Company("Oracle Corp", "0001341439")
         company.get_company_excel_reports_from("10-Q")
         result = company.get_10Q_year('1988', '1')
