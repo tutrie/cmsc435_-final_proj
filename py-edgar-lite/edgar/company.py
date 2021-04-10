@@ -1,4 +1,5 @@
 import re
+from datetime import time
 from typing import List
 import requests
 from lxml import html
@@ -145,13 +146,10 @@ class Company:
 
         return self._excel_urls[report_type]
 
-    def download_file(self, url, cik) -> bool:
+    def download_file(self, url) -> bool:
         """
         Download the file from the given url.
         """
-        if not cik == self.cik:
-            return False
-
         req = requests.get(url, allow_redirects=True)
         file = open('report_' + '_'.join(self.name.split(' ')) + '.xlsx', 'wb')
         file.write(req.content)
@@ -191,3 +189,9 @@ class Company:
                 return entry[quarter - 1]
 
         return None
+
+
+company = Company("Oracle Corp", "0001341439")
+company.get_company_excel_reports_from("10-Q")
+company.get_company_excel_reports_from("10-K")
+print(company.get_existing_forms())
