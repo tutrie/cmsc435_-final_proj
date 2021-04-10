@@ -189,9 +189,3 @@ class Company:
                 return entry[quarter - 1]
 
         return None
-
-
-company = Company("Oracle Corp", "0001341439")
-company.get_company_excel_reports_from("10-Q")
-company.get_company_excel_reports_from("10-K")
-print(company.get_existing_forms())
