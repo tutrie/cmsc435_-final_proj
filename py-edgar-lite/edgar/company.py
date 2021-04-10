@@ -47,7 +47,7 @@ class Company:
         """
         A private method for GET request.
         """
-        return requests.get(url, timeout=self.timeout)
+        return requests.get(url)
 
     def get_filings_url(self, filing_type="", prior_to="", ownership="include", no_of_entries=100) -> str:
         """

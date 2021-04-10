@@ -6,7 +6,6 @@ Be sure to run the following commands in terminal to install the required depend
 ```bash
 pip install requests
 pip install lxml
-pip install edgar
 ```
 
 ## Example
@@ -87,6 +86,10 @@ Returns the url of the 10-K excel report of a given company at a specified year.
 Returns the url of the 10-Q excel report of a given company at a specified year and quarter. 
 * year: year of the report
 * year: quarter of the year
+
+## Testing
+Running every test cases at once will cause some tests fail randomly, which is due to the fact that the tests were run 
+concurrently. It will be more consistent to run each one by one. 
 
 ## Note
 For the 4th quarter of any given year is entailed the 10-K form for that year.  Additionally, some auto generated reports may not be present thus the URL has no downloadable content.  

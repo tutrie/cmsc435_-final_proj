@@ -199,3 +199,9 @@ class CompanyTestCase(unittest.TestCase):
         self.assertEqual(result, None)
         result = company.get_10q_year_quarter(2018, '1')
         self.assertEqual(result, None)
+
+    def test_random(self):
+        company = Company("Oracle Corp", "0001341439")
+        url = company.get_company_excel_reports_from("10-K")
+        print(url)
+        print(company._excel_urls)
