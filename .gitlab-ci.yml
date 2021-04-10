@@ -12,11 +12,11 @@ test-django-backend:
   script:
     - pip install virtualenv
     - pip install coverage
+    - pip install django
+    - pip install djangorestframework
     - cd Backend
     - virtualenv newenv
     - source newenv/bin/activate
-    - pip install django
-    - pip install djangorestframework
     - python manage.py migrate
     - coverage run --source='.' manage.py test
     - coverage report
