@@ -11,13 +11,13 @@ test-django-backend:
   stage: test
   script:
     - pip install virtualenv
+    - cd Backend
+    - virtualenv newenv
+    - source newenv/bin/activate
     - pip install coverage
     - pip install Django
     - pip install djangorestframework
     - pip install psycopg2-binary
-    - cd Backend
-    - virtualenv newenv
-    - source newenv/bin/activate
     - python manage.py migrate
     - coverage run --source='.' manage.py test
     - coverage report
