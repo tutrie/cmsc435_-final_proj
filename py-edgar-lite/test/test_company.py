@@ -1,8 +1,6 @@
 import unittest
 import requests
 from lxml import html
-import urllib.parse as urlparse
-from urllib.parse import parse_qs
 
 from edgar.company import Company
 
