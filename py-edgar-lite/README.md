@@ -7,6 +7,64 @@ Run the following commands in your terminal to install the required dependencies
 pip install requests
 pip install lxml
 ```
+
+## Usage
+
+### Import Edgar
+
+Import the Edgar-Lite library into your python program:
+
+``` python
+from edgar.company import Company
+```
+
+### Create Companies
+
+Create a company object for any company that you are interested in retrieving data for by using the Company class with the company's name and CIK number as parameters:
+
+``` python
+company = Company("Oracle Corp", "0001341439")
+```
+
+### Retrieve Urls
+To retrieve a dictionary of urls to access company excel reports use the get_company_excel_reports_from('report_type') method with the type of the report you want. ('10-K' or '10-Q')
+
+``` python
+urls = company.get_company_excel_reports_from("10-K")
+```
+
+To get the url of a company's report from a specific year use get_10k_year('year_number') or get_10q_year_quarter('year_number','quarter_number')
+
+``` python
+url = company.get_10k_year('2019')
+```
+
+To get the url of a company's report from a specific quarter use get_10q_year_quarter('year_number','quarter_number')
+
+``` python
+url = company.get_10q_year_quarter('2019', '3')
+```
+
+### Download Excel Report
+To download a specific document url you retrieved from the methods above, use download_file(url)
+
+``` python
+url = company.get_10q_year_quarter('2019', '3')
+company.download_file(url)
+```
+
+To download all excel reports from 10-K document from the current company, use download_all_10k_reports(self)
+
+``` python
+company.download_10k_reports()
+```
+
+To download all excel reports from 10-Q document from the current company, use download_all_10q_reports(self)
+
+``` python
+company.download_10q_reports()
+```
+
 ## API
 
 ### Methods
@@ -28,18 +86,12 @@ Returns a url to fetch filings data and saves that url in the database to access
 * no_of_entries: defaults to 100. Returns the number of entries to be returned. Maximum is 100.
 
 
-`get_company_excel_reports_from(self, report_type)`
+`get_company_excel_reports_from(self, report_type, prior_to="", no_of_entries=100)`
 
 Returns the urls of all the documents in the specified report_type. i.e. 10-K, 10-Q
-* report_type: the type of report to retrieve
-
-
-`download_file(self, url)`
-
-Download the document from the url if the cid correspond to the current company.
-* url: The url of the forms that need to download
-* cik: The cik number of current company.
-
+* report_type: the type of report to retrieve.
+* prior_to: Time prior which documents are to be retrieved. If not specified, it'll return all documents
+* no_of_entries: defaults to 100. Returns the number of entries to be returned. Maximum is 100.
 
 `get_10k_year(self, year)`
 
@@ -47,73 +99,69 @@ Returns the url of the 10-K excel report of a given company at a specified year.
 * year: year of the report
 
 `get_10q_year_quarter(self, year, quarter)`
+
 Returns the url of the 10-Q excel report of a given company at a specified year and quarter. 
 * year: year of the report
-* year: quarter of the year
+* quarter: quarter of the year
 
-### Usage
+`download_file(self, url)`
 
-#### Import Edgar
+Download the document from the url.
+* url: The url of the forms that need to download
 
-Import the Edgar-Lite library into your python program:
+`download_10k_reports(self, prior_to="", no_of_entries=100)`
 
-``` python
-from edgar.company import Company
-```
+Download all the 10k excel reports for the current company.
+* prior_to: Time prior which documents are to be retrieved. If not specified, it'll return all documents
+* no_of_entries: defaults to 100. Returns the number of entries to be returned. Maximum is 100.
 
-#### Create Companies
 
-Create a company object for any company that you are interested in retrieving data for by using the Company class with the company's name and CIK number as parameters:
+`download_10q_reports(self, prior_to="", no_of_entries=100)`
 
-``` python
-company = Company("Oracle Corp", "0001341439")
-```
+Download all the 10q excel reports for the current company.
+* prior_to: Time prior which documents are to be retrieved. If not specified, it'll return all documents
+* no_of_entries: defaults to 100. Returns the number of entries to be returned. Maximum is 100.
 
-#### Retrieve Urls
-To retrieve a dictionary of urls to access company excel reports use the get_company_excel_reports_from() method with the type of the report you want. ('10-K' or '10-Q')
 
-``` python
-urls = company.get_company_excel_reports_from("10-K")
-```
 
-To get the url of a company's report from a specific quarter use get_10q_year_quarter('year_number','quarter_number') or get_10q_year_quarter('year_number','quarter_number')
-
-``` python
-url = company.get_10q_year_quarter('2019', '3')
-```
-
-#### Note
+### Note
 For the 4th quarter of any given year is entailed the 10-K form for that year. Additionally, some auto generated reports may not be present thus the URL has no downloadable content.
 
 ## Examples 
 
-Use Edgar-Lite to get 10-K report for Oracle over the past 10 years as excel documents:
+Use Edgar-Lite to get all the urls to a company's 10-K Excel reports based on a company's name and CIK
 
 ``` python
-#import Company class from edgar library
+# import Company class from edgar library
 from edgar.company import Company
-#create Company object for Oracle
+# create Company object for Oracle
 company = Company("Oracle Corp", "0001341439")
-#get urls of past 10 years of 10-K filings in the database from company
-urls = company.get_company_excel_reports_from(report_type='10-K', no_of_entries=10)
-# download excel documents from the urls
-for url in urls:
-    company.download_file(url[0])
+# get all the urls of the 10K excel reports of this compnay
+url_dict = company.get_company_excel_reports_from("10-K")
 ```
 
-Use Edgar-Lite to get a specific quarter of a year's 10-Q report for Oracle as excel documents:
+Use Edgar-Lite to download the latest ten 10-Q report for Oracle as excel documents:
+
+``` python
+# import Company class from edgar library
+from edgar.company import Company
+# create Company object for Oracle
+company = Company("Oracle Corp", "0001341439")
+# download the 10-Q report over the past 10 years.
+company.download_10q_reports(self, no_of_entries=10)
+```
+
+Use Edgar-Lite to download a specific quarter of a year's 10-Q report for Oracle as excel documents:
 
 ``` python
 #import Company class from edgar library
 from edgar.company import Company
 #create Company object for Oracle
 company = Company("Oracle Corp", "0001341439")
-#save url for page of 10-Q filings in the database
-company.get_filings_url('10-Q')
-# get urls from page
-urls = company.get_company_excel_reports_from('10-Q')
-# download first quarter of 2019's excel documents from the url
-company.download_file(urls['2019']['1'])
+# get the url for the first quarter of 2019's excel documents.
+url = company.get_10q_year_quarter('2019', '1')
+# download  from the url
+company.download_file(url)
 ```
 
 

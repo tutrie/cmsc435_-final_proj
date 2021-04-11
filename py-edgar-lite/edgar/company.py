@@ -48,7 +48,17 @@ class Company:
         """
         A private method for GET request.
         """
-        return requests.get(url, timeout=self.timeout)
+        page = requests.get(url, timeout=self.timeout, allow_redirects=True)
+        counter = 0
+        # Request up to 5 times if the request was not successful.
+        while counter < 5 and not page.ok:
+            page = requests.get(url, timeout=self.timeout, allow_redirects=True)
+            counter = counter + 1
+
+        if not page.ok:
+            return None
+
+        return page
 
     def get_filings_url(self, filing_type="", prior_to="", ownership="include", no_of_entries=100) -> str:
         """
@@ -67,15 +77,6 @@ class Company:
         url = self.get_filings_url(filing_type, prior_to, ownership, no_of_entries)
         # GET request to the filing page
         page = self._get(url)
-
-        # Request up to five more times if the GET request was not successful.
-        counter = 0
-        while counter < 5 and not page.ok:
-            page = self._get(url)
-            counter = counter + 1
-
-        if not page.ok:
-            return None
 
         return html.fromstring(page.content)
 
@@ -133,7 +134,7 @@ class Company:
             url_lst.sort(key=lambda x: x[1])
             url_lst[:] = list(map(lambda x: x[0], url_lst))
 
-    def get_company_excel_reports_from(self, report_type, prior_to="", no_of_entries=100) -> dict[str, List[str]]:
+    def get_company_excel_reports_from(self, report_type, prior_to="", no_of_entries=100) -> dict:
         """
         Retrieve the company's excel format 10-K or 10-Q report
         """
@@ -141,9 +142,6 @@ class Company:
         regex = re.search('10-K|10-Q', report_type)
         if not regex:
             return None
-
-        if self._excel_urls[report_type]:
-            return self._excel_urls[report_type]
 
         page = self.get_all_filings(filing_type=report_type, prior_to=prior_to, no_of_entries=no_of_entries)
         if page is None:
@@ -166,34 +164,58 @@ class Company:
         """
         Download the file from the given url.
         """
-        req = requests.get(url, allow_redirects=True)
-        file = open('report_' + '_'.join(self.name.split(' ')) + '.xlsx', 'wb')
-        file.write(req.content)
-        file.close()
-        return True
+        req = self._get(url)
+        if req is None:
+            req = self._get(url[:-1])
 
-    def download_all_10k_reports(self):
-        ten_k_dict = self._excel_urls['10-K']
-        for year in ten_k_dict.keys():
-            url = ten_k_dict[year][0]
-            req = requests.get(url, allow_redirects=True)
-            company_name = '_'.join(self.name.split(' '))
-            file = open(f'10-K_{0}_report_{1}.xlsx'.format(year, company_name), 'wb')
+        if req is not None:
+            file = open('report_' + '_'.join(self.name.split(' ')) + '.xlsx', 'wb')
             file.write(req.content)
             file.close()
+            return True
+        return False
 
-    def download_all_10q_reports(self) :
+    def download_10k_reports(self, prior_to="", no_of_entries=100):
+        self.get_company_excel_reports_from("10-K", prior_to=prior_to, no_of_entries=no_of_entries)
+        ten_k_dict = self._excel_urls['10-K']
+
+        for year in ten_k_dict.keys():
+            url = ten_k_dict[year][0]
+            req = self._get(url)
+
+            if req is None:
+                req = self._get(url[:-1])
+
+            if req is not None:
+                company_name = '_'.join(self.name.split(' '))
+                file = open(f'10K_{year}_report_{company_name}.xlsx', 'wb')
+                file.write(req.content)
+                file.close()
+        return True
+
+    def download_10q_reports(self, prior_to="", no_of_entries=100):
+        self.get_company_excel_reports_from("10-Q", prior_to=prior_to, no_of_entries=no_of_entries)
         ten_q_dict = self._excel_urls['10-Q']
+
+        if not ten_q_dict:
+            self.get_company_excel_reports_from("10-Q")
+
         for year in ten_q_dict.keys():
             for quarter in range(0, len(ten_q_dict[year])):
                 url = ten_q_dict[year][quarter]
-                req = requests.get(url, allow_redirects=True)
-                company_name = '_'.join(self.name.split(' '))
-                file = open(f'10-Q_{0}_{1}_report_{2}.xlsx'.format(year, quarter, company_name), 'wb')
-                file.write(req.content)
-                file.close()
+                req = self._get(url)
 
-    def get_existing_forms(self) -> dict[str, dict]:
+                if req is None:
+                    req = self._get(url[:-1])
+
+                if req is not None:
+                    company_name = '_'.join(self.name.split(' '))
+                    file = open(f'10Q_{year}_{quarter+1}_report_{company_name}.xlsx', 'wb')
+                    file.write(req.content)
+                    file.close()
+        return True
+
+    def get_existing_forms(self) -> dict:
         """
         Return all existing 10-K and 10-Q's url.
         """
@@ -205,11 +227,12 @@ class Company:
         """
         ten_k_dict = self._excel_urls['10-K']
         if not ten_k_dict:
-            self._get_company_10_k_excel_report()
+            self.get_company_excel_reports_from("10-K")
+            ten_k_dict = self._excel_urls['10-K']
 
         url_list = ten_k_dict.get(year)
-        if not url_list:
-            return ten_k_dict[0]
+        if url_list:
+            return url_list[0]
         return None
 
     def get_10q_year_quarter(self, year, quarter) -> str:
@@ -223,7 +246,8 @@ class Company:
 
         ten_q_dict = self._excel_urls['10-Q']
         if not ten_q_dict:
-            self._get_company_10_q_excel_report()
+            self.get_company_excel_reports_from("10-Q")
+            ten_q_dict = self._excel_urls['10-Q']
 
         url_list = ten_q_dict.get(year)
         if url_list:
@@ -231,3 +255,5 @@ class Company:
                 return url_list[quarter - 1]
 
         return None
+
+
