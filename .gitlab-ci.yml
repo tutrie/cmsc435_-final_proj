@@ -42,7 +42,7 @@ flake8:
 coverage:
   stage: Static Analysis
   script:
-    - coverage run --source=py-edgar-lite/test
+    - coverage run -m pytest py-edgar-lite/test
     - cd Backend
     - virtualenv venv
     - source venv/bin/activate
