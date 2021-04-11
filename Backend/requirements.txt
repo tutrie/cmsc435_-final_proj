@@ -1,5 +1,7 @@
+virtualenv
 Django
 djangorestframework
 psycopg2-binary
 flake8
 coverage
+pytest
