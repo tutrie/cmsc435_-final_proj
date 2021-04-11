@@ -31,7 +31,7 @@ test-django-backend:
 test-pyedgar-lite:
   stage: test
   script:
-    - pytest pyedgar-lite/test
+    - pytest py-edgar-lite/test
 
 
 flake8:
