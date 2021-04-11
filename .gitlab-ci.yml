@@ -25,17 +25,26 @@ test-django-backend:
   script:
     - python manage.py migrate
     - python manage.py test
-   
+
+test-pyedgar-lite:
+  stage: test
+  script:
+    - cd ..
+    - pytest pyedgar-lite/test
+
 
 flake8:
   stage: Static Analysis
   script:
+  - cd ..
   - flake8 --ignore=W293,W391 --exclude 'venv/*' --max-line-length=120 .
 
 coverage:
   stage: Static Analysis
   script:
     - coverage run --omit 'venv/*' --source='.' manage.py test
+    - cd ..
+    - coverage run --source=py-edgar-lite/test
     - coverage report
     - coverage erase
 
