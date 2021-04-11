@@ -22,7 +22,8 @@ class Migration(migrations.Migration):
                 ('report_date', models.DateField()),
                 ('report_type', models.CharField(max_length=4)),
                 ('excel_url', models.URLField()),
-                ('company', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='company_schema.company')),
+                ('company', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                              to='company_schema.company')),
             ],
         ),
         migrations.CreateModel(
@@ -31,7 +32,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100)),
                 ('path', models.FilePathField(allow_folders=True, path='./')),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='created_by', to=settings.AUTH_USER_MODEL)),
+                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='created_by',
+                                                 to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]
