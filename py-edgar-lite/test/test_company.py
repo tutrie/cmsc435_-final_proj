@@ -118,7 +118,7 @@ class CompanyTestCase(unittest.TestCase):
         company = None
         company = Company("Oracle Corp", "0001341439")
         # download file
-        url = "https://www.sec.gov/Archives/edgar/data/1341439/000119312506151154/Financial_Report.xlsx"
+        url = "https://www.sec.gov/Archives/edgar/data/1341439/000119312514251351/Financial_Report.xlsx"
         self.assertEqual(True, company.download_file(url))
         # delete downloaded files??
 
