@@ -48,7 +48,7 @@ class Company:
         """
         A private method for GET request.
         """
-        return requests.get(url)
+        return requests.get(url, timeout=self.timeout)
 
     def get_filings_url(self, filing_type="", prior_to="", ownership="include", no_of_entries=100) -> str:
         """
@@ -65,6 +65,15 @@ class Company:
         """
         url = self.get_filings_url(filing_type, prior_to, ownership, no_of_entries)
         page = self._get(url)
+
+        counter = 0
+        while counter <= 5 and not page.ok:
+            page = self._get(url)
+            counter = counter + 1
+
+        if counter == 5:
+            return None
+
         return html.fromstring(page.content)
 
     def _get_company_10_k_excel_report(self):
@@ -130,14 +139,9 @@ class Company:
         if not regex:
             return None
 
-        page = None
-        counter = 0
-        while page is None:
-            page = self.get_all_filings(filing_type=report_type)
-            counter = counter + 1
-
-        if counter == 5:
-            return
+        page = self.get_all_filings(filing_type=report_type)
+        if page is None:
+            return None
 
         # https://www.sec.gov/Archives/edgar/data/1018724/000101872420000030/0001018724-20-000030-index.htm
         self._document_urls = [BASE_URL + elem.attrib["href"]

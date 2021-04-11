@@ -106,6 +106,10 @@ class CompanyTestCase(unittest.TestCase):
         url = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001341439&type=10-K&dateb=&owner" \
               "=include&count=100"
         page = requests.get(url, timeout=10)
+
+        while not page.ok:
+            page = requests.get(url, timeout=10)
+
         expected = html.fromstring(page.content)
         self.assertEqual(html.tostring(result), html.tostring(expected))
 
@@ -126,8 +130,7 @@ class CompanyTestCase(unittest.TestCase):
         company = Company("Oracle Corp", "0001341439")
         # download file
         url = "https://www.sec.gov/Archives/edgar/data/1341439/000119312506151154/Financial_Report.xlsx"
-        self.assertEqual(True, company.download_file(url, '0001341439'))
-        self.assertEqual(False, company.download_file(url, '0123456789'))
+        self.assertEqual(True, company.download_file(url))
         # delete downloaded files??
 
     def test_correct_return_10k(self):
@@ -199,9 +202,3 @@ class CompanyTestCase(unittest.TestCase):
         self.assertEqual(result, None)
         result = company.get_10q_year_quarter(2018, '1')
         self.assertEqual(result, None)
-
-    def test_random(self):
-        company = Company("Oracle Corp", "0001341439")
-        url = company.get_company_excel_reports_from("10-K")
-        print(url)
-        print(company._excel_urls)

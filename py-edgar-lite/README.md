@@ -26,22 +26,22 @@ company = Company("Oracle Corp", "0001341439")
 ```
 
 ### Retrieve Urls
-To retrieve a list of urls to access company excel reports use the get_company_excel_reports_from() method with the name of the report you want. ('10-K' or '10-Q')
+To retrieve a list of urls to access company excel reports use the get_company_excel_reports_from() method with the type of the report you want. ('10-K' or '10-Q')
 
 ``` python
 urls = company.get_company_excel_reports_from("10-K")
 ```
 
-To get the url of a company's report from a specific quarter use get_10k_year('year_number','quarter_number') or get_10q_year_quarter('year_number','quarter_number')
+To get the url of a company's report from a specific quarter use get_10q_year_quarter('year_number','quarter_number') or get_10q_year_quarter('year_number','quarter_number')
 
 ``` python
-url = company.get_10k_year('2019', '3')
+url = company.get_10q_year_quarter('2019', '3')
 ```
 
 ### Note
 For the 4th quarter of any given year is entailed the 10-K form for that year.  Additionally, some auto generated reports may not be present thus the URL has no downloadable content.
 
-#### Methods
+### Methods
 
 `Company(name="", cik="", timeout="")`
 
