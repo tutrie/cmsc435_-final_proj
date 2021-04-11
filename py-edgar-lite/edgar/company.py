@@ -52,7 +52,7 @@ class Company:
 
     def get_filings_url(self, filing_type="", prior_to="", ownership="include", no_of_entries=100) -> str:
         """
-        Return the url that contains information for 10-K or 10-Q reports.
+        Return the url of filing page which contains information for 10-K or 10-Q reports.
         """
         url = self.url + "&type=" + filing_type + "&dateb=" + prior_to + "&owner=" + ownership + "&count=" + str(
             no_of_entries)
@@ -61,24 +61,27 @@ class Company:
     def get_all_filings(self, filing_type="", prior_to="", ownership="include",
                         no_of_entries=100) -> lxml.html.HtmlElement:
         """
-        Return the HTML of the filing page.
+        Return the HTML of the filing page. If the GET request to the filing url was not successful return None.
         """
+        # url of the filing page
         url = self.get_filings_url(filing_type, prior_to, ownership, no_of_entries)
+        # GET request to the filing page
         page = self._get(url)
 
+        # Request up to five more times if the GET request was not successful.
         counter = 0
-        while counter <= 5 and not page.ok:
+        while counter < 5 and not page.ok:
             page = self._get(url)
             counter = counter + 1
 
-        if counter == 5:
+        if not page.ok:
             return None
 
         return html.fromstring(page.content)
 
     def _get_company_10_k_excel_report(self):
         """
-        Parse the company's 10-K excel report urls.
+        A private method that parse the company's 10-K excel report urls.
         """
         processed = 0
 
@@ -130,7 +133,7 @@ class Company:
             url_lst.sort(key=lambda x: x[1])
             url_lst[:] = list(map(lambda x: x[0], url_lst))
 
-    def get_company_excel_reports_from(self, report_type) -> List[str]:
+    def get_company_excel_reports_from(self, report_type, prior_to="", no_of_entries=100) -> dict[str, List[str]]:
         """
         Retrieve the company's excel format 10-K or 10-Q report
         """
@@ -139,15 +142,16 @@ class Company:
         if not regex:
             return None
 
-        page = self.get_all_filings(filing_type=report_type)
+        if self._excel_urls[report_type]:
+            return self._excel_urls[report_type]
+
+        page = self.get_all_filings(filing_type=report_type, prior_to=prior_to, no_of_entries=no_of_entries)
         if page is None:
             return None
 
-        # https://www.sec.gov/Archives/edgar/data/1018724/000101872420000030/0001018724-20-000030-index.htm
         self._document_urls = [BASE_URL + elem.attrib["href"]
                                for elem in page.xpath("//*[@id='documentsbutton']") if elem.attrib.get("href")]
 
-        # https://www.sec.gov/cgi-bin/viewer?action=view&cik=1018724&accession_number=0001018724-20-000030&xbrl_type=v
         self._interactive_urls = [BASE_URL + elem.attrib["href"]
                                   for elem in page.xpath("//*[@id='interactiveDataBtn']") if elem.attrib.get("href")]
 
@@ -168,7 +172,7 @@ class Company:
         file.close()
         return True
 
-    def get_existing_forms(self):
+    def get_existing_forms(self) -> dict[str, dict]:
         """
         Return all existing 10-K and 10-Q's
         """
@@ -179,6 +183,8 @@ class Company:
         Return the url of specified year's 10-K excel report.
         """
         ten_k_lst = self._excel_urls['10-K']
+        if not ten_k_lst:
+            self._get_company_10_k_excel_report()
         for idx in ten_k_lst:
             if idx[1] == year:
                 return idx[0]
@@ -194,6 +200,8 @@ class Company:
             return None
 
         ten_q_dict = self._excel_urls['10-Q']
+        if not ten_q_dict:
+            self._get_company_10_q_excel_report()
         entry = ten_q_dict.get(year)
 
         if entry:

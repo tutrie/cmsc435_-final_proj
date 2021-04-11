@@ -9,38 +9,6 @@ pip install lxml
 ```
 ## API
 
-### Import Edgar
-
-Import the Edgar-Lite library into your python program:
-
-``` python
-from edgar.company import Company
-```
-
-### Create Companies
-
-Create a company object for any company that you are interested in retrieving data for by using the Company class with the company's name and CIK number as parameters:
-
-``` python
-company = Company("Oracle Corp", "0001341439")
-```
-
-### Retrieve Urls
-To retrieve a list of urls to access company excel reports use the get_company_excel_reports_from() method with the type of the report you want. ('10-K' or '10-Q')
-
-``` python
-urls = company.get_company_excel_reports_from("10-K")
-```
-
-To get the url of a company's report from a specific quarter use get_10q_year_quarter('year_number','quarter_number') or get_10q_year_quarter('year_number','quarter_number')
-
-``` python
-url = company.get_10q_year_quarter('2019', '3')
-```
-
-### Note
-For the 4th quarter of any given year is entailed the 10-K form for that year.  Additionally, some auto generated reports may not be present thus the URL has no downloadable content.
-
 ### Methods
 
 `Company(name="", cik="", timeout="")`
@@ -83,9 +51,39 @@ Returns the url of the 10-Q excel report of a given company at a specified year 
 * year: year of the report
 * year: quarter of the year
 
-## Testing
-Running every test cases at once will cause some tests fail randomly, which is due to the fact that the tests were run 
-concurrently. It will be more consistent to run each one by one. 
+### Usage
+
+#### Import Edgar
+
+Import the Edgar-Lite library into your python program:
+
+``` python
+from edgar.company import Company
+```
+
+#### Create Companies
+
+Create a company object for any company that you are interested in retrieving data for by using the Company class with the company's name and CIK number as parameters:
+
+``` python
+company = Company("Oracle Corp", "0001341439")
+```
+
+#### Retrieve Urls
+To retrieve a dictionary of urls to access company excel reports use the get_company_excel_reports_from() method with the type of the report you want. ('10-K' or '10-Q')
+
+``` python
+urls = company.get_company_excel_reports_from("10-K")
+```
+
+To get the url of a company's report from a specific quarter use get_10q_year_quarter('year_number','quarter_number') or get_10q_year_quarter('year_number','quarter_number')
+
+``` python
+url = company.get_10q_year_quarter('2019', '3')
+```
+
+#### Note
+For the 4th quarter of any given year is entailed the 10-K form for that year. Additionally, some auto generated reports may not be present thus the URL has no downloadable content.
 
 ## Examples 
 
@@ -96,10 +94,8 @@ Use Edgar-Lite to get 10-K report for Oracle over the past 10 years as excel doc
 from edgar.company import Company
 #create Company object for Oracle
 company = Company("Oracle Corp", "0001341439")
-#save url for page that provides past 10 years of 10-K filings in the database
-company.get_filings_url('10-K', '10')
-#get urls from page
-urls = company.get_company_excel_reports_from('10-K')
+#get urls of past 10 years of 10-K filings in the database from company
+urls = company.get_company_excel_reports_from(report_type='10-K', no_of_entries=10)
 # download excel documents from the urls
 for url in urls:
     company.download_file(url[0])
@@ -120,6 +116,10 @@ urls = company.get_company_excel_reports_from('10-Q')
 company.download_file(urls['2019']['1'])
 ```
 
+
+## Testing
+Running every test cases at once will cause some tests fail randomly, which is due to the fact that the tests were run 
+concurrently. It will be more consistent to run each one by one. 
 
 
 
