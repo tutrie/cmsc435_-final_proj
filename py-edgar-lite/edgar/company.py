@@ -36,9 +36,9 @@ class Company:
         self.timeout = timeout
         self._document_urls = []
         self._interactive_urls = []
-        # '10-K': [url: str, year: ]
+        # '10-K': {year: [url]}
         # '10-Q': {year: [url]}
-        self._excel_urls = {'10-K': [], '10-Q': {}}
+        self._excel_urls = {'10-K': {}, '10-Q': {}}
 
     @property
     def document_urls(self):
@@ -93,8 +93,8 @@ class Company:
 
             # split the original document url by '/', replace the last element with 'Financial_Report.xlsx'
             new_url = '/'.join(document_url.split('/')[:-1] + ["Financial_Report.xlsx"])
-            entry = [new_url, get_10k_year_from_url(new_url)]
-            self._excel_urls["10-K"].append(entry)
+            year = get_10k_year_from_url(new_url)
+            self._excel_urls["10-K"][year] = [new_url]
 
             processed += 1
             # Check if all the excel reports has been processed
@@ -172,25 +172,47 @@ class Company:
         file.close()
         return True
 
+    def download_all_10k_reports(self):
+        ten_k_dict = self._excel_urls['10-K']
+        for year in ten_k_dict.keys():
+            url = ten_k_dict[year][0]
+            req = requests.get(url, allow_redirects=True)
+            company_name = '_'.join(self.name.split(' '))
+            file = open(f'10-K_{0}_report_{1}.xlsx'.format(year, company_name), 'wb')
+            file.write(req.content)
+            file.close()
+
+    def download_all_10q_reports(self) :
+        ten_q_dict = self._excel_urls['10-Q']
+        for year in ten_q_dict.keys():
+            for quarter in range(0, len(ten_q_dict[year])):
+                url = ten_q_dict[year][quarter]
+                req = requests.get(url, allow_redirects=True)
+                company_name = '_'.join(self.name.split(' '))
+                file = open(f'10-Q_{0}_{1}_report_{2}.xlsx'.format(year, quarter, company_name), 'wb')
+                file.write(req.content)
+                file.close()
+
     def get_existing_forms(self) -> dict[str, dict]:
         """
-        Return all existing 10-K and 10-Q's
+        Return all existing 10-K and 10-Q's url.
         """
         return self._excel_urls
 
-    def get_10k_year(self, year):
+    def get_10k_year(self, year) -> str:
         """
         Return the url of specified year's 10-K excel report.
         """
-        ten_k_lst = self._excel_urls['10-K']
-        if not ten_k_lst:
+        ten_k_dict = self._excel_urls['10-K']
+        if not ten_k_dict:
             self._get_company_10_k_excel_report()
-        for idx in ten_k_lst:
-            if idx[1] == year:
-                return idx[0]
+
+        url_list = ten_k_dict.get(year)
+        if not url_list:
+            return ten_k_dict[0]
         return None
 
-    def get_10q_year_quarter(self, year, quarter):
+    def get_10q_year_quarter(self, year, quarter) -> str:
         """
         Return the url of specified year and quarter's 10-Q excel report.
         """
@@ -202,10 +224,10 @@ class Company:
         ten_q_dict = self._excel_urls['10-Q']
         if not ten_q_dict:
             self._get_company_10_q_excel_report()
-        entry = ten_q_dict.get(year)
 
-        if entry:
-            if quarter <= len(entry):
-                return entry[quarter - 1]
+        url_list = ten_q_dict.get(year)
+        if url_list:
+            if quarter <= len(url_list):
+                return url_list[quarter - 1]
 
         return None
