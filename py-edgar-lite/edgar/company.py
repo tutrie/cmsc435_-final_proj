@@ -1,5 +1,5 @@
 import re
-from datetime import time
+import time
 from typing import List
 import requests
 from lxml import html
@@ -130,11 +130,19 @@ class Company:
         if not regex:
             return None
 
-        page = self.get_all_filings(filing_type=report_type)
+        page = None
+        counter = 0
+        while page is None:
+            page = self.get_all_filings(filing_type=report_type)
+            counter = counter + 1
+
+        if counter == 5:
+            return
 
         # https://www.sec.gov/Archives/edgar/data/1018724/000101872420000030/0001018724-20-000030-index.htm
         self._document_urls = [BASE_URL + elem.attrib["href"]
                                for elem in page.xpath("//*[@id='documentsbutton']") if elem.attrib.get("href")]
+
         # https://www.sec.gov/cgi-bin/viewer?action=view&cik=1018724&accession_number=0001018724-20-000030&xbrl_type=v
         self._interactive_urls = [BASE_URL + elem.attrib["href"]
                                   for elem in page.xpath("//*[@id='interactiveDataBtn']") if elem.attrib.get("href")]
