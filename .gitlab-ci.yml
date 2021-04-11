@@ -1,0 +1,45 @@
+image: python:latest
+
+stages:
+  - build
+  - test
+  - deploy
+  - Static Analysis
+
+before_script:
+  - python --version
+  - pip install virtualenv
+  - cd Backend
+  - virtualenv venv
+  - source venv/bin/activate
+  - pip install -r requirements.txt
+# Change pip's cache directory to be inside the project directory since we can
+# only cache local items.
+build-start:
+  stage: build
+  script:
+    - echo "Hello, $GITLAB_USER_LOGIN!"
+
+test-django-backend:
+  stage: test
+  script:
+    - python manage.py migrate
+    - python manage.py test
+   
+
+flake8:
+  stage: Static Analysis
+  script:
+  - flake8 --ignore=W293,W391 --exclude 'venv/*' --max-line-length=120 .
+
+coverage:
+  stage: Static Analysis
+  script:
+    - coverage run --omit 'venv/*' --source='.' manage.py test
+    - coverage report
+    - coverage erase
+
+deploy-prod:
+  stage: deploy
+  script:
+    - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
