@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.apps import AppConfig
 from rest_framework import serializers, viewsets
 
+
 class CompanyConfig(AppConfig):
     name = 'company_schema'
 
@@ -32,5 +33,3 @@ class CompanySerializer(serializers.ModelSerializer):
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-
-
