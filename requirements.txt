@@ -5,3 +5,7 @@ psycopg2-binary
 flake8
 coverage
 pytest
+regex==2020.10.15
+requests==2.24.0
+lxml==4.6.1
+urllib3

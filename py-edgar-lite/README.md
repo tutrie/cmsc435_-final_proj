@@ -6,6 +6,7 @@ Run the following commands in your terminal to install the required dependencies
 ```bash
 pip install requests
 pip install lxml
+pip install urllib3
 ```
 
 ## Usage
