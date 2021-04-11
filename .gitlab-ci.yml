@@ -31,7 +31,6 @@ test-django-backend:
 test-pyedgar-lite:
   stage: test
   script:
-    - cd ..
     - pytest pyedgar-lite/test
 
 
