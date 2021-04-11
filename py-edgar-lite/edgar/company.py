@@ -1,6 +1,4 @@
 import re
-import time
-from typing import List
 import requests
 from lxml import html
 import lxml
