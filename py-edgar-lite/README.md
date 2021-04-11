@@ -12,7 +12,7 @@ pip install lxml
 
 ### Import Edgar
 
-Import the Edgar-Lite library into your python program:
+* Import the Edgar-Lite library into your python program:
 
 ``` python
 from edgar.company import Company
@@ -20,46 +20,46 @@ from edgar.company import Company
 
 ### Create Companies
 
-Create a company object for any company that you are interested in retrieving data for by using the Company class with the company's name and CIK number as parameters:
+* Create a company object for any company that you are interested in retrieving data for by using the Company class with the company's name and CIK number as parameters:
 
 ``` python
 company = Company("Oracle Corp", "0001341439")
 ```
 
 ### Retrieve Urls
-To retrieve a dictionary of urls to access company excel reports use the get_company_excel_reports_from('report_type') method with the type of the report you want. ('10-K' or '10-Q')
+* To retrieve a dictionary of urls to access company excel reports use the get_company_excel_reports_from('report_type') method with the type of the report you want. ('10-K' or '10-Q')
 
 ``` python
 urls = company.get_company_excel_reports_from("10-K")
 ```
 
-To get the url of a company's report from a specific year use get_10k_year('year_number') or get_10q_year_quarter('year_number','quarter_number')
+* To get the url of a company's report from a specific year use get_10k_year('year_number')
 
 ``` python
 url = company.get_10k_year('2019')
 ```
 
-To get the url of a company's report from a specific quarter use get_10q_year_quarter('year_number','quarter_number')
+* To get the url of a company's report from a specific quarter use get_10q_year_quarter('year_number','quarter_number')
 
 ``` python
 url = company.get_10q_year_quarter('2019', '3')
 ```
 
 ### Download Excel Report
-To download a specific document url you retrieved from the methods above, use download_file(url)
+* To download a specific document url you retrieved from the methods above, use download_file(url)
 
 ``` python
 url = company.get_10q_year_quarter('2019', '3')
 company.download_file(url)
 ```
 
-To download all excel reports from 10-K document from the current company, use download_all_10k_reports(self)
+* To download all excel reports from 10-K document from the current company, use download_all_10k_reports(self)
 
 ``` python
 company.download_10k_reports()
 ```
 
-To download all excel reports from 10-Q document from the current company, use download_all_10q_reports(self)
+* To download all excel reports from 10-Q document from the current company, use download_all_10q_reports(self)
 
 ``` python
 company.download_10q_reports()
@@ -129,7 +129,7 @@ For the 4th quarter of any given year is entailed the 10-K form for that year. A
 
 ## Examples 
 
-* Use Edgar-Lite to get all the urls to a company's 10-K Excel reports based on a company's name and CIK
+* Use Edgar-Lite to get all the urls to Oracle's 10-K Excel reports:
 
 ``` python
 # import Company class from edgar library
