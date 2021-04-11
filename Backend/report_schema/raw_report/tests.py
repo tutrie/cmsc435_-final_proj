@@ -7,6 +7,7 @@ import json
 from company_schema.models import Company
 from .models import RawReport, RawReportSerializer
 
+
 class RawReportTests(TestCase):
     def test_can_create_raw_report(self):
         RawReport.objects.create(

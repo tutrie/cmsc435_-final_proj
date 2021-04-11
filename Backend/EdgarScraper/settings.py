@@ -16,7 +16,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -28,7 +27,6 @@ DEBUG = os.environ.get("DEBUG", True)
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 ALLOWED_HOSTS = [] if not any(ALLOWED_HOSTS) else ALLOWED_HOSTS
-
 
 # Application definition
 
@@ -79,28 +77,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'EdgarScraper.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
     "default": {
-         # Add the docker environment SQL_ENGINE variable or for local development use sqlite3 engine
-        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"), 
-         
-         # Add the docker environment SQL_DATABASE variable or use the local sqlite database soruce
+        # Add the docker environment SQL_ENGINE variable or for local development use sqlite3 engine
+        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
+
+        # Add the docker environment SQL_DATABASE variable or use the local sqlite database soruce
         "NAME": os.environ.get("SQL_DATABASE", os.path.join(BASE_DIR, "db.sqlite3")),
-         
-         # Add the docker SQL_USER environment variable or on need password for sqlite3
+
+        # Add the docker SQL_USER environment variable or on need password for sqlite3
         "USER": os.environ.get("SQL_USER", ""),
-         
-         # Add the docker SQL_PASSWORD environment variable or on need password for sqlite3
+
+        # Add the docker SQL_PASSWORD environment variable or on need password for sqlite3
         "PASSWORD": os.environ.get("SQL_PASSWORD", ""),
-         
-         # Add the docker SQL_HOST environment variable or on need host for sqlite3
+
+        # Add the docker SQL_HOST environment variable or on need host for sqlite3
         "HOST": os.environ.get("SQL_HOST", ""),
-         
-         # Add the docker SQL_HOST environment variable or on need port for sqlite3
+
+        # Add the docker SQL_HOST environment variable or on need port for sqlite3
         "PORT": os.environ.get("SQL_PORT", ""),
     }
 }
@@ -123,7 +120,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -136,7 +132,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/

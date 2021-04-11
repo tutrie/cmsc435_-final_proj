@@ -20,7 +20,7 @@ class RawReport(models.Model):
             raise ValidationError('Report Type not Valid.')
 
         super().save(*args, **kwargs)
-    
+
     def __str__(self):
         return f'Report {self.report_type} from {self.report_date} for {self.company}'
 
@@ -43,7 +43,7 @@ class RawReportSerializer(serializers.ModelSerializer):
             'report_type',
             'excel_url'
         )
-    
+
     def to_representation(self, instance):
         self.fields['company'] = CompanySerializer()
         return super(RawReportSerializer, self).to_representation(instance)
