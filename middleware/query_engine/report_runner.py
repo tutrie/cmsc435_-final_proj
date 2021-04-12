@@ -4,11 +4,7 @@ from re import match
 import requests
 
 from report_generator.src.active_report import ActiveReport
-#from ReportGenerator.active_report import ActiveReport
-from report_generator.utils.object_conversions import (
-    json_dict_to_json_file,
-    dataframes_dict_to_workbook
-)
+from report_generator.utils.object_conversions import json_dict_to_json_file, dataframes_dict_to_workbook
 
 base_url = "http://127.0.0.1:5000/api/"
 raw_report_url = base_url + "raw-report"
@@ -248,7 +244,7 @@ def start_report_retrieval():
         2. Retrieve a User Generated Report
         3. Generate a new Report
     """
-    welcome_string = f'''Welcome! We will now ask you to input some information
+    welcome_string = '''Welcome! We will now ask you to input some information
         in order to generate your custom report. Enter 'back' at any time to
         return to a previous step in the current report retrieval cycle.\n
     '''
