@@ -64,12 +64,12 @@ class TestValidateFilePath(TestCase):
 
 
 class TestValidateSheetNames(TestCase):
-    def test_validate_sheet_names_valid_input(self):
+    def test_validate_sheet_names_valid_input_1(self):
         sheet_names = ['sljfjfd', '394_3', '-i383fs0()']
         response = proxy.validate_sheet_names(sheet_names)
         self.assertTrue(response)
 
-    def test_validate_sheet_names_valid_input(self):
+    def test_validate_sheet_names_valid_input_2(self):
         sheet_names = ['sljfjf;d']
         response = proxy.validate_sheet_names(sheet_names)
         self.assertTrue(response)
@@ -92,7 +92,7 @@ class TestValidateFileName(TestCase):
 
 
 class TestValidateNewRequest(TestCase):
-    def test_validate_new_request(self):
+    def test_validate_new_request_1(self):
         request = {
             'cik': '342893',
             'years': ['2015', '2016', '2017', '2018'],
@@ -106,7 +106,7 @@ class TestValidateNewRequest(TestCase):
         response = proxy.valid_new_request(request)
         self.assertTrue(response)
 
-    def test_validate_new_request(self):
+    def test_validate_new_request_2(self):
         request = {
             'cik': '342893',
             'years': ['2015', '2016', '2017', '2018'],
@@ -144,7 +144,7 @@ class TestValidateRawRequest(TestCase):
 
 
 class TestValidateOldRequest(TestCase):
-    def test_validate_old_request_valid_input(self):
+    def test_validate_old_request_valid_input_1(self):
         request = {
             'file_name': 'myFile.json',
             'user_dir': dirname(realpath(__file__)),
@@ -152,7 +152,7 @@ class TestValidateOldRequest(TestCase):
         response = proxy.valid_old_request(request)
         self.assertTrue(response)
 
-    def test_validate_old_request_valid_input(self):
+    def test_validate_old_request_valid_input_2(self):
         request = {
             'file_name': 'myFile.json',
             'user_dir': 'dlksjfds;a;d',
