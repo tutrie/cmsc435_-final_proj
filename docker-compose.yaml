@@ -15,11 +15,11 @@ services:
             - main
     web:
         container_name: django-server
-        build: ./Backend
+        build: ./django_api
         image: django-server:latest
         command: python3 manage.py runserver 0.0.0.0:8000
         volumes:
-            - web-django:/Backend/code
+            - web-django:/django_api/code
         env_file:
             - ./.env/django.env
         ports:

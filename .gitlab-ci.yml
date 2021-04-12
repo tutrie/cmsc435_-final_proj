@@ -19,7 +19,7 @@ build-start:
 test-django-backend:
   stage: test
   script:
-    - cd Backend
+    - cd django_api
     - virtualenv venv
     - source venv/bin/activate
     - pip install Django
@@ -31,19 +31,19 @@ test-django-backend:
 test-pyedgar-lite:
   stage: test
   script:
-    - pytest py-edgar-lite/test
+    - pytest py_edgar_lite/test
 
 
 flake8:
   stage: Static Analysis
   script:
-  - flake8 --ignore=W293,W391 --exclude 'Backend/venv/*' --max-line-length=120 .
+  - flake8 --ignore=W293,W391 --exclude 'django_api/venv/*' --max-line-length=120 .
 
 coverage:
   stage: Static Analysis
   script:
-    - coverage run -m pytest py-edgar-lite/test
-    - cd Backend
+    - coverage run -m pytest py_edgar_lite/test
+    - cd django_api
     - virtualenv venv
     - source venv/bin/activate
     - pip install Django
