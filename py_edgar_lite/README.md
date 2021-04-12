@@ -167,7 +167,7 @@ company.download_file(url)
 
 
 ## Testing
-* To be able to run the tests for the EDGAR-Lite, first cd into the folder of `py-edgar-lite` in the terminal.
+* To be able to run the tests for the EDGAR-Lite, first cd into the folder of `py_edgar_lite` in the terminal.
 
 * To simply run the tests, run the following command in the terminal.
 ```commandline

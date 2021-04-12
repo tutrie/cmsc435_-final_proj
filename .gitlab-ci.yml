@@ -31,7 +31,7 @@ test-django-backend:
 test-pyedgar-lite:
   stage: test
   script:
-    - pytest py-edgar-lite/test
+    - pytest py_edgar_lite/test
 
 
 flake8:
@@ -42,7 +42,7 @@ flake8:
 coverage:
   stage: Static Analysis
   script:
-    - coverage run -m pytest py-edgar-lite/test
+    - coverage run -m pytest py_edgar_lite/test
     - cd django_api
     - virtualenv venv
     - source venv/bin/activate
