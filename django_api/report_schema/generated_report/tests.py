@@ -16,25 +16,25 @@ class GeneratedReportTests(TestCase):
         GeneratedReport.objects.create(
             name='example name',
             created_by=User.objects.get(username='developer1'),
-            path='./EdgarScraper'
+            path='./main_app'
         )
 
         self.assertTrue(GeneratedReport.objects.all())
 
     def test_can_retrieve_generated_report(self):
         report = GeneratedReport(name='example name', created_by=User.objects.get(username='developer1'),
-                                 path='./EdgarScraper')
+                                 path='./main_app')
         report.save()
 
         retrieved_report = GeneratedReport.objects.get(name='example name')
         self.assertEqual(str(retrieved_report), str(report))
 
-        retrieved_report = GeneratedReport.objects.get(path='./EdgarScraper')
+        retrieved_report = GeneratedReport.objects.get(path='./main_app')
         self.assertEqual(str(retrieved_report), str(report))
 
     def test_can_delete_generated_report(self):
         report = GeneratedReport(name='example name', created_by=User.objects.get(username='developer1'),
-                                 path='./EdgarScraper')
+                                 path='./main_app')
         report.save()
 
         GeneratedReport.objects.get(name='example name').delete()
@@ -46,7 +46,7 @@ class GeneratedReportTests(TestCase):
         report_to_get = GeneratedReport.objects.create(
             name='example name',
             created_by=User.objects.get(username='developer1'),
-            path='./EdgarScraper'
+            path='./main_app'
         )
 
         response = client.get(
@@ -64,7 +64,7 @@ class GeneratedReportTests(TestCase):
         GeneratedReport.objects.create(
             name='example name',
             created_by=User.objects.get(username='developer1'),
-            path='./EdgarScraper'
+            path='./main_app'
         )
 
         response = client.get(
@@ -78,7 +78,7 @@ class GeneratedReportTests(TestCase):
         payload = {
             'name': 'example name',
             'created_by': User.objects.get(username='developer1').pk,
-            'path': './EdgarScraper'
+            'path': './main_app'
         }
 
         response = client.post(
@@ -94,7 +94,7 @@ class GeneratedReportTests(TestCase):
         payload_1 = {
             'name': 'example name',
             'created_by': 10,  # Non-existent user
-            'path': './EdgarScraper'
+            'path': './main_app'
         }
         payload_2 = {
             'name': 'example name',
@@ -104,12 +104,12 @@ class GeneratedReportTests(TestCase):
         payload_3 = {
             'name': '',  # No name
             'created_by': User.objects.get(username='developer1').pk,
-            'path': './EdgarScraper'
+            'path': './main_app'
         }
         payload_4 = {
             'name': ['example name'],  # Incorrect name type
             'created_by': User.objects.get(username='developer1').pk,
-            'path': './EdgarScraper'
+            'path': './main_app'
         }
 
         response_1 = client.post(
@@ -141,12 +141,12 @@ class GeneratedReportTests(TestCase):
     def test_put_valid_raw_report(self):
         client = Client()
         report = GeneratedReport(name='example name', created_by=User.objects.get(username='developer1'),
-                                 path='./EdgarScraper')
+                                 path='./main_app')
         report.save()
         payload = {  # Change name of report
             'name': 'a different name',
             'created_by': User.objects.get(username='developer1').pk,
-            'path': './EdgarScraper'
+            'path': './main_app'
         }
 
         response = client.put(
@@ -162,12 +162,12 @@ class GeneratedReportTests(TestCase):
     def test_put_invalid_raw_report(self):
         client = Client()
         report = GeneratedReport.objects.create(name='example name', created_by=User.objects.get(username='developer1'),
-                                                path='./EdgarScraper')
+                                                path='./main_app')
 
         payload_1 = {
             'name': 'example name',
             'created_by': 10,  # Non-existent user
-            'path': './EdgarScraper'
+            'path': './main_app'
         }
         payload_2 = {
             'name': 'example name',
@@ -177,12 +177,12 @@ class GeneratedReportTests(TestCase):
         payload_3 = {
             'name': '',  # No name
             'created_by': User.objects.get(username='developer1').pk,
-            'path': './EdgarScraper'
+            'path': './main_app'
         }
         payload_4 = {
             'name': ['example name'],  # Incorrect name type
             'created_by': User.objects.get(username='developer1').pk,
-            'path': './EdgarScraper'
+            'path': './main_app'
         }
 
         response_1 = client.put(
@@ -215,7 +215,7 @@ class GeneratedReportTests(TestCase):
         client = Client()
         report_to_delete = GeneratedReport.objects.create(name='example name',
                                                           created_by=User.objects.get(username='developer1'),
-                                                          path='./EdgarScraper')
+                                                          path='./main_app')
 
         response = client.delete(
             reverse('generated-reports-detail', kwargs={'pk': report_to_delete.pk})
@@ -226,7 +226,7 @@ class GeneratedReportTests(TestCase):
     def test_delete_not_exist_company(self):
         client = Client()
         GeneratedReport.objects.create(name='example name',
-                                       created_by=User.objects.get(username='developer1'), path='./EdgarScraper')
+                                       created_by=User.objects.get(username='developer1'), path='./main_app')
 
         response = client.delete(
             reverse('generated-reports-detail', kwargs={'pk': 10})

@@ -59,6 +59,11 @@ username: admin
 password: admin
 ```
 
+# Links
+Admin panel: http://localhost:8000/admin/
+
+API: http://localhost:8000/api/
+
 # Contributions
 - Brady Snelson - 15% - Set up django backend framework that created an API that allows a user to GET and POST generated and raw report file urls.
 - Jason Hipkins - 15% - Worked on filtering and cleaning excel raw reports. worked on merging reports together, lot of research on accounting methods and line item names.
