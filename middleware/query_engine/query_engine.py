@@ -1,4 +1,3 @@
-from report_generator.src.active_report import ActiveReport
 from middleware.query_engine.query import Query
 
 
@@ -12,9 +11,9 @@ def query(request: dict) -> Query:
 class QueryEngine:
 
     @staticmethod
-    def retrieve_raw_reports(request: dict) -> ActiveReport:
+    def retrieve_raw_reports(request: dict) -> dict:
         return query(request).run()
 
     @staticmethod
-    def generate_new_report(request: dict) -> ActiveReport:
-        return query(request).set_filter(request["filter"]).run()
+    def generate_new_report(request: dict) -> dict:
+        return query(request).set_filter(request["report_filter"]).run()

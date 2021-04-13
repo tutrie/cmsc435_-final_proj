@@ -69,14 +69,14 @@ class TestValidateSheetNames(TestCase):
         response = proxy.validate_sheet_names(sheet_names)
         self.assertTrue(response)
 
-    def test_validate_sheet_names_valid_input_2(self):
+    def test_validate_sheet_names_invalid_input_2(self):
         sheet_names = ['sljfjf;d']
         response = proxy.validate_sheet_names(sheet_names)
-        self.assertTrue(response)
+        self.assertFalse(response)
 
         sheet_names = ['s][]ljf~jfd']
         response = proxy.validate_sheet_names(sheet_names)
-        self.assertTrue(response)
+        self.assertFalse(response)
 
 
 class TestValidateFileName(TestCase):
@@ -97,8 +97,7 @@ class TestValidateNewRequest(TestCase):
             'cik': '342893',
             'years': ['2015', '2016', '2017', '2018'],
             'report_type': '10-K',
-            'sheet_names': ['sljfjfd', '394_3', '-i383fs0()'],
-            'instructions': {
+            'report_filter': {
                 'sheet1': ['1', '2', '3', '4'],
                 'sheet2': ['5', '6', '7', '8'],
             }
@@ -112,7 +111,7 @@ class TestValidateNewRequest(TestCase):
             'years': ['2015', '2016', '2017', '2018'],
             'report_type': '10-K',
             'sheet_names': ['sljfjfd', '394_3', '-i383fs0()'],
-            'instructions': {
+            'report_filter': {
                 'sheet1': ['1', '2', '3', '4'],
                 'sheet2': ['5', '6', '7', 'adfsd8'],
             }
@@ -126,8 +125,7 @@ class TestValidateRawRequest(TestCase):
         request = {
             'cik': '342893',
             'years': ['2015', '2016', '2017', '2018'],
-            'report_type': '10-K',
-            'user_dir': dirname(realpath(__file__))
+            'report_type': '10-K'
         }
         response = proxy.valid_raw_request(request)
         self.assertTrue(response)
@@ -135,9 +133,8 @@ class TestValidateRawRequest(TestCase):
     def test_validate_raw_request_invalid_input(self):
         request = {
             'cik': '342893',
-            'years': ['2015', '2016', '2017', '2018'],
-            'report_type': '10-K',
-            'user_dir': 'sd;jfasdljfl;sdj;flds'
+            'years': ['2015', '2016kg', '2017', '2018'],
+            'report_type': '10-K'
         }
         response = proxy.valid_raw_request(request)
         self.assertFalse(response)
@@ -146,16 +143,8 @@ class TestValidateRawRequest(TestCase):
 class TestValidateOldRequest(TestCase):
     def test_validate_old_request_valid_input_1(self):
         request = {
-            'file_name': 'myFile.json',
-            'user_dir': dirname(realpath(__file__)),
+            'file_name': 'myFile.json'
         }
         response = proxy.valid_old_request(request)
         self.assertTrue(response)
 
-    def test_validate_old_request_valid_input_2(self):
-        request = {
-            'file_name': 'myFile.json',
-            'user_dir': 'dlksjfds;a;d',
-        }
-        response = proxy.valid_old_request(request)
-        self.assertFalse(response)

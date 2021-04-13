@@ -8,22 +8,20 @@ def create_app():
 
     @app.route('/api/raw-report', methods=["GET"])
     def raw_report():
-        res = request.json
-
+        # ToDo delete try except
         try:
-            report = proxy.retrieve_raw_reports(res)
-            return report["report"].json
+            report = proxy.retrieve_raw_reports(request.json)
+            return report
         except Exception as e:
             print(e)
             return {"error": "file not found"}
 
     @app.route('/api/generate-report', methods=["GET", "POST"])
     def generate_report():
-        res = request.json
-
+        # ToDo delete try except
         try:
-            report = proxy.generate_new_report(res)
-            return report["report"].json
+            report = proxy.generate_new_report(request.json)
+            return report
         except Exception as e:
             print(e)
             return {"error": "file not found"}

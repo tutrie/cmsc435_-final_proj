@@ -80,8 +80,11 @@ def validate_sheet_names(sheet_names: list) -> bool:
         True if all sheet names match the regex; False otherwise.
     """
     for sheet_name in sheet_names:
-        match_obj = re.match(r'^\S([\-\(\)_a-zA-Z0-9 ]+)\S$', sheet_name)
-        return match_obj is None
+        match_obj = re.match(r'^\S([\-\(\)_a-zA-Z0-9 ]+)\S$', sheet_name)  # could you explain what would pass/fail?
+        if match_obj is None:
+            return False
+
+    return True
 
 
 def validate_file_name(file_name: str) -> bool:
@@ -108,10 +111,9 @@ def valid_new_request(request: dict) -> bool:
     guard1 = validate_cik(request['cik'])
     guard2 = validate_years(request['years'])
     guard3 = validate_report_type(request['report_type'])
-    guard4 = validate_sheet_names(request['sheet_names'])
-    guard5 = validate_instructions(request['instructions'])
+    guard5 = validate_instructions(request['report_filter'])  # the key is report_filter
 
-    if guard1 and guard2 and guard3 and guard4 and guard5:
+    if guard1 and guard2 and guard3 and guard5:
         return True
     else:
         return False
@@ -129,9 +131,9 @@ def valid_raw_request(request: dict) -> bool:
     guard1 = validate_cik(request['cik'])
     guard2 = validate_years(request['years'])
     guard3 = validate_report_type(request['report_type'])
-    guard4 = validate_file_path(request['user_dir'])
+    # guard4 = validate_file_path(request['user_dir']) ToDo: future functionality
 
-    if guard1 and guard2 and guard3 and guard4:
+    if guard1 and guard2 and guard3:
         return True
     else:
         return False
@@ -147,9 +149,9 @@ def valid_old_request(request: dict) -> bool:
         True if all values of request are valid; False otherwise.
     """
     guard1 = validate_file_name(request['file_name'])
-    guard2 = validate_file_path(request['user_dir'])
+    # guard2 = validate_file_path(request['user_dir']) ToDo: Future
 
-    if guard1 and guard2:
+    if guard1:
         return True
     else:
         return False
@@ -161,13 +163,13 @@ class Proxy:
 
     def retrieve_raw_reports(self, request: dict) -> dict:
         if valid_raw_request(request):
-            return {"report": self.query_engine.retrieve_raw_reports(request)}
+            return self.query_engine.retrieve_raw_reports(request)
 
         # we can create more robust error messages in the validate methods
         return {"error": "invalid request"}
 
     def generate_new_report(self, request: dict) -> dict:
         if valid_new_request(request):
-            return {"report": self.query_engine.generate_new_report(request)}
+            return self.query_engine.generate_new_report(request)
 
         return {"error": "invalid request"}

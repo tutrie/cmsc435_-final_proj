@@ -59,6 +59,67 @@ username: admin
 password: admin
 ```
 
+# Running the data API and report runner
+```bash
+cd middleware/flask_api
+pip install -r requirements.txt
+python app.py
+
+OR from main folder
+PYTHONPATH=./ python middleware/flask_api/app.py
+```
+(wait a few seconds to get it started)
+
+Using the Report Runner:
+```bash
+cd middleware/query_engine
+python report_runner.py
+```
+
+If you run into any issues with the previous command, run the following instead from main folder
+```bash
+PYTHONPATH=./ python middleware/query_engine/report_runner.py
+```
+
+Once the program starts, you will be prompted to choose an option.
+ Enter - 1 to Retrieve a Raw Report
+ Enter - 2 to Generate a new Report
+ Enter "done" to stop the program
+
+Retieving a Raw Report:
+For this Enter the follwing when prompted
+CIK: 0000010329
+YEARS: 2020
+REPORT TYPE: 10-K
+
+Once you are prompted to save the file, enter to save as json:
+Username/
+test
+json
+
+to save as xlsx workbook enter: 
+Username/
+test
+xlsx
+
+Generating a New Report:
+CIK: 0000010329
+YEARS: 2020
+REPORT TYPE: 10-K
+SHEETS: Document And Entity Information
+ROWS: 1
+
+Once you are prompted to save the file, enter to save as json:
+Username/
+test
+json
+
+to save as xlsx workbook enter: 
+Username/
+test
+xlsx
+
+
 # Links
 Admin panel: http://localhost:8000/admin/
 
