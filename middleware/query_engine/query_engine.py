@@ -1,4 +1,3 @@
-from report_generator.src.active_report import ActiveReport
 from middleware.query_engine.query import Query
 
 

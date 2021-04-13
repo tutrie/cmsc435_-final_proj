@@ -64,7 +64,7 @@ class ActiveReport:
         Returns:
             An ActiveReport object
         """
-        ############TODO: this file path thing may need updating. Quick solution
+        # TODO: this file path thing may need updating. Quick solution
         dir_path = dirname(realpath(__file__)).replace("src", "mocks")
         file_name = f'{report_type}-{year[-2:]}.json'
         json_file_path = join(dir_path, 'mock_database', cik,
@@ -120,6 +120,6 @@ class ActiveReport:
         self.generated_report = {}
         for sheet, rows in instructions.items():
             int_rows = [int(val) for val in rows]
-            self.generated_report[sheet] = self.dataframes[sheet].loc[int_rows] #rows is list of ints
+            self.generated_report[sheet] = self.dataframes[sheet].loc[int_rows] # rows is list of ints
 
         return dataframes_dict_to_json_dict(self.generated_report)
