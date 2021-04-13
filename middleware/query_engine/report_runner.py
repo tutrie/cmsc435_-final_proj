@@ -229,11 +229,11 @@ def can_save_to_location(file_path: str) -> bool:
 
 
 def save_json(report_dict: dict, output_file: str):
-    json_dict_to_json_file(report, output_file)
+    json_dict_to_json_file(report_dict, output_file)
 
 
 def save_xlsx(report_dict: dict, output_file: str):
-    dataframes_dict = json_dict_to_dataframes_dict(report)
+    dataframes_dict = json_dict_to_dataframes_dict(report_dict)
     dataframes_dict_to_workbook(dataframes_dict, output_file)
 
 
