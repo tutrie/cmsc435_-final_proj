@@ -1,10 +1,13 @@
+from report_generator.utils.object_conversions import (
+    json_dict_to_json_file,
+    json_dict_to_dataframes_dict,
+    dataframes_dict_to_workbook
+)
 from os.path import realpath, dirname, exists
 from re import match
-
 import requests
+import sys
 
-from report_generator.utils.object_conversions import json_dict_to_json_file, json_dict_to_dataframes_dict, \
-    dataframes_dict_to_workbook
 
 base_url = "http://127.0.0.1:5000/api/"
 raw_report_url = base_url + "raw-report"
@@ -14,7 +17,11 @@ user_report_url = base_url + "user-report"
 
 def get_user_input(prompt: str) -> str:
     """
+    Args:
+        prompt: A prompt to the user.
 
+    Returns:
+        A user inputted string stripped of whitespaces at each end.
     """
     value = input(prompt)
     return value.strip()
@@ -22,7 +29,11 @@ def get_user_input(prompt: str) -> str:
 
 def get_user_input_as_list(prompt: str) -> list:
     """
-        returns the input slpit into a list seperated by commas
+    Args:
+        prompt: A prompt to the user.
+
+    Returns:
+        The input into a list after seperating by commas.
     """
     as_list = []
 
@@ -65,8 +76,17 @@ def get_rows_for_sheets(sheets: list) -> dict:
 
 def get_database_path() -> str:
     """Returns the path to the database."""
-    dir_name = dirname(realpath(__file__)).replace("middleware\\query_engine", "report_generator\\mocks\\")
-    return dir_name + "mock_database\\Users\\"
+
+    if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+        dir_name = dirname(realpath(__file__)).replace(
+            "middleware/query_engine", "report_generator/mocks/")
+        return dir_name + "mock_database/Users/"
+
+    # To be deleted when put into Linux container
+    elif sys.platform.startswith('win32') or sys.platform.startswith('cygwin'):
+        dir_name = dirname(realpath(__file__)).replace(
+            "middleware\\query_engine", "report_generator\\mocks\\")
+        return dir_name + "mock_database\\Users\\"
 
 
 def retrieve_raw_report() -> dict:
@@ -109,7 +129,8 @@ def generate_new_report() -> dict:
 
     while not valid_input:
         request = basic_request()
-        sheets = get_user_input_as_list("Enter a list of sheets you want to pull from: ")
+        sheets = get_user_input_as_list(
+            "Enter a list of sheets you want to pull from: ")
         request["report_filter"] = get_rows_for_sheets(sheets)
 
         response = requests.get(generate_report_url, json=request).json()
@@ -207,12 +228,12 @@ def can_save_to_location(file_path: str) -> bool:
     return True
 
 
-def save_json(report: dict, output_file: str):
-    json_dict_to_json_file(report, output_file)
+def save_json(report_dict: dict, output_file: str):
+    json_dict_to_json_file(report_dict, output_file)
 
 
-def save_xlsx(report: dict, output_file: str):
-    dataframes_dict = json_dict_to_dataframes_dict(report)
+def save_xlsx(report_dict: dict, output_file: str):
+    dataframes_dict = json_dict_to_dataframes_dict(report_dict)
     dataframes_dict_to_workbook(dataframes_dict, output_file)
 
 
@@ -230,7 +251,7 @@ def save_report_locally(report: dict) -> str:
     output_file = "{}{}{}{}".format(directory, output_folder,
                                     file_name, file_extension)
 
-    save_as[file_extension](report, output_file)
+    save_as[file_extension](report.json, output_file)
 
     return output_file
 
