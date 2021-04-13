@@ -69,14 +69,14 @@ class TestValidateSheetNames(TestCase):
         response = proxy.validate_sheet_names(sheet_names)
         self.assertTrue(response)
 
-    def test_validate_sheet_names_valid_input_2(self):
+    def test_validate_sheet_names_invalid_input_2(self):
         sheet_names = ['sljfjf;d']
         response = proxy.validate_sheet_names(sheet_names)
-        self.assertTrue(response)
+        self.assertFalse(response)
 
         sheet_names = ['s][]ljf~jfd']
         response = proxy.validate_sheet_names(sheet_names)
-        self.assertTrue(response)
+        self.assertFalse(response)
 
 
 class TestValidateFileName(TestCase):
@@ -133,7 +133,7 @@ class TestValidateRawRequest(TestCase):
     def test_validate_raw_request_invalid_input(self):
         request = {
             'cik': '342893',
-            'years': ['2015', '2016', '2017', '2018'],
+            'years': ['2015', '2016kg', '2017', '2018'],
             'report_type': '10-K'
         }
         response = proxy.valid_raw_request(request)
@@ -148,9 +148,3 @@ class TestValidateOldRequest(TestCase):
         response = proxy.valid_old_request(request)
         self.assertTrue(response)
 
-    def test_validate_old_request_valid_input_2(self):
-        request = {
-            'file_name': 'myFile.json'
-        }
-        response = proxy.valid_old_request(request)
-        self.assertFalse(response)
