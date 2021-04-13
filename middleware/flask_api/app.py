@@ -1,9 +1,6 @@
 from flask import Flask, request
 from middleware.query_engine.proxy import Proxy
 
-t = Flask(__name__)
-t.debug = True
-
 
 def create_app():
     app = Flask(__name__)
