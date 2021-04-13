@@ -97,7 +97,7 @@ class TestValidateNewRequest(TestCase):
             'cik': '342893',
             'years': ['2015', '2016', '2017', '2018'],
             'report_type': '10-K',
-            'filter': {
+            'report_filter': {
                 'sheet1': ['1', '2', '3', '4'],
                 'sheet2': ['5', '6', '7', '8'],
             }
@@ -111,7 +111,7 @@ class TestValidateNewRequest(TestCase):
             'years': ['2015', '2016', '2017', '2018'],
             'report_type': '10-K',
             'sheet_names': ['sljfjfd', '394_3', '-i383fs0()'],
-            'filter': {
+            'report_filter': {
                 'sheet1': ['1', '2', '3', '4'],
                 'sheet2': ['5', '6', '7', 'adfsd8'],
             }
