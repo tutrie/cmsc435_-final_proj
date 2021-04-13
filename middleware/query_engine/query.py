@@ -6,7 +6,7 @@ chain queries.
 
 ToDo: Math, Aggregates, Ect...
 """
-from ReportGenerator.active_report import ActiveReport
+from report_generator.src.active_report import ActiveReport
 
 
 class Query(object):
@@ -33,11 +33,12 @@ class Query(object):
         self.report_filter = report_filter
         return self
 
-    def run(self) -> ActiveReport:
+    def run(self) -> dict:
         report = ActiveReport.from_year_list(
             self.cik, self.years, self.report_type)
 
         if self.report_filter:
             report = report.filter_report(self.report_filter)
+            return {"report": report}
 
-        return report
+        return {"report": report.json}

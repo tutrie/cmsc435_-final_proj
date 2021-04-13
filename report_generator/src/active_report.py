@@ -64,9 +64,10 @@ class ActiveReport:
         Returns:
             An ActiveReport object
         """
-        dir_path = dirname(realpath(__file__))
+        ############TODO: this file path thing may need updating. Quick solution
+        dir_path = dirname(realpath(__file__)).replace("src", "mocks")
         file_name = f'{report_type}-{year[-2:]}.json'
-        json_file_path = join(dir_path, 'Toplevel', cik,
+        json_file_path = join(dir_path, 'mock_database', cik,
                               year, report_type, file_name)
 
         json_dict = json_file_to_json_dict(json_file_path)
@@ -87,12 +88,12 @@ class ActiveReport:
         Returns:
             An ActiveReport object of the collated/merged reports across years.
         """
-        dir_path = dirname(realpath(__file__))
+        dir_path = dirname(realpath(__file__)).replace("src", "mocks")
 
         report_dicts = {}
         for year in years:
             file_name = f'{report_type}-{year[-2:]}.json'
-            json_file_path = join(dir_path, 'Toplevel', cik,
+            json_file_path = join(dir_path, 'mock_database', cik,
                                   year, report_type, file_name)
 
             report_dicts[file_name] = json_file_to_json_dict(json_file_path)
@@ -118,6 +119,7 @@ class ActiveReport:
         """
         self.generated_report = {}
         for sheet, rows in instructions.items():
-            self.generated_report[sheet] = self.dataframes[sheet].loc[rows]
+            int_rows = [int(val) for val in rows]
+            self.generated_report[sheet] = self.dataframes[sheet].loc[int_rows] #rows is list of ints
 
-        return self.generated_report
+        return dataframes_dict_to_json_dict(self.generated_report)
