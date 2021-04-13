@@ -62,6 +62,7 @@ password: admin
 # Running the data API and report runner
 ```bash
 cd middleware/flask_api
+pip install -r requirements.txt
 python app.py
 
 OR from main folder
