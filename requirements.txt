@@ -1,6 +1,6 @@
 virtualenv
-Django
-djangorestframework
+Django~=3.2
+djangorestframework~=3.12.4
 psycopg2-binary
 flake8
 coverage
@@ -9,3 +9,7 @@ regex==2020.10.15
 requests==2.24.0
 lxml==4.6.1
 urllib3
+
+flask~=1.1.2
+pandas~=1.2.3
+openpyxl~=3.0.7
