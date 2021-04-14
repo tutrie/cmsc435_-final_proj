@@ -1,7 +1,5 @@
-import openpyxl as pyxl
 import pandas as pd
-import copy
-
+import openpyxl as pyxl
 
 class CleanedExcelReport:
     def __init__(self, file: str):
