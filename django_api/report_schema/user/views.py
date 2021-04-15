@@ -1,5 +1,5 @@
-from django.contrib.auth.models import User, Group
-from rest_framework import serializers, viewsets, permissions, status
+from django.contrib.auth.models import User
+from rest_framework import serializers, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -9,13 +9,13 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ['username', 'email']
 
+
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
-    #permission_classes = [permissions.IsAuthenticated]
 
     @action(methods=['POST'], detail=False, url_path='create_user', url_name='create_user')
     def create_user(self, request):
