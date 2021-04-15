@@ -211,7 +211,7 @@ class TestSaveUserReport(TestCase):
 
         report = ActiveReport.from_year("0000010329", "2020", "10-K")
 
-        file_loc = qry.save_report_locally(report)
+        file_loc = qry.save_report_locally(report.json)
 
         self.assertTrue(exists(file_loc))
         os.remove(file_loc)
@@ -222,7 +222,7 @@ class TestSaveUserReport(TestCase):
 
         report = ActiveReport.from_year("0000010329", "2020", "10-K")
 
-        file_loc = qry.save_report_locally(report)
+        file_loc = qry.save_report_locally(report.json)
 
         self.assertTrue(exists(file_loc))
         os.remove(file_loc)
