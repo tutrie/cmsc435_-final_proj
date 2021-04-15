@@ -2,6 +2,7 @@ from flask import Blueprint, redirect, url_for, render_template, flash, request,
 from flask_login import current_user, login_required, login_user, logout_user
 from rest_framework.authtoken.admin import User
 import bcrypt
+from middleware.query_engine import query_engine
 
 from api_comms.forms import LoginForm, RegistrationForm
 
@@ -11,6 +12,10 @@ users = Blueprint("users", __name__)
 @users.route("/account", methods=["GET", "POST"])
 @login_required
 def account():
+    # display account details
+    # use query engine here
+    lst = {}
+    query_engine.query(lst)
     return
 
 
@@ -23,6 +28,9 @@ def register():
         hashed = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
         user = User(username=form.username.data, email=form.email.data, password=hashed)
         user.save()
+        # return these
+        username = form.username
+        password = form.password
 
         return redirect(url_for('users.login'))
 
@@ -35,8 +43,7 @@ def login():
     if form.validate_on_submit():
         user = User.objects(username=form.username.data).first()
         if user is not None and bcrypt.check_password_hash(
-            user.password, form.password.data
-        ):
+                user.password, form.password.data):
             login_user(user)
             return redirect(url_for('users.account'))
         else:
@@ -48,4 +55,4 @@ def login():
 
 @users.route("/logout")
 def logout():
-    return
+    logout_user()
