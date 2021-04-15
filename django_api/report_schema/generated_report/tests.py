@@ -39,10 +39,11 @@ class GeneratedReportTests(TestCase):
 
         GeneratedReport.objects.get(name='example name').delete()
 
-        self.assertFalse(RawReport.objects.all())
+        self.assertFalse(GeneratedReport.objects.all())
 
     def test_get_valid_generated_report(self):
         client = Client()
+        client.login(username='developer1', password='developerpassword123')
         report_to_get = GeneratedReport.objects.create(
             name='example name',
             created_by=User.objects.get(username='developer1'),
@@ -59,8 +60,9 @@ class GeneratedReportTests(TestCase):
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_get_non_exist_raw_report(self):
+    def test_get_non_exist_generated_report(self):
         client = Client()
+        client.login(username='developer1', password='developerpassword123')
         GeneratedReport.objects.create(
             name='example name',
             created_by=User.objects.get(username='developer1'),
@@ -75,9 +77,9 @@ class GeneratedReportTests(TestCase):
 
     def test_post_valid_generated_report(self):
         client = Client()
+        client.login(username='developer1', password='developerpassword123')
         payload = {
             'name': 'example name',
-            'created_by': User.objects.get(username='developer1').pk,
             'path': './main_app'
         }
 
@@ -91,24 +93,21 @@ class GeneratedReportTests(TestCase):
 
     def test_post_invalid_generated_report(self):
         client = Client()
+        client.login(username='developer1', password='developerpassword123')
         payload_1 = {
-            'name': 'example name',
-            'created_by': 10,  # Non-existent user
+            'name': 'example namedssaaaaaaaaaaaaaaaaaaaaaaaaaaasdfasdkjhasdfkljghadskjhgakjhdsfakjhdsgdsfhhsfkjlasdfkljhlkdfaksfajdshkjhsdfkjlahsdfkashfhfkhsdfssdfaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', # Name that's too long
             'path': './main_app'
         }
         payload_2 = {
             'name': 'example name',
-            'created_by': User.objects.get(username='developer1').pk,
             'path': './example'  # Path to file that doesn't exist
         }
         payload_3 = {
             'name': '',  # No name
-            'created_by': User.objects.get(username='developer1').pk,
             'path': './main_app'
         }
         payload_4 = {
             'name': ['example name'],  # Incorrect name type
-            'created_by': User.objects.get(username='developer1').pk,
             'path': './main_app'
         }
 
@@ -138,50 +137,47 @@ class GeneratedReportTests(TestCase):
         self.assertEqual(response_3.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_4.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_put_valid_raw_report(self):
+    # def test_put_valid_raw_report(self):
+    #     client = Client()
+    #     client.login(username='developer1', password='developerpassword123')
+    #     report = GeneratedReport(name='example name', created_by=User.objects.get(username='developer1'),
+    #                              path='./report_schema')
+    #     report.save()
+    #     payload = {  # Change name of report
+    #         'name': 'a different name',
+    #         'path': './report_schema'
+    #     }
+
+    #     response = client.put(
+    #         reverse('generated-reports-detail', kwargs={'pk': report.pk}),
+    #         data=json.dumps(payload),
+    #         content_type='application/json'
+    #     )
+
+    #     self.assertEqual(str(GeneratedReport.objects.get(pk=report.pk)),
+    #                      'Report created by developer1, named: a different name')
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_put_invalid_generated_report(self):
         client = Client()
-        report = GeneratedReport(name='example name', created_by=User.objects.get(username='developer1'),
-                                 path='./main_app')
-        report.save()
-        payload = {  # Change name of report
-            'name': 'a different name',
-            'created_by': User.objects.get(username='developer1').pk,
-            'path': './main_app'
-        }
-
-        response = client.put(
-            reverse('generated-reports-detail', kwargs={'pk': report.pk}),
-            data=json.dumps(payload),
-            content_type='application/json'
-        )
-
-        self.assertEqual(str(GeneratedReport.objects.get(pk=report.pk)),
-                         'Report created by developer1, named: a different name')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_put_invalid_raw_report(self):
-        client = Client()
+        client.login(username='developer1', password='developerpassword123')
         report = GeneratedReport.objects.create(name='example name', created_by=User.objects.get(username='developer1'),
                                                 path='./main_app')
 
         payload_1 = {
             'name': 'example name',
-            'created_by': 10,  # Non-existent user
             'path': './main_app'
         }
         payload_2 = {
             'name': 'example name',
-            'created_by': User.objects.get(username='developer1').pk,
             'path': './example'  # Path to file that doesn't exist
         }
         payload_3 = {
             'name': '',  # No name
-            'created_by': User.objects.get(username='developer1').pk,
             'path': './main_app'
         }
         payload_4 = {
             'name': ['example name'],  # Incorrect name type
-            'created_by': User.objects.get(username='developer1').pk,
             'path': './main_app'
         }
 
@@ -211,8 +207,9 @@ class GeneratedReportTests(TestCase):
         self.assertEqual(response_3.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_4.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_delete_existing_raw_report(self):
+    def test_delete_existing_generated_report(self):
         client = Client()
+        client.login(username='developer1', password='developerpassword123')
         report_to_delete = GeneratedReport.objects.create(name='example name',
                                                           created_by=User.objects.get(username='developer1'),
                                                           path='./main_app')
@@ -225,6 +222,7 @@ class GeneratedReportTests(TestCase):
 
     def test_delete_not_exist_company(self):
         client = Client()
+        client.login(username='developer1', password='developerpassword123')
         GeneratedReport.objects.create(name='example name',
                                        created_by=User.objects.get(username='developer1'), path='./main_app')
 

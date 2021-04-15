@@ -76,3 +76,7 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         # Take the filtered queryset and serialize it so we can send it in a response.
         serializer = self.get_serializer(filtered_queryset, many=True)
         return Response(serializer.data)
+    
+    # # Overwrite the update method for what a PUT request is made
+    # def update(self, request, *args, **kwargs):
+
