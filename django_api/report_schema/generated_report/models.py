@@ -2,12 +2,12 @@ from django.db import models
 from django.conf import settings
 from django.apps import AppConfig
 from django.contrib import admin
-from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, serializers, permissions, status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
 
 from report_schema.generated_report.permissions import IsOwner
+
 
 class GeneratedReport(models.Model):
     name = models.CharField(max_length=100)
@@ -47,7 +47,7 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
     """
     queryset = GeneratedReport.objects.all()
     serializer_class = GeneratedReportSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwner] # API user must authenticate with a registered user
+    permission_classes = [permissions.IsAuthenticated, IsOwner]  # API user must authenticate with a registered user
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     
     # Overwrite the create method that is called for a POST request
@@ -67,7 +67,7 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         user = request.user
         if user.is_superuser:
-            reports_for_user = GeneratedReport.objects.all() # Superusers can see all reports
+            reports_for_user = GeneratedReport.objects.all()  # Superusers can see all reports
         else:
             reports_for_user = GeneratedReport.objects.filter(created_by=user)
 
@@ -79,4 +79,3 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
     
     # # Overwrite the update method for what a PUT request is made
     # def update(self, request, *args, **kwargs):
-

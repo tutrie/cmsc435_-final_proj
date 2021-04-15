@@ -5,7 +5,6 @@ from rest_framework import status
 import json
 
 from .models import GeneratedReport, GeneratedReportSerializer
-from report_schema.raw_report.models import RawReport
 
 
 class GeneratedReportTests(TestCase):
@@ -95,7 +94,13 @@ class GeneratedReportTests(TestCase):
         client = Client()
         client.login(username='developer1', password='developerpassword123')
         payload_1 = {
-            'name': 'example namedssaaaaaaaaaaaaaaaaaaaaaaaaaaasdfasdkjhasdfkljghadskjhgakjhdsfakjhdsgdsfhhsfkjlasdfkljhlkdfaksfajdshkjhsdfkjlahsdfkashfhfkhsdfssdfaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', # Name that's too long
+            'name': '''
+            namedssaaaaaaaaaaaaaaaaaaaaaaaaaaa
+            sdfasdkjhasdfkljghadskjhgakjhdsfak
+            jhdsgdsfhhsfkjlasdfkljhlkdfaksfajd
+            shkjhsdfkjlahsdfkashfhfkhsdfssdfaa
+            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+            aaaaaaaaaadafasdfasdfasdfasdfasdfa''',  # Name that's too long
             'path': './main_app'
         }
         payload_2 = {
