@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
-from rest_framework import serializers, viewsets, status
+from rest_framework import serializers, viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -21,7 +22,6 @@ class UserViewSet(viewsets.ModelViewSet):
     def create_user(self, request):
         serialized = UserSerializer(data=request.data)
         if serialized.is_valid():
-            print(serialized.initial_data)
             User.objects.create_user(
                 serialized.initial_data['username'],
                 serialized.initial_data['email'],
