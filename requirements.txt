@@ -1,6 +1,6 @@
 virtualenv
-Django
-djangorestframework
+Django~=3.1.7
+djangorestframework~=3.12.4
 psycopg2-binary
 flake8
 coverage
@@ -9,3 +9,8 @@ regex==2020.10.15
 requests==2.24.0
 lxml==4.6.1
 urllib3
+
+Flask~=1.1.2
+edgar~=5.4.1
+bcrypt~=3.2.0
+WTForms~=2.3.3
