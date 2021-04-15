@@ -2,7 +2,6 @@ from django.contrib.auth.models import User
 from rest_framework import serializers, viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -29,6 +28,6 @@ class UserViewSet(viewsets.ModelViewSet):
                 serialized_request_data.initial_data['email'],
                 serialized_request_data.initial_data['password']
             )
-            return Response(serialized.data, status=status.HTTP_201_CREATED)
+            return Response(serialized_request_data.data, status=status.HTTP_201_CREATED)
         else:
-            return Response(serialized._errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serialized_request_data._errors, status=status.HTTP_400_BAD_REQUEST)

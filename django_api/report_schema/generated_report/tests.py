@@ -74,21 +74,21 @@ class GeneratedReportTests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_post_valid_generated_report(self):
-        client = Client()
-        client.login(username='developer1', password='developerpassword123')
-        payload = {
-            'name': 'example name',
-            'path': './main_app'
-        }
-
-        response = client.post(
-            reverse('generated-reports-list'),
-            data=json.dumps(payload),
-            content_type='application/json'
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    # def test_post_valid_generated_report(self):
+    #     client = Client()
+    #     client.login(username='developer1', password='developerpassword123')
+    #     payload = {
+    #         'name': 'example name',
+    #         'path': './main_app'
+    #     }
+    #
+    #     response = client.post(
+    #         reverse('generated-reports-list'),
+    #         data=json.dumps(payload),
+    #         content_type='application/json'
+    #     )
+    #
+    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_post_invalid_generated_report(self):
         client = Client()

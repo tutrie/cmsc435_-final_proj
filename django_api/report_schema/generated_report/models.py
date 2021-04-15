@@ -42,7 +42,7 @@ class GeneratedReportSerializer(serializers.ModelSerializer):
 
 class GeneratedReportViewSet(viewsets.ModelViewSet):
     """
-    API Endpoint that allows the user to create 
+    API Endpoint that allows the user to create
     and retrieve generated reports for the authenticated user.
     """
     queryset = GeneratedReport.objects.all()
