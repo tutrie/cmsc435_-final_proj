@@ -20,12 +20,13 @@ from rest_framework import routers
 from company_schema.models import CompanyViewSet
 from report_schema.raw_report.models import RawReportViewSet
 from report_schema.generated_report.models import GeneratedReportViewSet
+from report_schema.user.views import UserViewSet
 
 router = routers.DefaultRouter()
 router.register(r'companies', CompanyViewSet, basename='companies')
 router.register(r'raw-reports', RawReportViewSet, basename='raw-reports')
 router.register(r'generated-reports', GeneratedReportViewSet, basename='generated-reports')
-
+router.register(r'users', UserViewSet, basename='users')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
