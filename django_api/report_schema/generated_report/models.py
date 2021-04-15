@@ -2,10 +2,12 @@ from django.db import models
 from django.conf import settings
 from django.apps import AppConfig
 from django.contrib import admin
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, serializers, permissions, status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
 
+from report_schema.generated_report.permissions import IsOwner
 
 class GeneratedReport(models.Model):
     name = models.CharField(max_length=100)
@@ -31,6 +33,7 @@ class GeneratedReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeneratedReport
         fields = (
+            'id',
             'name',
             'created_by',
             'path'
@@ -44,14 +47,15 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
     """
     queryset = GeneratedReport.objects.all()
     serializer_class = GeneratedReportSerializer
-    permission_classes = [permissions.IsAuthenticated] # API user must authenticate with a registered user
+    permission_classes = [permissions.IsAuthenticated, IsOwner] # API user must authenticate with a registered user
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     
     # Overwrite the create method that is called for a POST request
     def create(self, request, *args, **kwargs):
         user = request.user
         request.data['created_by'] = user.id
-        print(request.data)
+
+        # Create a serialized report from the request data and check if its valid
         report_serializer = GeneratedReportSerializer(data=request.data)
         if report_serializer.is_valid():
             report_serializer.save()
@@ -59,7 +63,7 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         else:
             return Response(report_serializer._errors, status=status.HTTP_400_BAD_REQUEST)
     
-    # Overwrite the list method (called for a general GET request to this endpoint)
+    # Overwrite the list method that is called for a GET request
     def list(self, request, *args, **kwargs):
         user = request.user
         if user.is_superuser:
@@ -72,13 +76,3 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         # Take the filtered queryset and serialize it so we can send it in a response.
         serializer = self.get_serializer(filtered_queryset, many=True)
         return Response(serializer.data)
-        
-    # Overwrite the method that gets an individual report by ID
-    def retrieve(self, request, *args, **kwargs):
-        content = {
-            'user': str(request.user),  # `django.contrib.auth.User` instance.
-            'auth': str(request.auth),  # None
-        }
-        print('this should show up')
-        print(content)
-        return Response(content)

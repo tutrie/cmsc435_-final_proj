@@ -18,8 +18,9 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
 
+    # Endpoint to create a new user by posting to /api/users/create_user
     @action(methods=['POST'], detail=False, url_path='create_user', url_name='create_user')
-    def create_user(self, request):
+    def create_user(self, request) -> Response:
         serialized_request_data = UserSerializer(data=request.data)
         if serialized_request_data.is_valid():
             # Create user from initial data because using the UserSerializer hides the password
