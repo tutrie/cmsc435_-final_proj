@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.apps import AppConfig
 from django.contrib import admin
-from rest_framework import viewsets, serializers, permissions
+from rest_framework import viewsets, serializers, permissions, status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
 
@@ -38,18 +38,42 @@ class GeneratedReportSerializer(serializers.ModelSerializer):
 
 
 class GeneratedReportViewSet(viewsets.ModelViewSet):
+    """
+    API Endpoint that allows the user to create 
+    and retrieve generated reports for the authenticated user.
+    """
     queryset = GeneratedReport.objects.all()
     serializer_class = GeneratedReportSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated] # API user must authenticate with a registered user
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     
+    # Overwrite the create method that is called for a POST request
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        request.data['created_by'] = user.id
+        print(request.data)
+        report_serializer = GeneratedReportSerializer(data=request.data)
+        if report_serializer.is_valid():
+            report_serializer.save()
+            return Response(report_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(report_serializer._errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Overwrite the list method (called for a general GET request to this endpoint)
     def list(self, request, *args, **kwargs):
         user = request.user
-        reports_for_user = GeneratedReport.objects.filter(created_by=user)
+        if user.is_superuser:
+            reports_for_user = GeneratedReport.objects.all() # Superusers can see all reports
+        else:
+            reports_for_user = GeneratedReport.objects.filter(created_by=user)
+
         filtered_queryset = self.filter_queryset(reports_for_user)
+        
+        # Take the filtered queryset and serialize it so we can send it in a response.
         serializer = self.get_serializer(filtered_queryset, many=True)
         return Response(serializer.data)
-
+        
+    # Overwrite the method that gets an individual report by ID
     def retrieve(self, request, *args, **kwargs):
         content = {
             'user': str(request.user),  # `django.contrib.auth.User` instance.

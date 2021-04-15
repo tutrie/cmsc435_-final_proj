@@ -20,12 +20,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(methods=['POST'], detail=False, url_path='create_user', url_name='create_user')
     def create_user(self, request):
-        serialized = UserSerializer(data=request.data)
-        if serialized.is_valid():
+        serialized_request_data = UserSerializer(data=request.data)
+        if serialized_request_data.is_valid():
+            # Create user from initial data because using the UserSerializer hides the password
             User.objects.create_user(
-                serialized.initial_data['username'],
-                serialized.initial_data['email'],
-                serialized.initial_data['password']
+                serialized_request_data.initial_data['username'],
+                serialized_request_data.initial_data['email'],
+                serialized_request_data.initial_data['password']
             )
             return Response(serialized.data, status=status.HTTP_201_CREATED)
         else:
