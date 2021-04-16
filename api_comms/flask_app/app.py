@@ -1,16 +1,16 @@
-from flask import Blueprint, redirect, url_for, render_template, flash, request, session
+from flask import Blueprint, redirect, url_for, render_template, flash
 from flask_login import current_user, login_required, login_user, logout_user
 from rest_framework.authtoken.admin import User
 import bcrypt
 from middleware.query_engine import query_engine
 
-from api_comms.forms import LoginForm, RegistrationForm
+from api_comms import LoginForm, RegistrationForm
 
 users = Blueprint("users", __name__)
 
 
 @users.route("/account", methods=["GET", "POST"])
-@login_required
+# @login_required
 def account():
     # display account details
     # use query engine here

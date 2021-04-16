@@ -4,8 +4,6 @@ from rest_framework.authtoken.admin import User
 from wtforms import StringField, IntegerField, SubmitField, TextAreaField, PasswordField
 from wtforms.validators import (
     InputRequired,
-    DataRequired,
-    NumberRange,
     Length,
     Email,
     EqualTo,
