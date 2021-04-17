@@ -1,58 +1,39 @@
-from flask import Blueprint, redirect, url_for, render_template, flash
-from flask_login import current_user, login_required, login_user, logout_user
-from rest_framework.authtoken.admin import User
 import bcrypt
-from middleware.query_engine import query_engine
-
-from api_comms import LoginForm, RegistrationForm
-
-users = Blueprint("users", __name__)
+from flask import Flask, request, session
+from flask import render_template
 
 
-@users.route("/account", methods=["GET", "POST"])
-# @login_required
-def account():
-    # display account details
-    # use query engine here
-    lst = {}
-    query_engine.query(lst)
-    return
+app = Flask(__name__)
+app.config['SECRET_KEY'] = '\xe0\x8d?8z\xdd\x87i}\xfc\xaa\x91\x8f\n1\x1a\xe4\xb3\xa7\xbd5\xf8\x96\xdd'
 
 
-@users.route("/register", methods=["GET", "POST"])
+@app.route('/')
+def main_page():
+    return render_template('mainpage.html', title='Main Page')
+
+
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('something.here'))
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        hashed = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
-        user = User(username=form.username.data, email=form.email.data, password=hashed)
-        user.save()
-        # return these
-        username = form.username
-        password = form.password
-
-        return redirect(url_for('users.login'))
-
-    return render_template('register.html', title='Register', form=form)
+    return render_template('register.html', title='Register')
 
 
-@users.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.objects(username=form.username.data).first()
-        if user is not None and bcrypt.check_password_hash(
-                user.password, form.password.data):
-            login_user(user)
-            return redirect(url_for('users.account'))
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
+
+        if username is not None and password is not None and \
+                username == 'admin' and password == 'admin':
+            session['logged_in'] = True
+            session['username'] = request.form['username']
+            return render_template('account.html', name=username)
         else:
-            flash("login failed.  check credentials")
-            return redirect(url_for('users.login'))
+            return render_template('login.html')
 
-    return render_template('templates/login.html', title='Login', form=form)
+    return render_template('login.html')
 
 
-@users.route("/logout")
+@app.route("/logout", methods=["GET", "POST"])
 def logout():
-    logout_user()
+    return render_template('logout.html', title='logout')

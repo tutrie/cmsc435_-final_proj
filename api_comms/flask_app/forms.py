@@ -1,21 +1,24 @@
-from flask_login import current_user
-from flask_wtf import FlaskForm
-from rest_framework.authtoken.admin import User
-from wtforms import StringField, IntegerField, SubmitField, TextAreaField, PasswordField
+from sqlalchemy.testing import db
+from wtforms import StringField, SubmitField, PasswordField
 from wtforms.validators import (
     InputRequired,
     Length,
-    Email,
     EqualTo,
     ValidationError,
 )
+# from models import User
+class User:
+    username = db.StringField(required=True, unique=True, min_length=1, max_length=20)
+    password = db.StringField(required=True, min_length=1, max_length=20)
 
+    # Returns unique string identifying our object
+    def get_id(self):
+        return self.username
 
-class RegistrationForm(FlaskForm):
+class RegistrationForm:
     username = StringField(
-        "Username", validators=[InputRequired(), Length(min=1, max=40)]
+        "Username", validators=[InputRequired(), Length(min=1, max=20)]
     )
-    email = StringField("Email", validators=[InputRequired(), Email()])
     password = PasswordField("Password", validators=[InputRequired()])
     confirm_password = PasswordField(
         "Confirm Password", validators=[InputRequired(), EqualTo("password")]
@@ -33,7 +36,7 @@ class RegistrationForm(FlaskForm):
             raise ValidationError("Email is taken")
 
 
-class LoginForm(FlaskForm):
+class LoginForm():
     username = StringField("Username", validators=[InputRequired()])
     password = PasswordField("Password", validators=[InputRequired()])
     submit = SubmitField("Login")

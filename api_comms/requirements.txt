@@ -41,6 +41,7 @@ ExifRead==2.3.2
 filelock==3.0.12
 flake8==3.9.0
 Flask==1.1.2
+Flask-Login==0.5.0
 future==0.18.2
 fuzzywuzzy==0.18.0
 html2text==2020.1.16

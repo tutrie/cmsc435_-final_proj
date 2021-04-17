@@ -1,12 +1,10 @@
 FROM python:3
 
-ENV PYTHONUNBUFFERED 1
-ENV PYTHONDONTWRITEBYTECODE 1
-
 COPY requirements.txt .
 
-RUN pip install --user --upgrade -r requirements.txt
+RUN pip install --upgrade -r requirements.txt
 
-COPY auth.py .
+COPY . .
 
-CMD ["python", "auth.py"]
+# CMD ["python", "auth.py"]
+CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
