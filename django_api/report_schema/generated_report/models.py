@@ -77,5 +77,16 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(filtered_queryset, many=True)
         return Response(serializer.data)
     
-    # # Overwrite the update method for what a PUT request is made
-    # def update(self, request, *args, **kwargs):
+    # Overwrite the update method for what a PUT request is made
+    def update(self, request, *args, **kwargs):
+        user = request.user
+        request.data['created_by'] = user.id
+
+        report_to_update = self.get_object()
+        
+        report_serializer = GeneratedReportSerializer(report_to_update, data=request.data)
+        if report_serializer.is_valid():
+            report_serializer.save()
+            return Response(report_serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(report_serializer._errors, status=status.HTTP_400_BAD_REQUEST)
