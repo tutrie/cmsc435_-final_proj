@@ -38,3 +38,12 @@ def test_logout():
     url = BASE_URL + 'logout'
     response = requests.get(url)
     assert response.status_code == 200
+
+
+# def test_login():
+#     url = 'https://www.geeksforgeeks.org/render-html-forms-get-post-in-django/'
+#     package = {'username': 'admin',
+#                'password': 'admin'}
+#
+#     response = requests.post(url, data=json.dumps(package))
+#     assert response.status_code == 200
