@@ -1,10 +1,6 @@
 # User Documentation
 
 ## Running the Application
-## Links
-Admin panel: http://localhost:8000/admin/
-
-API: http://localhost:8000/api/
 
 
 # Developer Documentation
@@ -20,19 +16,24 @@ Create local database
 ```bash
 python manage.py migrate
 ```
-Create superuser for admin panel, follow the prompts to create a username and password.
+Create superuser for admin panel, follow the prompts to create an admin account.
 ```bash
-python manage.py createsuperuser --email admin@example.com
+python manage.py createsuperuser
 ```
 Run the server locally on port 8000
 ```bash
 python manage.py runserver
 ```
+You can now browse the api and use the admin panel by going to the following links
+
+Admin panel: http://localhost:8000/admin/
+
+API: http://localhost:8000/api/
 
 ### Frontend Setup
 
 
-## Accessing Cloud Instance
+### Accessing Cloud Instance
 Download the scraper.pem security key
 
 SSH into the instance
@@ -43,7 +44,7 @@ ssh -i "scraper.pem" ec2-user@ec2-13-58-133-36.us-east-2.compute.amazonaws.com
 
 
 # Contributions
-- Brady Snelson - 15% - Set up django backend framework that created an API that allows a user to GET and POST generated and raw report file urls.
+- Brady Snelson - 15% - Added authentication to generated-reports endpoint. Updated GET/POST/PUT routes to only allow requests from the owner of each report. Created EC2 cloud instance and set up dockerized django container to run on it. 
 - Jason Hipkins - 15% - Worked on filtering and cleaning excel raw reports. worked on merging reports together, lot of research on accounting methods and line item names.
 - Preston Thomson - 15% - Set up the CI-CD pipeline for automatic building, testing, linting, and code coverage checks.
 - Josh Helperin - 15% - Fixed and tested querant, created proxy functions and tested proxy.
@@ -68,8 +69,8 @@ docker-compose up --build -d
 
 Now run the following commands to migrate the database
 ```bash
-docker-compose run web python3 manage.py migrate
 docker-compose run web python3 manage.py makemigrations
+docker-compose run web python3 manage.py migrate
 ```
 
 If you are unable to login to admin using the credentials below, run the following command. This will prompt you to set up a new admin superuser for testing. If you have any trouble, start a bash shell and run the command.

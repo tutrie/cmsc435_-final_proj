@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "u28%n=7i#o8r05cx_++m--1c)_m&l9=!nv8#@
 DEBUG = os.environ.get("DEBUG", True)
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
-ALLOWED_HOSTS = [] if not any(ALLOWED_HOSTS) else ALLOWED_HOSTS
+ALLOWED_HOSTS = ['13.58.133.36'] if not any(ALLOWED_HOSTS) else ALLOWED_HOSTS
 
 # Application definition
 
