@@ -3,6 +3,26 @@ import os
 import re
 
 
+def strip_request(request: dict) -> dict:
+    """
+    Args:
+        request: A request dictionary sent from the front-end.
+
+    Returns:
+        The same request passed in but with its values cleaned up in order to
+        be used for further processing.
+    """
+    cleaned = {}
+    for key, val in request.items():
+        if isinstance(val, list):
+            cleaned[key] = [item.strip() for item in val]
+        elif isinstance(val, str):
+            cleaned[key] = item.strip()
+        else:
+            cleaned[key] = item
+    return cleaned
+
+
 def validate_cik(cik: str) -> bool:
     """
     Args:
@@ -81,14 +101,11 @@ def validate_sheet_names(sheet_names: list) -> bool:
     """
     for sheet_name in sheet_names:
         match_obj = re.match(r'^\S([\-\(\)_a-zA-Z0-9 ]+)\S$', sheet_name)
-        # could you explain what would pass/fail?
-
-        # From what I've seen, the only characters used in naming sheets have
-        # been a-z, A-Z, 0-9, hypens, paratheses, underscores, and spaces. So
-        # with this regex, anything that starts with non-whitespace characters,
-        # has any of the characters I specified above, and ends in a
-        # non-whitespace character will pass this test. You can test it out on
-        # https://regexr.com. - JJ
+        # Accepts a-z, A-Z, 0-9, hypens, paratheses, underscores, and spaces.
+        # So with this regex, anything that starts with non-whitespace
+        # characters, has any of the characters I specified above, and ends in
+        # a non-whitespace character will pass this test. Testing can be done
+        # on https://regexr.com.
         if match_obj is None:
             return False
 
@@ -172,13 +189,15 @@ class Proxy:
 
     def retrieve_raw_reports(self, request: dict) -> dict:
         if valid_raw_request(request):
-            return self.query_engine.retrieve_raw_reports(request)
+            stripped_request = strip_request(request)
+            return self.query_engine.retrieve_raw_reports(stripped_request)
 
         # we can create more robust error messages in the validate methods
         return {"error": "invalid request"}
 
     def generate_new_report(self, request: dict) -> dict:
         if valid_new_request(request):
-            return self.query_engine.generate_new_report(request)
+            stripped_request = strip_request(request)
+            return self.query_engine.generate_new_report(stripped_request)
 
         return {"error": "invalid request"}
