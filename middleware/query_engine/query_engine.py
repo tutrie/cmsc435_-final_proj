@@ -1,19 +1,24 @@
-from middleware.query_engine.query import Query
+from report_generator.src.active_report import ActiveReport
 
 
-def query(request: dict) -> Query:
-    return Query() \
-        .set_cik(request["cik"]) \
-        .set_years(request["years"]) \
-        .set_report_type(request["report_type"])
+def get_active_report(request) -> ActiveReport:
+    return ActiveReport.from_year_list(request["cik"], request["years"], request["report_type"])
 
 
 class QueryEngine:
 
     @staticmethod
     def retrieve_raw_reports(request: dict) -> dict:
-        return query(request).run()
+        report = get_active_report(request)
+
+        return {"report": report.json}
 
     @staticmethod
     def generate_new_report(request: dict) -> dict:
-        return query(request).set_filter(request["report_filter"]).run()
+        report = get_active_report(request)
+
+        if request["report_filter"]:
+            report = report.filter_report(request["report_filter"])
+            return {"report": report}
+
+        return {"report": report.json}
