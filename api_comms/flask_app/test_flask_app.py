@@ -13,7 +13,7 @@ def test_main():
     assert response.status_code == 200
 
 
-# not working bc cant send it to the django server
+# not working bc cant send it to the django server, so a != 200  code
 def test_login():
     url = BASE_URL + 'login'
     package = {'username': 'admin',
@@ -23,10 +23,18 @@ def test_login():
     assert response.status_code == 200
 
 
+# not working bc cant send it to the django server, so a != 200  code
+def test_register():
+    url = BASE_URL + 'register'
+    package = {'username': 'bob',
+               'password1': 'bob',
+               'password2': 'bob'}
+
+    response = requests.post(url, data=json.dumps(package))
+    assert response.status_code == 200
+
+
 def test_logout():
     url = BASE_URL + 'logout'
     response = requests.get(url)
     assert response.status_code == 200
-
-# def test_register(client):
-
