@@ -80,7 +80,15 @@ def validate_sheet_names(sheet_names: list) -> bool:
         True if all sheet names match the regex; False otherwise.
     """
     for sheet_name in sheet_names:
-        match_obj = re.match(r'^\S([\-\(\)_a-zA-Z0-9 ]+)\S$', sheet_name)  # could you explain what would pass/fail?
+        match_obj = re.match(r'^\S([\-\(\)_a-zA-Z0-9 ]+)\S$', sheet_name)
+        # could you explain what would pass/fail?
+
+        # From what I've seen, the only characters used in naming sheets have
+        # been a-z, A-Z, 0-9, hypens, paratheses, underscores, and spaces. So
+        # with this regex, anything that starts with non-whitespace characters,
+        # has any of the characters I specified above, and ends in a
+        # non-whitespace character will pass this test. You can test it out on
+        # https://regexr.com. - JJ
         if match_obj is None:
             return False
 
@@ -111,7 +119,8 @@ def valid_new_request(request: dict) -> bool:
     guard1 = validate_cik(request['cik'])
     guard2 = validate_years(request['years'])
     guard3 = validate_report_type(request['report_type'])
-    guard5 = validate_instructions(request['report_filter'])  # the key is report_filter
+    guard5 = validate_instructions(
+        request['report_filter'])  # the key is report_filter
 
     if guard1 and guard2 and guard3 and guard5:
         return True
