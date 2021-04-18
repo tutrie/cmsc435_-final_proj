@@ -1,5 +1,5 @@
 virtualenv
-Django
+django
 djangorestframework
 psycopg2-binary
 flake8
@@ -9,3 +9,6 @@ regex==2020.10.15
 requests==2.24.0
 lxml==4.6.1
 urllib3
+essential_generators
+flask
+randomtimestamp
