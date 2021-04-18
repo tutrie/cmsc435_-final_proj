@@ -27,7 +27,7 @@ DEBUG = os.environ.get("DEBUG", True)
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 ALLOWED_HOSTS = [] if not any(ALLOWED_HOSTS) else ALLOWED_HOSTS
-ALLOWED_HOSTS.append('13.58.133.36')
+ALLOWED_HOSTS.append('18.217.8.244')
 
 # Application definition
 
