@@ -41,9 +41,9 @@ def login():
 
         response = requests.get('http://18.217.8.244:8000/api/generated-reports/',
                                 auth=(data["username"], data["password"]), timeout=5)
-
+        print(response)
         if response.status_code == 200:
-            return redirect(url_for('account'))
+            return render_template('account.html', data=response.json())
 
     return render_template('login.html', title='login')
 
@@ -52,7 +52,3 @@ def login():
 def logout():
     return render_template('logout.html', title='logout')
 
-
-@app.route('/account')
-def account():
-    return render_template('account.html', data=request)
