@@ -3,7 +3,7 @@ import os
 import re
 
 
-def validate_cik(cik: str) -> bool:
+def is_valid_cik(cik: str) -> bool:
     """
     Args:
         cik: A CIK of a company.
@@ -14,7 +14,7 @@ def validate_cik(cik: str) -> bool:
     return cik.isnumeric()
 
 
-def validate_years(years: list) -> bool:
+def is_valid_years(years: list) -> bool:
     """
     Args:
         years: A list of interger strings reprenting years.
@@ -29,7 +29,7 @@ def validate_years(years: list) -> bool:
     return True
 
 
-def validate_report_type(report_type: str) -> bool:
+def is_valid_report_type(report_type: str) -> bool:
     """
     Args:
         report_type: A string corresponding to the report type requested.
@@ -42,7 +42,7 @@ def validate_report_type(report_type: str) -> bool:
     return report_type in report_types
 
 
-def validate_instructions(instructions: dict) -> bool:
+def is_valid_instructions(instructions: dict) -> bool:
     """
     Args:
         instructions: A dictionary where key is the Excel sheet name and the
@@ -60,7 +60,7 @@ def validate_instructions(instructions: dict) -> bool:
     return True
 
 
-def validate_file_path(file_path: str) -> bool:
+def is_valid_file_path(file_path: str) -> bool:
     """
     Args:
         file_path: A path/directory to where the file should be saved to.
@@ -71,7 +71,7 @@ def validate_file_path(file_path: str) -> bool:
     return os.path.exists(file_path)
 
 
-def validate_sheet_names(sheet_names: list) -> bool:
+def is_valid_sheet_names(sheet_names: list) -> bool:
     """
     Args:
         sheet_names: Names of sheets to pull data from.
@@ -87,7 +87,7 @@ def validate_sheet_names(sheet_names: list) -> bool:
     return True
 
 
-def validate_file_name(file_name: str) -> bool:
+def is_valid_file_name(file_name: str) -> bool:
     """
     Args:
         file_name: Names file to save data to.
@@ -99,7 +99,7 @@ def validate_file_name(file_name: str) -> bool:
     return match_obj is not None
 
 
-def valid_new_request(request: dict) -> tuple:
+def validate_new_report_request(request: dict) -> tuple:
     """
     Args:
         request: A dictionary containing the user inputted values with its
@@ -108,27 +108,23 @@ def valid_new_request(request: dict) -> tuple:
     Returns:
         True, "success" if all values of request are valid; False, reason why otherwise.
     """
-    is_valid_cik = validate_cik(request['cik'])
-    is_valid_years = validate_years(request['years'])
-    is_valid_report_type = validate_report_type(request['report_type'])
-    is_valid_filter = validate_instructions(request['report_filter'])  # the key is report_filter
 
-    if not is_valid_cik:
+    if not is_valid_cik(request['cik']):
         return False, "Invalid CIK"
 
-    if not is_valid_years:
+    if not is_valid_years(request['years']):
         return False, "Invalid Years"
 
-    if not is_valid_report_type:
+    if not is_valid_report_type(request['report_type']):
         return False, "Invalid Report Type"
 
-    if not is_valid_filter:
+    if not is_valid_instructions(request['report_filter']):
         return False, "Invalid Report Filter"
 
     return True, "Success"
 
 
-def valid_raw_request(request: dict) -> tuple:
+def validate_raw_report_request(request: dict) -> tuple:
     """
     Args:
         request: A dictionary containing the user inputted values with its
@@ -137,23 +133,19 @@ def valid_raw_request(request: dict) -> tuple:
     Returns:
         True, "success" if all values of request are valid; False, reason why otherwise.
     """
-    is_valid_cik = validate_cik(request['cik'])
-    is_valid_years = validate_years(request['years'])
-    is_valid_report_type = validate_report_type(request['report_type'])
-
-    if not is_valid_cik:
+    if not is_valid_cik(request['cik']):
         return False, "Invalid CIK"
 
-    if not is_valid_years:
+    if not is_valid_years(request['years']):
         return False, "Invalid Years"
 
-    if not is_valid_report_type:
+    if not is_valid_report_type(request['report_type']):
         return False, "Invalid Report Type"
 
     return True, "Success"
 
 
-def valid_old_request(request: dict) -> tuple:
+def validate_old_request(request: dict) -> tuple:
     """
     Args:
         request: A dictionary containing the user inputted values with its
@@ -162,9 +154,8 @@ def valid_old_request(request: dict) -> tuple:
     Returns:
         True if all values of request are valid; False otherwise.
     """
-    is_valid_file_name = validate_file_name(request['file_name'])
 
-    if not is_valid_file_name:
+    if not is_valid_file_name(request['file_name']):
         return False, "Invalid File Name"
 
     return True, "Success"
@@ -183,7 +174,7 @@ class Proxy:
         Returns:
 
         """
-        is_valid, msg = valid_raw_request(request)
+        is_valid, msg = validate_raw_report_request(request)
 
         if is_valid:
             return self.query_engine.retrieve_raw_reports(request)
@@ -199,7 +190,7 @@ class Proxy:
         Returns:
 
         """
-        is_valid, msg = valid_new_request(request)
+        is_valid, msg = validate_new_report_request(request)
 
         if is_valid:
             return self.query_engine.generate_new_report(request)
