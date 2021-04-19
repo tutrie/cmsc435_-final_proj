@@ -18,8 +18,10 @@
 # -- Project information -----------------------------------------------------
 
 project = 'XRBL Scraper'
-copyright = '2021, Patrick Donnelly, Brady Snelson, Gilbert Garczynski, Jason Hipkins, Joshua Helperin, Preston Thomson, Siyao Li'
-author = 'Patrick Donnelly, Brady Snelson, Gilbert Garczynski, Jason Hipkins, Joshua Helperin, Preston Thomson, Siyao Li'
+copyright = '2021, Patrick Donnelly, Brady Snelson, Gilbert Garczynski, Jason Hipkins, Joshua Helperin, ' \
+            'Preston Thomson, Siyao Li '
+author = 'Patrick Donnelly, Brady Snelson, Gilbert Garczynski, Jason Hipkins, Joshua Helperin, Preston Thomson, ' \
+         'Siyao Li '
 
 # The full version, including alpha/beta/rc tags
 release = 'V1.0.0'
