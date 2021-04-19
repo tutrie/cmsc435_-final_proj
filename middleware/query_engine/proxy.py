@@ -173,7 +173,7 @@ class Proxy:
             request:
                 {"cik": str, "years": list(str), "report_type": str}
         Returns:
-
+            ToDo
         """
         is_valid, msg = validate_raw_report_request(request)
 
@@ -189,7 +189,7 @@ class Proxy:
             request:
                 {"cik": str, "years": list(str), "report_type": str, "report_filter": str}
         Returns:
-
+            ToDo
         """
         is_valid, msg = validate_new_report_request(request)
 
