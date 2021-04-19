@@ -5,9 +5,9 @@ from django.contrib import admin
 from rest_framework import viewsets, serializers, permissions, status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
+from rest_framework.decorators import action
 
 from report_schema.generated_report.permissions import IsOwner
-
 
 class GeneratedReport(models.Model):
     name = models.CharField(max_length=100)
@@ -90,3 +90,4 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             return Response(report_serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(report_serializer._errors, status=status.HTTP_400_BAD_REQUEST)
+

@@ -6,7 +6,7 @@ def create_app():
     app = Flask(__name__)
     proxy = Proxy()
 
-    @app.route('/api/raw-report', methods=["GET"])
+    @app.route('/api/raw-reports/something', methods=["GET"])
     def raw_report():
         # ToDo delete try except
         try:

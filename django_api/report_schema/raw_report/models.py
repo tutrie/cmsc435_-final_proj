@@ -4,8 +4,10 @@ from django.contrib import admin
 from django.apps import AppConfig
 from rest_framework import viewsets
 from rest_framework import serializers
+from rest_framework.decorators import action
 
 from company_schema.models import Company, CompanySerializer
+from . import utils
 
 
 class RawReport(models.Model):
@@ -58,3 +60,35 @@ class RawReportViewSet(viewsets.ModelViewSet):
     """
     queryset = RawReport.objects.all()
     serializer_class = RawReportSerializer
+
+
+    @action(methods=['GET'], detail=False, url_path='get_raw_reports', url_name='get_raw_reports')
+    def get_raw_reports(self, request) -> Response:
+
+        # check that request is valid
+        is_valid, msg = request_is_valid()
+        if not is_valid:
+            return Response(json.dumps(msg), status=status.HTTP_400_INVALID)
+    
+        # check if in the database (query the model)
+
+        # If its not, call siyao's code
+        urls = utils.function_that_gets_urls_from_edgar
+        # create company model for that company if we dont have it
+        # Create objects and add them to django database using the urls
+
+
+
+        data = {
+            'company_name': request['name'],
+            'company_cik': request['cik'],
+            'report_type': request['report_type'],
+            'report_date': {
+                '<report_year>': '<report_url>',
+            },
+            'notes': [
+                'Additional notes go here!'
+            ]
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
