@@ -8,7 +8,6 @@ from rest_framework.decorators import action
 
 from company_schema.models import Company, CompanySerializer
 from middleware.query_engine.proxy import strip_request, valid_raw_request
-from py_edgar_lite.edgar.company import Company as EdgarPuller
 from . import utils
 
 
@@ -67,9 +66,7 @@ class RawReportViewSet(viewsets.ModelViewSet):
             url_name='get_raw_reports')
     def get_raw_reports(self, request) -> Response:
 
-        # check that request is valid
         request = strip_request(request)
-
         is_valid, msg_dict = valid_raw_request(request)
         if not is_valid:
             return Response(

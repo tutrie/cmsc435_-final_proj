@@ -5,7 +5,6 @@ from report_generator.utils.object_conversions import (
 from py_edgar_lite.edgar.company import Company as EdgarScraper
 from models import RawReport, Company
 from openpyxl import load_workbook
-import pandas as pd
 import os
 
 
