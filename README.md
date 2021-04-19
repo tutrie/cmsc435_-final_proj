@@ -41,6 +41,19 @@ SSH into the instance
 ssh -i "scraper.pem" ec2-user@ec2-13-58-133-36.us-east-2.compute.amazonaws.com
 ```
 
+### Setting up and Running the Django Docker Container
+```bash
+sudo service docker start
+```
+
+Build the docker container for django
+```bash
+docker-compose up --build -d
+```
+If that fails, try clearing out the docker cache
+```bash
+docker system prune -a
+```
 
 
 # Contributions
