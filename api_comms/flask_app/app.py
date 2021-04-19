@@ -23,7 +23,7 @@ def register():
             data = request.data
 
         response = requests.post('http://18.217.8.244:8000/api/users/create_user/',
-                                 data=data, timeout=5)
+                                 data=data, timeout=15)
         if response.status_code == 201 or response.status_code == 200:
             return redirect(url_for('login'))
 
@@ -40,7 +40,7 @@ def login():
             data = request.data
 
         response = requests.get('http://18.217.8.244:8000/api/generated-reports/',
-                                auth=(data["username"], data["password"]), timeout=5)
+                                auth=(data["username"], data["password"]), timeout=15)
         print(response)
         if response.status_code == 200:
             return render_template('account.html', data=response.json())
