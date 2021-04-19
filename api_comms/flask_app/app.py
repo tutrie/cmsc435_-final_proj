@@ -14,42 +14,34 @@ def main_page():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    print(request.method)
-    print(request.url)
-    print(request.data)
     if request.method == 'POST':
-        # print(len(request.data) == 0)
         if len(request.data) == 0:
             data = {"username": request.form['username'],
                     "password": request.form['password'],
                     "email": request.form['email']}
-            print(data)
         else:
             data = request.data
 
         response = requests.post('http://18.217.8.244:8000/api/users/create_user/',
                                  data=data, timeout=5)
-
-        if response.status_code != 200:
+        print(response.status_code)
+        if response.status_code != 201 or response.status_code != 200:
             return render_template('register.html', title='Register')
-        elif response.status_code == 200:
-            return redirect(url_for('login'))
+        elif response.status_code == 201 or response.status_code == 200:
+            return render_template('login.html', title='login')
+            # return redirect(url_for('login'))
 
     return render_template('register.html', title='Register')
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    print(request.method)
-    print(request.url)
-    print(request.data)
     if request.method == "POST":
         # print(len(request.data) == 0)
         # get input from the form
         if len(request.data) == 0:
             data = {"username": request.form['username'],
                     "password": request.form['password']}
-            print(data)
         else:
             data = request.data
         response = requests.get('http://18.217.8.244:8000/api/generated-reports/',
