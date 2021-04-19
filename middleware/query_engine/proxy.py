@@ -1,4 +1,5 @@
 from middleware.query_engine.query_engine import QueryEngine
+from Typing import List
 import os
 import re
 
@@ -14,7 +15,7 @@ def strip_request(request: dict) -> dict:
     """
     cleaned = {}
     for key, val in request.items():
-        if isinstance(val, list):
+        if isinstance(val, List[str]):
             cleaned[key] = [item.strip() for item in val]
         elif isinstance(val, str):
             cleaned[key] = item.strip()

@@ -7,6 +7,8 @@ from rest_framework import serializers
 from rest_framework.decorators import action
 
 from company_schema.models import Company, CompanySerializer
+from middleware.query_engine.proxy import strip_request, valid_raw_request
+from py_edgar_lite.edgar.company import Company as EdgarPuller
 from . import utils
 
 
@@ -61,29 +63,24 @@ class RawReportViewSet(viewsets.ModelViewSet):
     queryset = RawReport.objects.all()
     serializer_class = RawReportSerializer
 
-
-    @action(methods=['GET'], detail=False, url_path='get_raw_reports', url_name='get_raw_reports')
+    @action(methods=['GET'], detail=False, url_path='get_raw_reports',
+            url_name='get_raw_reports')
     def get_raw_reports(self, request) -> Response:
 
         # check that request is valid
-        is_valid, msg = request_is_valid()
+        request = strip_request(request)
+
+        is_valid, msg_dict = valid_raw_request(request)
         if not is_valid:
-            return Response(json.dumps(msg), status=status.HTTP_400_INVALID)
-    
-        # check if in the database (query the model)
+            return Response(
+                json.dumps(msg_dict), status=status.HTTP_400_INVALID
+            )
 
-        # If its not, call siyao's code
-        urls = utils.function_that_gets_urls_from_edgar
-        # create company model for that company if we dont have it
-        # Create objects and add them to django database using the urls
-
-
-
-        data = {
+        response = {
             'company_name': request['name'],
             'company_cik': request['cik'],
             'report_type': request['report_type'],
-            'report_date': {
+            'reports': {
                 '<report_year>': '<report_url>',
             },
             'notes': [
@@ -91,4 +88,16 @@ class RawReportViewSet(viewsets.ModelViewSet):
             ]
         }
 
-        return Response(data, status=status.HTTP_200_OK)
+        raw_reports_in_db = utils.raw_reports_from_db(request)
+
+        if not raw_reports_in_db:
+            utils.create_company_model(request)
+            response['reports'] = utils.download_and_create_reports(request)
+        else:
+            for report_model in raw_reports_from_db:
+                # NEED TO CHANGE DATETIME MODEL TO STRING
+                # OR CONVERT DATETIME TO STRING
+                year_str = str(report_model.report_date.year)
+                response['reports'][year_str] = report_model.excel_url
+
+        return Response(response, status=status.HTTP_200_OK)
