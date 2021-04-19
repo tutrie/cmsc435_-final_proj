@@ -2,6 +2,10 @@ from middleware.query_engine.query_engine import QueryEngine
 import os
 import re
 
+"""
+ToDo: Explain the file and what it will be used for
+"""
+
 
 def is_valid_cik(cik: str) -> bool:
     """
@@ -9,7 +13,7 @@ def is_valid_cik(cik: str) -> bool:
         cik: A CIK of a company.
 
     Returns:
-        True if cik paremeter is numeric; False otherwise
+        True if cik parameter is numeric; False otherwise
     """
     return cik.isnumeric()
 
@@ -17,7 +21,7 @@ def is_valid_cik(cik: str) -> bool:
 def is_valid_years(years: list) -> bool:
     """
     Args:
-        years: A list of interger strings reprenting years.
+        years: A list of strings representing years.
 
     Returns:
         True if years contains well-formatted years; False otherwise.
