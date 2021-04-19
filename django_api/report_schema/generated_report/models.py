@@ -27,7 +27,7 @@ class GeneratedReport(models.Model):
 
 @admin.register(GeneratedReport)
 class GeneratedReportAdmin(admin.ModelAdmin):
-    """Defines what parameters from the company model should be displayed on the admin panel.
+    """Defines what parameters from the generated report model should be displayed on the admin panel.
 
     Inherits from the predefined model admin class.
     """
