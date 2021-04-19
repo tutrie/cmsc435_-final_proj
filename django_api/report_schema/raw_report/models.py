@@ -88,8 +88,13 @@ class RawReportViewSet(viewsets.ModelViewSet):
         raw_reports_in_db = utils.raw_reports_from_db(request)
 
         if not raw_reports_in_db:
-            utils.create_company_model(request)
-            response['reports'] = utils.download_and_create_reports(request)
+            company_model = Company.objects.create(
+                name=request['company'], cik=request['cik']
+            )
+
+            response['reports'] = utils.download_and_create_reports(
+                request, company_model
+            )
         else:
             for report_model in raw_reports_from_db:
                 # NEED TO CHANGE DATETIME MODEL TO STRING
