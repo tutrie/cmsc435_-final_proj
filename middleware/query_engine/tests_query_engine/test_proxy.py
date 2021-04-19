@@ -116,7 +116,7 @@ class TestValidateNewRequest(TestCase):
                 'sheet2': ['5', '6', '7', 'adfsd8'],
             }
         }
-        response = proxy.valid_new_request(request)
+        response, msg = proxy.valid_new_request(request)
         self.assertFalse(response)
 
 
@@ -127,7 +127,7 @@ class TestValidateRawRequest(TestCase):
             'years': ['2015', '2016', '2017', '2018'],
             'report_type': '10-K'
         }
-        response = proxy.valid_raw_request(request)
+        response, msg = proxy.valid_raw_request(request)
         self.assertTrue(response)
 
     def test_validate_raw_request_invalid_input(self):
@@ -136,7 +136,7 @@ class TestValidateRawRequest(TestCase):
             'years': ['2015', '2016kg', '2017', '2018'],
             'report_type': '10-K'
         }
-        response = proxy.valid_raw_request(request)
+        response, msg = proxy.valid_raw_request(request)
         self.assertFalse(response)
 
 
