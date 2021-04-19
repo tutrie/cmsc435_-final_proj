@@ -45,14 +45,22 @@ def login():
         if response.status_code == 200:
             return redirect(url_for('account'))
 
-    return render_template('login.html', title='login')
+    return render_template('login.html', title='Login')
 
 
 @app.route("/logout", methods=["GET", "POST"])
 def logout():
-    return render_template('logout.html', title='logout')
+    return render_template('logout.html', title='Logout')
 
 
 @app.route('/account')
 def account():
     return render_template('account.html', data=request)
+
+@app.route('/raw_report')
+def raw_report():
+    return render_template('raw_report.html', title='Raw Report')
+
+@app.route('/generated_report')
+def generated_report():
+    return render_template('generated_report.html', title='Generated Report')
