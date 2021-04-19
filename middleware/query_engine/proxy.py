@@ -26,6 +26,7 @@ def is_valid_years(years: list) -> bool:
         year = year.strip()
         if not year.isnumeric() or len(year) != 4:
             return False
+
     return True
 
 
@@ -106,7 +107,7 @@ def validate_new_report_request(request: dict) -> tuple:
             corresponding keys.
 
     Returns:
-        True, "success" if all values of request are valid; False, reason why otherwise.
+        True, "success" if all values of request are valid; False, "reason" otherwise.
     """
 
     if not is_valid_cik(request['cik']):
@@ -121,7 +122,7 @@ def validate_new_report_request(request: dict) -> tuple:
     if not is_valid_instructions(request['report_filter']):
         return False, "Invalid Report Filter"
 
-    return True, "Success"
+    return True, "success"
 
 
 def validate_raw_report_request(request: dict) -> tuple:
@@ -131,7 +132,7 @@ def validate_raw_report_request(request: dict) -> tuple:
             corresponding keys.
 
     Returns:
-        True, "success" if all values of request are valid; False, reason why otherwise.
+        True, "success" if all values of request are valid; False, "reason" otherwise.
     """
     if not is_valid_cik(request['cik']):
         return False, "Invalid CIK"
@@ -142,7 +143,7 @@ def validate_raw_report_request(request: dict) -> tuple:
     if not is_valid_report_type(request['report_type']):
         return False, "Invalid Report Type"
 
-    return True, "Success"
+    return True, "success"
 
 
 def validate_old_request(request: dict) -> tuple:
@@ -152,13 +153,13 @@ def validate_old_request(request: dict) -> tuple:
             corresponding keys.
 
     Returns:
-        True if all values of request are valid; False otherwise.
+        True, "success" if all values of request are valid; False, "reason" otherwise.
     """
 
     if not is_valid_file_name(request['file_name']):
         return False, "Invalid File Name"
 
-    return True, "Success"
+    return True, "success"
 
 
 class Proxy:
@@ -170,7 +171,7 @@ class Proxy:
 
         Args:
             request:
-
+                {"cik": str, "years": list(str), "report_type": str}
         Returns:
 
         """
@@ -186,7 +187,7 @@ class Proxy:
 
         Args:
             request:
-
+                {"cik": str, "years": list(str), "report_type": str, "report_filter": str}
         Returns:
 
         """
