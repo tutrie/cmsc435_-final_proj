@@ -41,14 +41,13 @@ def login():
 
         response = requests.get('http://18.217.8.244:8000/api/generated-reports/',
                                 auth=(data["username"], data["password"]), timeout=15)
-        print(response)
+
         if response.status_code == 200:
             return render_template('account.html', data=response.json())
 
-    return render_template('login.html', title='login')
+    return render_template('login.html', title='Login')
 
 
 @app.route("/logout", methods=["GET", "POST"])
 def logout():
-    return render_template('logout.html', title='logout')
-
+    return render_template('logout.html', title='Logout')
