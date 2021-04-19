@@ -38,15 +38,12 @@ def login():
                     "password": request.form['password']}
         else:
             data = request.data
-        response = requests.get('http://18.217.8.244:8000/api/generated-reports/',
-                                data=data, timeout=5)
 
-        print(response.status_code)
+        response = requests.get('http://18.217.8.244:8000/api/generated-reports/',
+                                auth=(data["username"], data["password"]), timeout=5)
+
         if response.status_code == 200:
-            response = json.loads(response)
-            # send data to the account display html
             return redirect(url_for('account'))
-            # return render_template('account.html', name=request.data['username'], data=response)
 
     return render_template('login.html', title='login')
 
@@ -54,3 +51,8 @@ def login():
 @app.route("/logout", methods=["GET", "POST"])
 def logout():
     return render_template('logout.html', title='logout')
+
+
+@app.route('/account')
+def account():
+    return render_template('account.html', data=request)
