@@ -90,7 +90,7 @@ def validate_sheet_names(sheet_names: list) -> bool:
 def validate_file_name(file_name: str) -> bool:
     """
     Args:
-        sheet_names: Names file to save data to.
+        file_name: Names file to save data to.
 
     Returns:
         True if file name matches regex; False otherwise.
@@ -99,7 +99,61 @@ def validate_file_name(file_name: str) -> bool:
     return match_obj is not None
 
 
-def valid_new_request(request: dict) -> bool:
+def valid_new_request(request: dict) -> tuple:
+    """
+    Args:
+        request: A dictionary containing the user inputted values with its
+            corresponding keys.
+
+    Returns:
+        True, "success" if all values of request are valid; False, reason why otherwise.
+    """
+    is_valid_cik = validate_cik(request['cik'])
+    is_valid_years = validate_years(request['years'])
+    is_valid_report_type = validate_report_type(request['report_type'])
+    is_valid_filter = validate_instructions(request['report_filter'])  # the key is report_filter
+
+    if not is_valid_cik:
+        return False, "Invalid CIK"
+
+    if not is_valid_years:
+        return False, "Invalid Years"
+
+    if not is_valid_report_type:
+        return False, "Invalid Report Type"
+
+    if not is_valid_filter:
+        return False, "Invalid Report Filter"
+
+    return True, "Success"
+
+
+def valid_raw_request(request: dict) -> tuple:
+    """
+    Args:
+        request: A dictionary containing the user inputted values with its
+            corresponding keys.
+
+    Returns:
+        True, "success" if all values of request are valid; False, reason why otherwise.
+    """
+    is_valid_cik = validate_cik(request['cik'])
+    is_valid_years = validate_years(request['years'])
+    is_valid_report_type = validate_report_type(request['report_type'])
+
+    if not is_valid_cik:
+        return False, "Invalid CIK"
+
+    if not is_valid_years:
+        return False, "Invalid Years"
+
+    if not is_valid_report_type:
+        return False, "Invalid Report Type"
+
+    return True, "Success"
+
+
+def valid_old_request(request: dict) -> tuple:
     """
     Args:
         request: A dictionary containing the user inputted values with its
@@ -108,53 +162,12 @@ def valid_new_request(request: dict) -> bool:
     Returns:
         True if all values of request are valid; False otherwise.
     """
-    guard1 = validate_cik(request['cik'])
-    guard2 = validate_years(request['years'])
-    guard3 = validate_report_type(request['report_type'])
-    guard5 = validate_instructions(request['report_filter'])  # the key is report_filter
+    is_valid_file_name = validate_file_name(request['file_name'])
 
-    if guard1 and guard2 and guard3 and guard5:
-        return True
-    else:
-        return False
+    if not is_valid_file_name:
+        return False, "Invalid File Name"
 
-
-def valid_raw_request(request: dict) -> bool:
-    """
-    Args:
-        request: A dictionary containing the user inputted values with its
-            corresponding keys.
-
-    Returns:
-        True if all values of request are valid; False otherwise.
-    """
-    guard1 = validate_cik(request['cik'])
-    guard2 = validate_years(request['years'])
-    guard3 = validate_report_type(request['report_type'])
-    # guard4 = validate_file_path(request['user_dir']) ToDo: future functionality
-
-    if guard1 and guard2 and guard3:
-        return True
-    else:
-        return False
-
-
-def valid_old_request(request: dict) -> bool:
-    """
-    Args:
-        request: A dictionary containing the user inputted values with its
-            corresponding keys.
-
-    Returns:
-        True if all values of request are valid; False otherwise.
-    """
-    guard1 = validate_file_name(request['file_name'])
-    # guard2 = validate_file_path(request['user_dir']) ToDo: Future
-
-    if guard1:
-        return True
-    else:
-        return False
+    return True, "Success"
 
 
 class Proxy:
@@ -162,14 +175,33 @@ class Proxy:
         self.query_engine = QueryEngine()
 
     def retrieve_raw_reports(self, request: dict) -> dict:
-        if valid_raw_request(request):
+        """
+
+        Args:
+            request:
+
+        Returns:
+
+        """
+        is_valid, msg = valid_raw_request(request)
+
+        if is_valid:
             return self.query_engine.retrieve_raw_reports(request)
 
-        # we can create more robust error messages in the validate methods
-        return {"error": "invalid request"}
+        return {"error": msg}
 
     def generate_new_report(self, request: dict) -> dict:
-        if valid_new_request(request):
+        """
+
+        Args:
+            request:
+
+        Returns:
+
+        """
+        is_valid, msg = valid_new_request(request)
+
+        if is_valid:
             return self.query_engine.generate_new_report(request)
 
-        return {"error": "invalid request"}
+        return {"error": msg}
