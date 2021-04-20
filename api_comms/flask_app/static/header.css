@@ -4,6 +4,10 @@
     font-family: sans-serif;
     background: #acacace7;
 }
+.menu {
+    border-bottom: 1px solid;
+    border-color: #fff
+}
 .menu ul {
     display: inline-flex;
     margin: 50px;

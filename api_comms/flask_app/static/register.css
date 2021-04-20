@@ -1,4 +1,35 @@
 .generated-report, .raw-report, .mainpage {
     color: #5a5a5a;
 }
-  
+.container {
+    height: 70%;
+    top: 23%;
+    left: 80px;
+    position: absolute;
+    color: #fff;
+    margin-left: 40px;
+}
+.form {
+position: relative;
+z-index: 1;
+background: #FFFFFF;
+max-width: 360px;
+margin: 0 auto 100px;
+padding: 45px;
+text-align: center;
+box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+input {
+width: 100%;
+padding: 12px 20px;
+margin: 8px 0;
+box-sizing: border-box;
+border-radius: 25px;
+}
+label {
+font-size: 25px;
+}
+a {
+/* text-decoration: none; */
+color: #f8e9b8
+}

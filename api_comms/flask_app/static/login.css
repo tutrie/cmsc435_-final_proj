@@ -1,13 +1,14 @@
 .generated-report, .raw-report, .mainpage {
   color: #5a5a5a;
 }
-
-.login-page {
-  width: 360px;
-  padding: 8% 0 0;
-  margin: auto;
+.content {
+  height: 70%;
+    top: 23%;
+    left: 80px;
+    position: absolute;
+    color: #fff;
+    margin-left: 40px;
 }
-
 .form {
   position: relative;
   z-index: 1;
@@ -18,13 +19,17 @@
   text-align: center;
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
 }
-.form input {
-  outline: 0;
-  background: #f2f2f2;
+input {
   width: 100%;
-  border: 0;
-  margin: 0 0 15px;
-  padding: 15px;
+  padding: 12px 20px;
+  margin: 8px 0;
   box-sizing: border-box;
-  font-size: 14px;
+  border-radius: 25px;
+}
+label {
+  font-size: 25px;
+}
+a {
+  /* text-decoration: none; */
+  color: #f8e9b8
 }
