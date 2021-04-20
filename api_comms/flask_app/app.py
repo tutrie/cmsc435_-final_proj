@@ -1,8 +1,6 @@
-import json
 import requests
 from flask import Flask, request
 from flask import redirect, url_for, render_template
-from flask_login import current_user, login_user, logout_user
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '\xe0\x8d?8z\xdd\x87i}\xfc\xaa\x91\x8f\n1\x1a\xe4\xb3\xa7\xbd5\xf8\x96\xdd'
