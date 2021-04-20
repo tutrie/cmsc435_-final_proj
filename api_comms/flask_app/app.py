@@ -51,3 +51,16 @@ def login():
 @app.route("/logout", methods=["GET", "POST"])
 def logout():
     return render_template('logout.html', title='Logout')
+
+
+@app.route('/account')
+def account():
+    return render_template('account.html', data=request)
+
+@app.route('/raw_report')
+def raw_report():
+    return render_template('raw_report.html', title='Raw Report')
+
+@app.route('/generated_report')
+def generated_report():
+    return render_template('generated_report.html', title='Generated Report')
