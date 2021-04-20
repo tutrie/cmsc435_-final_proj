@@ -16,14 +16,28 @@ def ten_k_workbook_to_dataframes_dict(excel_report: pyxl.Workbook, notes: dict) 
         data = sheet.values
         cols = next(data)  # Headers (First Row)
         data = list(data)  # Second until Last rows
-        df = pd.DataFrame(data, columns=cols).set_index('index', inplace=True)
-        dataframes_dict[sheet.title] = pd.DataFrame(data, columns=cols).set_index(keys='index').fillna(value=np.nan)
+        df = pd.DataFrame(data, columns=cols)
+        for loc in range(len(df['index'])):
+            df['index'][loc] = df['index'][loc].replace(' (loss)', '')
+        df = df.set_index('index').fillna(value=np.nan)
+        dup_count = 1
+        #print('converting to df_dict')
+        while True in df.index.duplicated():
+            #print('found a dup')
+            df.index = df.index.where(~df.index.duplicated(), df.index+' dp_'+str(dup_count))
+            dup_count += 1
 
-    return normalize_data(dataframes_dict, notes)
+
+#        dataframes_dict[sheet.title] = pd.DataFrame(data, columns=cols).set_index(keys='index').fillna(value=np.nan)
+        dataframes_dict[sheet.title] = df
+
+    return dataframes_dict
+    #return normalize_data(dataframes_dict, notes)
 
 def normalize_data(dataframes_dict: dict, notes: dict) -> dict:
     for index, (sheets, df) in enumerate(dataframes_dict.items()):
         if index == 0:
+            pass
 
 
 
