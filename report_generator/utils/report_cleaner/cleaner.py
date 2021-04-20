@@ -20,12 +20,11 @@ def ten_k_workbook_to_dataframes_dict(excel_report: pyxl.Workbook, notes: dict) 
         for loc in range(len(df['index'])):
             df['index'][loc] = df['index'][loc].replace(' (loss)', '')
             df['index'][loc] = df['index'][loc].replace(' (gain)', '')
+            df['index'][loc] = df['index'][loc].replace(' (benefit)', '')
 
         df = df.set_index('index').fillna(value=np.nan)
         dup_count = 1
-        #print('converting to df_dict')
         while True in df.index.duplicated():
-            #print('found a dup')
             df.index = df.index.where(~df.index.duplicated(), df.index+' dp_'+str(dup_count))
             dup_count += 1
 
