@@ -19,10 +19,12 @@ def ten_k_workbook_to_dataframes_dict(excel_report: pyxl.Workbook, notes: dict) 
         df = pd.DataFrame(data, columns=cols).set_index('index', inplace=True)
         dataframes_dict[sheet.title] = pd.DataFrame(data, columns=cols).set_index(keys='index').fillna(value=np.nan)
 
-    return dataframes_dict
+    return normalize_data(dataframes_dict, notes)
 
 def normalize_data(dataframes_dict: dict, notes: dict) -> dict:
-    pass
+    for index, (sheets, df) in enumerate(dataframes_dict.items()):
+        if index == 0:
+
 
 
 
