@@ -2,6 +2,7 @@ import json
 import requests
 from flask import Flask, request
 from flask import redirect, url_for, render_template
+from flask_login import current_user, login_user, logout_user
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '\xe0\x8d?8z\xdd\x87i}\xfc\xaa\x91\x8f\n1\x1a\xe4\xb3\xa7\xbd5\xf8\x96\xdd'
@@ -43,7 +44,8 @@ def login():
                                 auth=(data["username"], data["password"]), timeout=15)
 
         if response.status_code == 200:
-            return render_template('account.html', data=response.json())
+            return redirect(url_for('account'))
+            # return render_template('account.html', data=response.json())
 
     return render_template('login.html', title='Login')
 
@@ -55,11 +57,13 @@ def logout():
 
 @app.route('/account')
 def account():
-    return render_template('account.html', data=request)
+    return render_template('account.html', title='Account')
+
 
 @app.route('/raw_report')
 def raw_report():
     return render_template('raw_report.html', title='Raw Report')
+
 
 @app.route('/generated_report')
 def generated_report():
