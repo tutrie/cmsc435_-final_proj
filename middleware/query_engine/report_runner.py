@@ -251,7 +251,7 @@ def save_report_locally(report: dict) -> str:
     output_file = "{}{}{}{}".format(directory, output_folder,
                                     file_name, file_extension)
 
-    save_as[file_extension](report.json, output_file)
+    save_as[file_extension](report, output_file)
 
     return output_file
 

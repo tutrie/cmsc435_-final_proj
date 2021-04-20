@@ -12,11 +12,13 @@ class RawReport(models.Model):
     company = models.ForeignKey(Company, on_delete=models.deletion.CASCADE)
     report_date = models.DateField()
     report_type = models.CharField(max_length=4)
+    parsed_json = models.JSONField(blank=True, null=True)
     excel_url = models.URLField()
 
-    # Overwrite save method
+    # Overwrite default save method
     def save(self, *args, **kwargs):
-        if self.report_type != '10-Q' and self.report_type != '10-K':
+        report_type_is_valid = self.report_type == '10-Q' or self.report_type == '10-K'
+        if not report_type_is_valid:
             raise ValidationError('Report Type not Valid.')
 
         super().save(*args, **kwargs)
@@ -44,11 +46,15 @@ class RawReportSerializer(serializers.ModelSerializer):
             'excel_url'
         )
 
+    # Overwrite how the company field is serialized
     def to_representation(self, instance):
         self.fields['company'] = CompanySerializer()
         return super(RawReportSerializer, self).to_representation(instance)
 
 
 class RawReportViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to create and retrieve raw reports.
+    """
     queryset = RawReport.objects.all()
     serializer_class = RawReportSerializer
