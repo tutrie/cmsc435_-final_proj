@@ -56,6 +56,7 @@ def normalize_data(dataframes_dict: dict, notes: dict) -> dict:
                 dataframes_dict[sheet_name] = df.T
     return dataframes_dict
 
+
 def get_multiplier(note: str) -> int:
     if 'Thousands' in note:
         return 1000
