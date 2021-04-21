@@ -7,8 +7,7 @@ from rest_framework import serializers
 from rest_framework.decorators import action
 
 from company_schema.models import Company, CompanySerializer
-from report_schema.proxy import strip_request, valid_raw_request
-from . import utils
+from report_schema.proxy import Proxy
 
 
 class RawReport(models.Model):
@@ -65,39 +64,11 @@ class RawReportViewSet(viewsets.ModelViewSet):
     @action(methods=['GET'], detail=False, url_path='get_raw_reports',
             url_name='get_raw_reports')
     def get_raw_reports(self, request) -> Response:
+        response, status_code = Proxy().retrieve_raw_reports(request)
 
-        request = strip_request(request)
-        is_valid, msg_dict = valid_raw_request(request)
-        if not is_valid:
+        if status_code == 400:
             return Response(
-                json.dumps(msg_dict), status=status.HTTP_400_INVALID
+                json.dumps(response), status=status.HTTP_400_INVALID
             )
 
-        response = {
-            'company_name': request['name'],
-            'company_cik': request['cik'],
-            'report_type': request['report_type'],
-            'reports': {
-                '<report_year>': '<report_url>',
-            },
-            'notes': [
-                'Additional notes go here!'
-            ]
-        }
-
-        raw_reports_in_db = utils.raw_reports_from_db(request)
-
-        if not raw_reports_in_db:
-            company_model = Company.objects.create(
-                name=request['company'], cik=request['cik']
-            )
-
-            response['reports'] = utils.download_and_create_reports(
-                request, company_model
-            )
-        else:
-            for report_model in raw_reports_from_db:
-                year_str = str(report_model.report_date.year)
-                response['reports'][year_str] = report_model.excel_url
-
-        return Response(response, status=status.HTTP_200_OK)
+        return Response(json.dumps(response), status=status.HTTP_200_OK)

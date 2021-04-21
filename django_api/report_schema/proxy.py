@@ -1,4 +1,4 @@
-from middleware.query_engine.query_engine import QueryEngine
+from raw_report.utils import retrieve_raw_reports_response
 from Typing import List
 import os
 import re
@@ -137,7 +137,8 @@ def validate_new_report_request(request: dict) -> tuple:
             corresponding keys.
 
     Returns:
-        True, "success" if all values of request are valid; False, "reason" otherwise.
+        True, "success" if all values of request are valid; False, "reason"
+        otherwise.
     """
 
     if not is_valid_cik(request['cik']):
@@ -162,7 +163,8 @@ def validate_raw_report_request(request: dict) -> tuple:
             corresponding keys.
 
     Returns:
-        True, "success" if all values of request are valid; False, "reason" otherwise.
+        True, "success" if all values of request are valid; False, "reason"
+        otherwise.
     """
     if not is_valid_cik(request['cik']):
         return False, "Invalid CIK"
@@ -183,7 +185,8 @@ def validate_old_request(request: dict) -> tuple:
             corresponding keys.
 
     Returns:
-        True, "success" if all values of request are valid; False, "reason" otherwise.
+        True, "success" if all values of request are valid; False, "reason"
+        otherwise.
     """
 
     if not is_valid_file_name(request['file_name']):
@@ -194,7 +197,7 @@ def validate_old_request(request: dict) -> tuple:
 
 class Proxy:
     def __init__(self):
-        self.query_engine = QueryEngine()
+        pass
 
     def retrieve_raw_reports(self, request: dict) -> dict:
         """
@@ -203,27 +206,35 @@ class Proxy:
             request:
                 {"cik": str, "years": list(str), "report_type": str}
         Returns:
-            ToDo
+            A tuple of a dictionary (response) that is either an error message
+            or a valid reponse, along with a status code, 400 or 200
+            repectively.
         """
+        request = strip_request(request)
         is_valid, msg = validate_raw_report_request(request)
 
         if is_valid:
-            return self.query_engine.retrieve_raw_reports(request)
+            return retrieve_raw_reports_response(request), 200
 
-        return {"error": msg}
+        return {"error": msg}, 400
 
     def generate_new_report(self, request: dict) -> dict:
         """
 
         Args:
-            request:
-                {"cik": str, "years": list(str), "report_type": str, "report_filter": str}
+            request: {
+                        "cik": str,
+                        "years": list(str),
+                        "report_type": str,
+                        "report_filter": str
+                    }
         Returns:
             ToDo
         """
         is_valid, msg = validate_new_report_request(request)
 
         if is_valid:
-            return self.query_engine.generate_new_report(request)
+            return {'msg': msg}
+            # return self.query_engine.generate_new_report(request)
 
         return {"error": msg}

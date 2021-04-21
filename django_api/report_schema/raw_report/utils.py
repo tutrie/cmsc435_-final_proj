@@ -17,7 +17,8 @@ def raw_reports_from_db(request: dict) -> Queryset:
         years of reports wanted, and the report type.
 
     Returns:
-        Django Queryset of all reports in database that match user input values.
+        Django Queryset of all reports in database that match user input
+        values.
     """
     company_reports_in_db = RawReport.objects.filter(
         company__cik=request['cik'],
@@ -108,3 +109,37 @@ def download_and_create_reports(request: dict, company_model: Company) -> dict:
                              )
 
     return edgar_scraper._excel_urls[request['report_type']]
+
+
+def retrieve_raw_reports_response(request: dict) -> dict:
+    """
+    Args:
+        request: A request from the front-end with user inputted company, CIK,
+            years of reports wanted, and the report type.
+
+    Returns:
+        A response dictionary containing the urls for the raw reports.
+    """
+    response = {
+        'company_name': request['name'],
+        'company_cik': request['cik'],
+        'report_type': request['report_type'],
+        'reports': {}
+    }
+
+    raw_reports_in_db = raw_reports_from_db(request)
+
+    if not raw_reports_in_db:
+        company_model = Company.objects.create(
+            name=request['company'], cik=request['cik']
+        )
+
+        response['reports'] = download_and_create_reports(
+            request, company_model
+        )
+    else:
+        for report_model in raw_reports_from_db:
+            year_str = str(report_model.report_date.year)
+            response['reports'][year_str] = report_model.excel_url
+
+    return response
