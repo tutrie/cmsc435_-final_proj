@@ -1,5 +1,29 @@
 # User Documentation
 
+### Setting up and Running the Django Docker Container
+####NOTE: You can skip this step if running the application in production mode
+Start Docker
+```bash
+sudo service docker start
+```
+Build the Docker container for django
+```bash
+docker-compose up --build -d
+```
+Run the Docker container
+```bash
+docker-compose up -d
+```
+Super user login for the admin panel is
+
+username: admin
+
+password: admin
+
+If you are having trouble logging in with these credentials run
+```bash
+docker-compose run web python3 manage.py createsuperuser
+```
 ## Running the Application
 
 
@@ -31,7 +55,7 @@ Admin panel: http://localhost:8000/admin/
 API: http://localhost:8000/api/
 
 ### Frontend Setup
-
+Put what we have to do here for the UI/services
 
 ### Accessing Cloud Instance
 Download the scraper.pem security key
@@ -41,19 +65,14 @@ SSH into the instance
 ssh -i "scraper.pem" ec2-user@ec2-13-58-133-36.us-east-2.compute.amazonaws.com
 ```
 
-### Setting up and Running the Django Docker Container
-```bash
-sudo service docker start
-```
+## Running Tests
+### Django tests
+### Query Engine tests
 
-Build the docker container for django
-```bash
-docker-compose up --build -d
-```
-If that fails, try clearing out the docker cache
-```bash
-docker system prune -a
-```
+
+## System Architecture
+### Flask Frontend
+### Django Backend API
 
 
 # Contributions
