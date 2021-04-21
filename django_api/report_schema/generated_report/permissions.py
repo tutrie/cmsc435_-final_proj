@@ -3,6 +3,7 @@ from rest_framework.request import Request
 from django.db.models import Model
 from rest_framework import views
 
+
 class IsOwner(permissions.BasePermission):
     """Custom permission to only allow owners of an object to edit it.
     

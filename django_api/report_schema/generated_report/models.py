@@ -75,7 +75,8 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         This function is called when a user makes a POST request to the /api/generated_reports/ endpoint.
 
         Args:
-            request (Request): Accepts a request object with a json body that has the fields defined on the object model.
+            request (Request): Accepts a request object with a json body
+            that has the fields defined on the object model.
 
 
         Returns:
@@ -125,7 +126,8 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         The user should include the generated report's pk in the kwargs of the request.
 
         Args:
-            request (Request): Accepts a request object with a json body that has the fields defined on the object model.
+            request (Request): Accepts a request object with a json body that 
+            has the fields defined on the object model.
 
 
         Returns:

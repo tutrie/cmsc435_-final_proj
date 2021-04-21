@@ -130,7 +130,6 @@ class RawReportTests(TestCase):
             content_type='application/json'
         )
 
-
         self.assertEqual(response_1.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_2.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_3.status_code, status.HTTP_400_BAD_REQUEST)
@@ -206,7 +205,8 @@ class RawReportTests(TestCase):
     def test_delete_existing_raw_report(self):
         client = Client()
         google = Company.objects.create(name='Google', cik='123456')
-        report_to_delete = RawReport.objects.create(company=google, report_date='2020-05-22', excel_url='Http://Google.com')
+        report_to_delete = RawReport.objects.create(company=google, report_date='2020-05-22',
+                                                                excel_url='Http://Google.com')
 
         response = client.delete(
             reverse('raw-reports-detail', kwargs={'pk': report_to_delete.pk})

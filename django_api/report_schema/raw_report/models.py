@@ -1,11 +1,8 @@
 from django.db import models
-from django.core.exceptions import ValidationError
 from django.contrib import admin
 from django.apps import AppConfig
 from rest_framework import viewsets
 from rest_framework import serializers
-from rest_framework.response import Response
-from rest_framework.request import Request
 
 from company_schema.models import Company, CompanySerializer
 
