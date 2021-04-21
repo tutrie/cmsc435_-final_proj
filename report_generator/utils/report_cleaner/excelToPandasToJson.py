@@ -8,3 +8,6 @@ class ConvertCleanSave:
         self.excel_report = pyxl.load_workbook(file)  # the original workbook in case needed in future
         self.cleaned_excel_report, self.notes = ten_k_excel_cleaning(pyxl.load_workbook(file))  # pyxl Workbook object
         self.pandas_dict = ten_k_workbook_to_dataframes_dict(self.cleaned_excel_report, self.notes)
+
+    def convert_to_json(self):
+        return dataframes_dict_to_json_dict(self.pandas_dict)

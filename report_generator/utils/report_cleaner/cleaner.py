@@ -18,14 +18,12 @@ def ten_k_workbook_to_dataframes_dict(excel_report: pyxl.Workbook, notes: dict) 
         data = list(data)  # Second until Last rows
         df = pd.DataFrame(data, columns=cols)
         for loc in range(len(df['index'])):
-            df['index'][loc] = df['index'][loc].replace(' (loss)', '')
-            df['index'][loc] = df['index'][loc].replace(' (gain)', '')
-            df['index'][loc] = df['index'][loc].replace(' (benefit)', '')
-            df['index'][loc] = df['index'][loc].replace(' (losses)', '')
-            df['index'][loc] = df['index'][loc].replace(' (gains)', '')
-            df['index'][loc] = df['index'][loc].replace(' (expense)', '')
-
-
+            df.loc[loc, 'index'] = str(df['index'][loc].replace(' (loss)', ''))
+            df.loc[loc, 'index'] = str(df['index'][loc].replace(' (gain)', ''))
+            df.loc[loc, 'index'] = str(df['index'][loc].replace(' (benefit)', ''))
+            df.loc[loc, 'index'] = str(df['index'][loc].replace(' (losses)', ''))
+            df.loc[loc, 'index'] = str(df['index'][loc].replace(' (gains)', ''))
+            df.loc[loc, 'index'] = str(df['index'][loc].replace(' (expense)', ''))
         df = df.set_index('index').fillna(value=np.nan)
         dup_count = 1
         while True in df.index.duplicated():
