@@ -1,10 +1,10 @@
-from py_edgar_lite.edgar.company import Company as EdgarScraper
-from report_generator.utils.object_conversions import (
+from report_schema.raw_report.EdgarScraper import EdgarScraper
+from report_schema.raw_report.models import RawReport, Company
+from report_schema.raw_report.object_conversions import (
     dataframes_dict_to_json_dict,
     workbook_to_dataframes_dict
 )
 from django.db.models.query import QuerySet
-from models import RawReport, Company
 from openpyxl import load_workbook
 import datetime
 import os

@@ -7,7 +7,6 @@ from rest_framework import serializers
 from rest_framework.decorators import action
 
 from company_schema.models import Company, CompanySerializer
-from report_schema.proxy import Proxy
 
 
 class RawReport(models.Model):
@@ -63,7 +62,9 @@ class RawReportViewSet(viewsets.ModelViewSet):
 
     @action(methods=['GET'], detail=False, url_path='get_raw_reports',
             url_name='get_raw_reports')
-    def get_raw_reports(self, request) -> Response:
+    def get_raw_reports(self, request):
+        from report_schema.proxy import Proxy
+        proxy = Proxy()
         response, status_code = Proxy().retrieve_raw_reports(request)
 
         if status_code == 400:

@@ -1,5 +1,7 @@
-from report_schema.raw_report.utils import retrieve_raw_reports_response
-from Typing import List
+from report_schema.raw_report.utils import (
+    retrieve_raw_reports_response
+)
+from typing import List
 import os
 import re
 
