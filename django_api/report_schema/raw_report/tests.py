@@ -206,7 +206,7 @@ class RawReportTests(TestCase):
         client = Client()
         google = Company.objects.create(name='Google', cik='123456')
         report_to_delete = RawReport.objects.create(company=google, report_date='2020-05-22',
-                        excel_url='Http://Google.com')
+                                                                excel_url='Http://Google.com')
 
         response = client.delete(
             reverse('raw-reports-detail', kwargs={'pk': report_to_delete.pk})
