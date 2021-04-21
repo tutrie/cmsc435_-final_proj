@@ -4,13 +4,12 @@ from report_schema.raw_report.object_conversions import (
     dataframes_dict_to_json_dict,
     workbook_to_dataframes_dict
 )
-from django.db.models.query import QuerySet
 from openpyxl import load_workbook
 import datetime
 import os
 
 
-def raw_reports_from_db(request: dict) -> Queryset:
+def raw_reports_from_db(request: dict) -> object:
     """
     Args:
         request: A request from the front-end with user inputted company, CIK,

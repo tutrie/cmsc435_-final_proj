@@ -8,26 +8,6 @@ ToDo: Explain the file and what it will be used for
 """
 
 
-def strip_request(request: dict) -> dict:
-    """
-    Args:
-        request: A request dictionary sent from the front-end.
-
-    Returns:
-        The same request passed in but with its values cleaned up in order to
-        be used for further processing.
-    """
-    cleaned = {}
-    for key, val in request.items():
-        if isinstance(val, List[str]):
-            cleaned[key] = [item.strip() for item in val]
-        elif isinstance(val, str):
-            cleaned[key] = item.strip()
-        else:
-            cleaned[key] = item
-    return cleaned
-
-
 def is_valid_cik(cik: str) -> bool:
     """
     Args:

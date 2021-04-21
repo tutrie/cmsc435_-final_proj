@@ -2,6 +2,7 @@ from report_schema.raw_report.utils import (
     retrieve_raw_reports_response
 )
 from typing import List
+import json
 import os
 import re
 
@@ -24,9 +25,9 @@ def strip_request(request: dict) -> dict:
         if isinstance(val, List[str]):
             cleaned[key] = [item.strip() for item in val]
         elif isinstance(val, str):
-            cleaned[key] = item.strip()
+            cleaned[key] = val.strip()
         else:
-            cleaned[key] = item
+            cleaned[key] = val
     return cleaned
 
 
@@ -216,9 +217,9 @@ class Proxy:
         is_valid, msg = validate_raw_report_request(request)
 
         if is_valid:
-            return retrieve_raw_reports_response(request), 200
+            return json.dumps(retrieve_raw_reports_response(request)), 200
 
-        return {"error": msg}, 400
+        return json.dumps({"error": msg}), 400
 
     def generate_new_report(self, request: dict) -> dict:
         """
@@ -236,7 +237,7 @@ class Proxy:
         is_valid, msg = validate_new_report_request(request)
 
         if is_valid:
-            return {'msg': msg}
+            return json.dumps({'msg': msg}), 200
             # return self.query_engine.generate_new_report(request)
 
-        return {"error": msg}
+        return json.dumps({"error": msg}), 400

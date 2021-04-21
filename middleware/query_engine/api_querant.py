@@ -1,7 +1,6 @@
 from py_edgar_lite.edgar.company import Company
 from datetime import datetime
 import requests
-import json
 
 base_url = "http://127.0.0.1:8000/api/"
 companies_url = base_url + "companies"
@@ -74,7 +73,7 @@ def get_raw_reports_in_db(request: dict) -> dict:
             request.post(raw_report_url, payload=payload)
             output['report_date'][str(year)] = excel_url
         else:
-            output['notes'].append(f'Report could not be generated for
+            output['notes'].append(f'Report could not be generated for \
                                    year {year}!')
 
     return output
@@ -108,7 +107,7 @@ def get_raw_reports_from_edgar(request: dict) -> dict:
     )
 
     if not report_urls:
-        output['notes'].append(f"Couldn't get excel reports from company!")
+        output['notes'].append("Couldn't get excel reports from company!")
         return output
 
     # Add report urls to output if requested by user and to database.
@@ -160,7 +159,7 @@ def retrieve_raw_reports(request: dict) -> dict:
             ]
         }
     """
-    if company_in_db(request['company']['cik']):
+    if is_company_in_db(request['company']['cik']):
         response = get_raw_reports_in_db(request)
     else:
         response = get_raw_reports_from_edgar(request)

@@ -1,9 +1,10 @@
-from django.db import models
 from django.core.exceptions import ValidationError
-from django.contrib import admin
 from django.apps import AppConfig
-from rest_framework import viewsets
-from rest_framework import serializers
+from django.contrib import admin
+from django.db import models
+
+from rest_framework import viewsets, serializers, status
+from rest_framework.response import Response
 from rest_framework.decorators import action
 
 from company_schema.models import Company, CompanySerializer
@@ -64,12 +65,11 @@ class RawReportViewSet(viewsets.ModelViewSet):
             url_name='get_raw_reports')
     def get_raw_reports(self, request):
         from report_schema.proxy import Proxy
-        proxy = Proxy()
         response, status_code = Proxy().retrieve_raw_reports(request)
 
         if status_code == 400:
             return Response(
-                json.dumps(response), status=status.HTTP_400_INVALID
+                response, status=status.HTTP_400_INVALID
             )
 
-        return Response(json.dumps(response), status=status.HTTP_200_OK)
+        return Response(response, status=status.HTTP_200_OK)
