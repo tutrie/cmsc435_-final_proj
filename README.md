@@ -67,8 +67,11 @@ ssh -i "scraper.pem" ec2-user@ec2-13-58-133-36.us-east-2.compute.amazonaws.com
 
 ## Running Tests
 ### Django tests
+```bash
+cd django_api
+python manage.py test
+```
 ### Query Engine tests
-
 
 ## System Architecture
 ### Flask Frontend
