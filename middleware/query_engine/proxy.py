@@ -1,5 +1,4 @@
 from middleware.query_engine.query_engine import QueryEngine
-from Typing import List
 import os
 import re
 

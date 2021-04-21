@@ -5,9 +5,8 @@ from django.contrib import admin
 from rest_framework import viewsets, serializers, permissions, status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
-from rest_framework.decorators import action
-
 from report_schema.generated_report.permissions import IsOwner
+
 
 class GeneratedReport(models.Model):
     name = models.CharField(max_length=100)
@@ -47,9 +46,10 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
     """
     queryset = GeneratedReport.objects.all()
     serializer_class = GeneratedReportSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwner]  # API user must authenticate with a registered user
+    # API user must authenticate with a registered user
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    
+
     # Overwrite the create method that is called for a POST request
     def create(self, request, *args, **kwargs):
         user = request.user
@@ -62,7 +62,7 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             return Response(report_serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(report_serializer._errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
     # Overwrite the list method that is called for a GET request
     def list(self, request, *args, **kwargs):
         user = request.user
@@ -72,22 +72,22 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             reports_for_user = GeneratedReport.objects.filter(created_by=user)
 
         filtered_queryset = self.filter_queryset(reports_for_user)
-        
+
         # Take the filtered queryset and serialize it so we can send it in a response.
         serializer = self.get_serializer(filtered_queryset, many=True)
         return Response(serializer.data)
-    
+
     # Overwrite the update method for what a PUT request is made
     def update(self, request, *args, **kwargs):
         user = request.user
         request.data['created_by'] = user.id
 
         report_to_update = self.get_object()
-        
-        report_serializer = GeneratedReportSerializer(report_to_update, data=request.data)
+
+        report_serializer = GeneratedReportSerializer(
+            report_to_update, data=request.data)
         if report_serializer.is_valid():
             report_serializer.save()
             return Response(report_serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(report_serializer._errors, status=status.HTTP_400_BAD_REQUEST)
-
