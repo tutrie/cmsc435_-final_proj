@@ -35,12 +35,27 @@ def ten_k_workbook_to_dataframes_dict(excel_report: pyxl.Workbook, notes: dict) 
     return dataframes_dict
     #return normalize_data(dataframes_dict, notes)
 
+
 def normalize_data(dataframes_dict: dict, notes: dict) -> dict:
-    for index, (sheets, df) in enumerate(dataframes_dict.items()):
-        if index == 0:
-            pass
+    for index, (sheet_name, frame) in enumerate(dataframes_dict.items()):
+        if get_multiplier(notes[sheet_name]) > 1:
+            multiplier = get_multiplier(notes[sheet_name])
+            df = frame.T
+            if index == 0:
+                df['Entity Public Float'] = df['Entity Public Float']*multiplier
+                dataframes_dict[sheet_name] = df.T
+            else:
+                for row_name in df.columns:
+                    row_to_skip = ('(in shares)' in row_name or '(in dollars per share)' in row_name)
+                    if not row_to_skip:
+                        df[row_name] = df[row_name]*multiplier
+                dataframes_dict[sheet_name] = df.T
 
 
+def get_multiplier(note: str) -> int:
+    if 'Thousands' in note:
+        return 1000
+    return 1
 
 
 def ten_k_excel_cleaning(excel_report: pyxl.Workbook) -> pyxl.Workbook:
