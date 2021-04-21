@@ -21,6 +21,10 @@ def ten_k_workbook_to_dataframes_dict(excel_report: pyxl.Workbook, notes: dict) 
             df['index'][loc] = df['index'][loc].replace(' (loss)', '')
             df['index'][loc] = df['index'][loc].replace(' (gain)', '')
             df['index'][loc] = df['index'][loc].replace(' (benefit)', '')
+            df['index'][loc] = df['index'][loc].replace(' (losses)', '')
+            df['index'][loc] = df['index'][loc].replace(' (gains)', '')
+            df['index'][loc] = df['index'][loc].replace(' (expense)', '')
+
 
         df = df.set_index('index').fillna(value=np.nan)
         dup_count = 1
@@ -55,6 +59,10 @@ def normalize_data(dataframes_dict: dict, notes: dict) -> dict:
 def get_multiplier(note: str) -> int:
     if 'Thousands' in note:
         return 1000
+    if 'Millions' in note:
+        return 1000000
+    if 'Billions' in note:
+        return 1000000000
     return 1
 
 
