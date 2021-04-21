@@ -4,6 +4,7 @@ from report_schema.raw_report.object_conversions import (
     dataframes_dict_to_json_dict,
     workbook_to_dataframes_dict
 )
+from os.path import dirname, realpath
 from openpyxl import load_workbook
 import datetime
 import os
@@ -21,8 +22,7 @@ def raw_reports_from_db(request: dict) -> object:
     """
     company_reports_in_db = RawReport.objects.filter(
         company__cik=request['cik'],
-        report_date__in=request['years'],
-        report_type=request['report_type']
+        report_date__in=request['years']
     )
     return company_reports_in_db
 
@@ -39,7 +39,9 @@ def create_raw_report_jsons_from_workbooks(request: dict) -> dict:
     """
     json_dict_by_year = {}
     for year in request['years']:
-        wb = load_workbook(f'10K_{year}_report_{request["company"]}.xlsx')
+        dir_name = dirname(realpath(__file__)) + '/downloaded_reports/'
+        filename = f'10K_{year}_report_{request["company"]}.xlsx'
+        wb = load_workbook(f'{dir_name}{filename}')
 
         df_dict = workbook_to_dataframes_dict(wb)
         json_dict_by_year[year] = dataframes_dict_to_json_dict(df_dict)
@@ -76,7 +78,6 @@ def create_raw_report_models(request, company_model, jsons, urls) -> None:
             company=company_model,
             # Edgar Scaper only able to get year of report, not full date.
             report_date=datetime.date(int(year), 1, 1),
-            report_type=request['report_type'],
             parsed_json=json,
             excel_url=urls[year]
         )
@@ -104,10 +105,10 @@ def download_and_create_reports(request: dict, company_model: Company) -> dict:
     jsons_by_year = create_raw_report_jsons_from_workbooks(request)
 
     create_raw_report_models(request, company_model, jsons_by_year,
-                             edgar_scraper._excel_urls[request['report_type']]
+                             edgar_scraper._excel_urls[request['10-K']]
                              )
 
-    return edgar_scraper._excel_urls[request['report_type']]
+    return edgar_scraper._excel_urls[request['10-K']]
 
 
 def retrieve_raw_reports_response(request: dict) -> dict:
@@ -122,7 +123,6 @@ def retrieve_raw_reports_response(request: dict) -> dict:
     response = {
         'company_name': request['name'],
         'company_cik': request['cik'],
-        'report_type': request['report_type'],
         'reports': {}
     }
 
