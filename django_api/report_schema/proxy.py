@@ -1,4 +1,4 @@
-from raw_report.utils import retrieve_raw_reports_response
+from report_schema.raw_report.utils import retrieve_raw_reports_response
 from Typing import List
 import os
 import re
