@@ -176,8 +176,10 @@ class Company:
             url_lst.sort(key=lambda x: x[1])
             url_lst[:] = list(map(lambda x: x[0], url_lst))
 
-    def download_file(self, url) -> bool:
+    def download_file(self, url: str) -> bool:
         """
+        Downloads the file from the given url.
+
         Args:
             url: The downloading url of the file wants to be downloaded.
 
@@ -188,19 +190,28 @@ class Company:
         if req is None:
             req = self._get(url[:-1])
 
-        if req is not None:
+        if req:
             file = open('report_' + '_'.join(self.name.split(' ')) + '.xlsx', 'wb')
             file.write(req.content)
             file.close()
             return True
         return False
 
-    def download_10k_reports(self, prior_to="", no_of_entries=100):
-        self.get_company_excel_reports_from("10-K", prior_to=prior_to, no_of_entries=no_of_entries)
-        ten_k_dict = self._excel_urls['10-K']
+    def download_10k_reports(self, prior_to: str = "", ownership: str = "include",
+                             no_of_entries: int = 100) -> None:
+        """
+        Downloads the 10-K excel reports of the current company.
 
-        for year in ten_k_dict.keys():
-            url = ten_k_dict[year][0]
+        Args:
+            prior_to: Time prior which documents are to be retrieved. If not specified will return all documents.
+            ownership: Defaults to include. Options are include, exclude, only.
+            no_of_entries: Number of reports can be returned. Defaults to 100 and the maximum is 100 as well.
+        """
+        self.get_company_excel_reports_from("10-K", prior_to, ownership, no_of_entries)
+        dict_10k = self._excel_urls['10-K']
+
+        for year in dict_10k.keys():
+            url = dict_10k[year][0]
             req = self._get(url)
 
             if req is None:
@@ -211,18 +222,26 @@ class Company:
                 file = open(f'10K_{year}_report_{company_name}.xlsx', 'wb')
                 file.write(req.content)
                 file.close()
-        return True
 
-    def download_10q_reports(self, prior_to="", no_of_entries=100):
-        self.get_company_excel_reports_from("10-Q", prior_to=prior_to, no_of_entries=no_of_entries)
-        ten_q_dict = self._excel_urls['10-Q']
+    def download_10q_reports(self, prior_to: str = "", ownership: str = "include",
+                             no_of_entries: int = 100) -> None:
+        """
+        Downloads the 10-Q excel reports of the current company.
 
-        if not ten_q_dict:
+        Args:
+            prior_to: Time prior which documents are to be retrieved. If not specified will return all documents.
+            ownership: Defaults to include. Options are include, exclude, only.
+            no_of_entries: Number of reports can be returned. Defaults to 100 and the maximum is 100 as well.
+        """
+        self.get_company_excel_reports_from("10-Q", prior_to, ownership, no_of_entries)
+        dict_10q = self._excel_urls['10-Q']
+
+        if not dict_10q:
             self.get_company_excel_reports_from("10-Q")
 
-        for year in ten_q_dict.keys():
-            for quarter in range(0, len(ten_q_dict[year])):
-                url = ten_q_dict[year][quarter]
+        for year in dict_10q.keys():
+            for quarter in range(0, len(dict_10q[year])):
+                url = dict_10q[year][quarter]
                 req = self._get(url)
 
                 if req is None:
@@ -233,11 +252,14 @@ class Company:
                     file = open(f'10Q_{year}_{quarter + 1}_report_{company_name}.xlsx', 'wb')
                     file.write(req.content)
                     file.close()
-        return True
 
-    def get_10k_year(self, year) -> str:
+    def get_10k_year(self, year: str) -> str:
         """
-        Return the url of specified year's 10-K excel report.
+        Args:
+            year: The year of the report url that wants to be retrieved.
+
+        Returns:
+            The url of specified year's 10-K excel report.
         """
         dict_10k = self._excel_urls['10-K']
         if not dict_10k:
@@ -249,9 +271,14 @@ class Company:
             return url_list[0]
         return None
 
-    def get_10q_year_quarter(self, year, quarter) -> str:
+    def get_10q_year_quarter(self, year: str, quarter: str) -> str:
         """
-        Return the url of specified year and quarter's 10-Q excel report.
+        Args:
+            year: The year of the report url that wants to be retrieved.
+            quarter: The quarter of the report url that wants to be retrieved.
+
+        Returns:
+            The url of specified year and quarter's 10-K excel report.
         """
         try:
             quarter = int(quarter)
