@@ -13,7 +13,6 @@ class RawReportTests(TestCase):
         RawReport.objects.create(
             company=Company.objects.create(name='Google', cik='123456'),
             report_date=date.today(),
-            report_type='10-Q',
             excel_url='Google.com'
         )
 
@@ -21,7 +20,7 @@ class RawReportTests(TestCase):
 
     def test_can_retrieve_raw_report(self):
         company = Company.objects.create(name='Google', cik='123456')
-        report = RawReport(company=company, report_date=date.today(), report_type='10-Q', excel_url='Google')
+        report = RawReport(company=company, report_date=date.today(), excel_url='Google')
         report.save()
 
         retrieved_report = RawReport.objects.get(company=company)
@@ -30,7 +29,7 @@ class RawReportTests(TestCase):
 
     def test_can_delete_raw_report(self):
         company = Company.objects.create(name='Google', cik='123456')
-        report = RawReport(company=company, report_date=date.today(), report_type='10-Q', excel_url='Google')
+        report = RawReport(company=company, report_date=date.today(), excel_url='Google')
         report.save()
 
         RawReport.objects.get(company=company).delete()
@@ -42,7 +41,6 @@ class RawReportTests(TestCase):
         report_to_get = RawReport.objects.create(
             company=Company.objects.create(name='Google', cik='123456'),
             report_date=date.today(),
-            report_type='10-Q',
             excel_url='Google.com'
         )
 
@@ -61,7 +59,6 @@ class RawReportTests(TestCase):
         RawReport.objects.create(
             company=Company.objects.create(name='Google', cik='123456'),
             report_date=date.today(),
-            report_type='10-Q',
             excel_url='Google.com'
         )
 
@@ -77,7 +74,6 @@ class RawReportTests(TestCase):
         payload = {
             'company': 'Google',
             'report_date': '2020-05-22',
-            'report_type': '10-Q',
             'excel_url': 'https://www.google.com/'
         }
 
@@ -95,32 +91,21 @@ class RawReportTests(TestCase):
         payload_1 = {
             'company': 'Google',
             'report_date': '2020-13-22',  # A non existent date
-            'report_type': '10-Q',
             'excel_url': 'https://www.google.com/'
         }
         payload_2 = {
             'company': 'Microsoft',  # A non existent company
             'report_date': '2020-05-22',
-            'report_type': '10-Q',
             'excel_url': 'https://www.google.com/'
         }
         payload_3 = {
             'company': 'Google',
             'report_date': '2020-05-22',
-            'report_type': '10-Q',
             'excel_url': 'google.com'  # Incorrectly formatted excel_url
         }
         payload_4 = {
             'company': ['Google'],  # Wrong type
             'report_date': '2020-05-22',
-            'report_type': '10-Q',
-            'excel_url': 'https://www.google.com/'
-        }
-
-        payload_5 = {
-            'company': ['Google'],
-            'report_date': '2020-05-22',
-            'report_type': '10-J',  # Invalid report_type
             'excel_url': 'https://www.google.com/'
         }
 
@@ -144,37 +129,28 @@ class RawReportTests(TestCase):
             data=json.dumps(payload_4),
             content_type='application/json'
         )
-        response_5 = client.post(
-            reverse('raw-reports-list'),
-            data=json.dumps(payload_5),
-            content_type='application/json'
-        )
+
 
         self.assertEqual(response_1.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_2.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_3.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_4.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response_5.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_put_valid_raw_report(self):
         client = Client()
         google = Company.objects.create(name='Google', cik='123456')
         Company.objects.create(name='Facebook', cik='9876524')
-        report_1 = RawReport.objects.create(company=google, report_date='2020-05-22', report_type='10-Q',
-                                            excel_url='Http://Google.com')
-        report_2 = RawReport.objects.create(company=google, report_date='2020-05-22', report_type='10-Q',
-                                            excel_url='Http://Google.com')
+        report_1 = RawReport.objects.create(company=google, report_date='2020-05-22', excel_url='Http://Google.com')
+        report_2 = RawReport.objects.create(company=google, report_date='2020-05-22', excel_url='Http://Google.com')
 
         payload_1 = {  # Change company
             'company': 'Facebook',
             'report_date': '2020-05-22',
-            'report_type': '10-Q',
             'excel_url': 'https://www.google.com/'
         }
         payload_2 = {  # Change excel_url and form
             'company': 'Google',
             'report_date': '2020-05-22',
-            'report_type': '10-K',
             'excel_url': 'https://www.facebook.com/'
         }
 
@@ -189,31 +165,27 @@ class RawReportTests(TestCase):
             content_type='application/json'
         )
 
-        self.assertEqual(str(RawReport.objects.get(pk=report_1.pk)), 'Report 10-Q from 2020-05-22 for Facebook')
+        self.assertEqual(str(RawReport.objects.get(pk=report_1.pk)), 'Report from 2020-05-22 for Facebook')
         self.assertEqual(response_1.status_code, status.HTTP_200_OK)
 
         self.assertEqual(RawReport.objects.get(pk=report_2.pk).excel_url, 'https://www.facebook.com/')
-        self.assertEqual(str(RawReport.objects.get(pk=report_2.pk)), 'Report 10-K from 2020-05-22 for Google')
+        self.assertEqual(str(RawReport.objects.get(pk=report_2.pk)), 'Report from 2020-05-22 for Google')
         self.assertEqual(response_2.status_code, status.HTTP_200_OK)
 
     def test_put_invalid_raw_report(self):
         client = Client()
         google = Company.objects.create(name='Google', cik='123456')
-        report_1 = RawReport.objects.create(company=google, report_date='2020-05-22', report_type='10-Q',
-                                            excel_url='Http://Google.com')
-        report_2 = RawReport.objects.create(company=google, report_date='2020-05-22', report_type='10-Q',
-                                            excel_url='Http://Google.com')
+        report_1 = RawReport.objects.create(company=google, report_date='2020-05-22', excel_url='Http://Google.com')
+        report_2 = RawReport.objects.create(company=google, report_date='2020-05-22', excel_url='Http://Google.com')
 
         payload_1 = {  # Company doesn't exist
             'company': 'Microsoft',
             'report_date': '2020-05-22',
-            'report_type': '10-Q',
             'excel_url': 'https://www.google.com/'
         }
         payload_2 = {  # Date is invalid
             'company': 'Google',
             'report_date': '2020-13-22',
-            'report_type': '10-Q',
             'excel_url': 'https://www.facebook.com/'
         }
 
@@ -234,8 +206,7 @@ class RawReportTests(TestCase):
     def test_delete_existing_raw_report(self):
         client = Client()
         google = Company.objects.create(name='Google', cik='123456')
-        report_to_delete = RawReport.objects.create(company=google, report_date='2020-05-22', report_type='10-Q',
-                                                    excel_url='Http://Google.com')
+        report_to_delete = RawReport.objects.create(company=google, report_date='2020-05-22', excel_url='Http://Google.com')
 
         response = client.delete(
             reverse('raw-reports-detail', kwargs={'pk': report_to_delete.pk})
@@ -246,8 +217,7 @@ class RawReportTests(TestCase):
     def test_delete_not_exist_raw_report(self):
         client = Client()
         google = Company.objects.create(name='Google', cik='123456')
-        RawReport.objects.create(company=google, report_date='2020-05-22',
-                                 report_type='10-Q', excel_url='Http://Google.com')
+        RawReport.objects.create(company=google, report_date='2020-05-22', excel_url='Http://Google.com')
 
         response = client.delete(
             reverse('raw-reports-detail', kwargs={'pk': 10})

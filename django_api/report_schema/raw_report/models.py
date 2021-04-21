@@ -17,35 +17,16 @@ class RawReport(models.Model):
     """
     company = models.ForeignKey(Company, on_delete=models.deletion.CASCADE)
     report_date = models.DateField()
-    report_type = models.CharField(max_length=4)
     parsed_json = models.JSONField(blank=True, null=True)
     excel_url = models.URLField()
 
-    # Overwrite default save method
-    def save(self, *args, **kwargs):
-        """This function overwrites the default save method for this model.
-        It is automatically called by django when it attempts to save an object into the database.
-
-        Raises:
-            ValidationError: [description]
-        """
-        report_type_is_valid = self.report_type == '10-Q' or self.report_type == '10-K'
-        if not report_type_is_valid:
-            raise ValidationError('Report Type not Valid.')
-
-        super().save(*args, **kwargs)
-
     def __str__(self):
-        return f'Report {self.report_type} from {self.report_date} for {self.company}'
+        return f'Report from {self.report_date} for {self.company}'
 
 
 @admin.register(RawReport)
 class RawReportAdmin(admin.ModelAdmin):
-    """Defines what parameters from the raw report model should be displayed on the admin panel.
-
-    Inherits from the predefined model admin class.
-    """
-    list_display = ('company', 'report_date', 'report_type', 'excel_url')
+    list_display = ('company', 'report_date', 'excel_url')
 
 
 class ReportSchemaConfig(AppConfig):
@@ -67,7 +48,6 @@ class RawReportSerializer(serializers.ModelSerializer):
         fields = (
             'company',
             'report_date',
-            'report_type',
             'excel_url'
         )
 
