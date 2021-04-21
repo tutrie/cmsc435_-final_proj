@@ -40,12 +40,12 @@ def create_raw_report_jsons_from_workbooks(request: dict) -> dict:
     """
     json_dict_by_year = {}
     for year in request['years']:
-        wb = load_workbook(f'10K_{year}_report_{request['company']}.xlsx')
+        wb = load_workbook(f'10K_{year}_report_{request["company"]}.xlsx')
 
         df_dict = workbook_to_dataframes_dict(wb)
         json_dict_by_year[year] = dataframes_dict_to_json_dict(df_dict)
 
-        os.remove(f'10K_{year}_report_{request['company']}.xlsx')
+        os.remove(f'10K_{year}_report_{request["company"]}.xlsx')
     return json_dict_by_year
 
 
