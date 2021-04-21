@@ -105,10 +105,10 @@ def download_and_create_reports(request: dict, company_model: Company) -> dict:
     jsons_by_year = create_raw_report_jsons_from_workbooks(request)
 
     create_raw_report_models(request, company_model, jsons_by_year,
-                             edgar_scraper._excel_urls[request['10-K']]
+                             edgar_scraper._excel_urls['10-K']
                              )
 
-    return edgar_scraper._excel_urls[request['10-K']]
+    return edgar_scraper._excel_urls['10-K']
 
 
 def retrieve_raw_reports_response(request: dict) -> dict:
