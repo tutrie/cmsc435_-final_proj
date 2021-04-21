@@ -42,8 +42,9 @@ def login():
                                 auth=(data["username"], data["password"]), timeout=15)
 
         if response.status_code == 200:
-            return redirect(url_for('account'))
-            # return render_template('account.html', data=response.json())
+            # how to pass response.json() to redirect url
+            # return redirect(url_for('account'))
+            return render_template('account.html', data=response.json())
 
     return render_template('login.html', title='Login')
 
@@ -60,7 +61,7 @@ def account():
 
 @app.route('/raw_report')
 def raw_report():
-    return render_template('raw_report.html', title='Raw Report')
+    return render_template('raw_report.html', title='Raw Report', data=request)
 
 
 @app.route('/generated_report')
