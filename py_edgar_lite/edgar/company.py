@@ -14,15 +14,18 @@ class Company:
 
     This class can get the urls of a specified company's 10-K and 10-Q excel reports by providing
     this company's name and CIK number. And also it contains functionalities to download the reports.
+
+    Fields:
+        name: Company's name.
+        cik: Company's CIK number.
+        url: Default url to the company's filing page.
+        timeout: Timeout for get requests will be used in the class, default to 10.
+        _document_urls: Urls for document buttons on the company's filing page.
+        _interactive_urls: Urls for interactive buttons on the company's filing page.
+        _excel_urls: Downloading urls for company's 10-K and 10-Q excel reports.
     """
 
     def __init__(self, name: str, cik: str, timeout: int = 10):
-        """
-        Args:
-            name: Company's name.
-            cik: Company's CIK number.
-            timeout: Timeout for get requests will be used in the class, default to 10.
-        """
         self.name = name
         self.cik = cik
         self.url = f"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={cik}"
