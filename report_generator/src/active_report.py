@@ -22,7 +22,7 @@ def join_pandas_dataframes(report_dict: dict) -> dict:
 
     for keys in to_return:
         to_return[keys] = pd.concat(
-            to_return[keys], join='outer', ignore_index=True)
+            to_return[keys], axis=1)
     # dataframes_dict_to_workbook(to_return, '../test')
 
     return to_return
