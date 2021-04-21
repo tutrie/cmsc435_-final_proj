@@ -205,11 +205,10 @@ class RawReportTests(TestCase):
     def test_delete_existing_raw_report(self):
         client = Client()
         google = Company.objects.create(name='Google', cik='123456')
-        report_to_delete = RawReport.objects.create(company=google, report_date='2020-05-22',
-                                                                excel_url='Http://Google.com')
+        report = RawReport.objects.create(company=google, report_date='2020-05-22', excel_url='Http://Google.com')
 
         response = client.delete(
-            reverse('raw-reports-detail', kwargs={'pk': report_to_delete.pk})
+            reverse('raw-reports-detail', kwargs={'pk': report.pk})
         )
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
