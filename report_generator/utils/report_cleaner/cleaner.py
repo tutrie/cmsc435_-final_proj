@@ -32,8 +32,8 @@ def ten_k_workbook_to_dataframes_dict(excel_report: pyxl.Workbook, notes: dict) 
 #        dataframes_dict[sheet.title] = pd.DataFrame(data, columns=cols).set_index(keys='index').fillna(value=np.nan)
         dataframes_dict[sheet.title] = df
 
-    return dataframes_dict
-    #return normalize_data(dataframes_dict, notes)
+    #return dataframes_dict
+    return normalize_data(dataframes_dict, notes)
 
 
 def normalize_data(dataframes_dict: dict, notes: dict) -> dict:
@@ -50,7 +50,7 @@ def normalize_data(dataframes_dict: dict, notes: dict) -> dict:
                     if not row_to_skip:
                         df[row_name] = df[row_name]*multiplier
                 dataframes_dict[sheet_name] = df.T
-
+    return dataframes_dict
 
 def get_multiplier(note: str) -> int:
     if 'Thousands' in note:
