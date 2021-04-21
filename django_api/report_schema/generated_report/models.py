@@ -126,7 +126,7 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         The user should include the generated report's pk in the kwargs of the request.
 
         Args:
-            request (Request): Accepts a request object with a json body that 
+            request (Request): Accepts a request object with a json body that
             has the fields defined on the object model.
 
 
