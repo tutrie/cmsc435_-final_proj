@@ -97,8 +97,6 @@ class RawReportViewSet(viewsets.ModelViewSet):
             )
         else:
             for report_model in raw_reports_from_db:
-                # NEED TO CHANGE DATETIME MODEL TO STRING
-                # OR CONVERT DATETIME TO STRING
                 year_str = str(report_model.report_date.year)
                 response['reports'][year_str] = report_model.excel_url
 

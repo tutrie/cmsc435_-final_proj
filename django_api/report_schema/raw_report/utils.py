@@ -6,6 +6,7 @@ from report_generator.utils.object_conversions import (
 from django.db.models.query import QuerySet
 from models import RawReport, Company
 from openpyxl import load_workbook
+import datetime
 import os
 
 
@@ -73,8 +74,8 @@ def create_raw_report_models(request, company_model, jsons, urls) -> None:
     for year, json in jsons.items():
         RawReport.objects.create(
             company=company_model,
-            # NEED TO CHANGE THIS OR GET FULL DATE FROM SIYAO!
-            report_date=models.DateField(),
+            # Edgar Scaper only able to get year of report, not full date.
+            report_date=datetime.date(int(year), 1, 1),
             report_type=request['report_type'],
             parsed_json=json,
             excel_url=urls[year]
