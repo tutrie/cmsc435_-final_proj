@@ -7,7 +7,7 @@ from rest_framework import serializers
 from rest_framework.decorators import action
 
 from company_schema.models import Company, CompanySerializer
-from ..middleware.query_engine.proxy import strip_request, valid_raw_request
+from report_schema.proxy import strip_request, valid_raw_request
 from . import utils
 
 
