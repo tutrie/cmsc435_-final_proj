@@ -8,47 +8,41 @@ from urllib.parse import parse_qs
 BASE_URL = "https://www.sec.gov"
 
 
-def get_10k_year_from_url(url):
-    url = url.split('/')
-    return '20' + url[7][10:12]
-
-
-def get_10q_year_seq_number(url):
-    url = url.split('/')
-    return ['20' + url[7][10:12], url[7][12:]]
-
-
-def get_accession_number(interactive_url):
-    parsed = urlparse.urlparse(interactive_url)
-    accession_num = parse_qs(parsed.query)['accession_number']
-
-    return accession_num[0]
-
-
 class Company:
+    """
+    A class representing a Company in the EDGAR Filling System.
 
-    def __init__(self, name, cik, timeout=10):
+    This class can get the urls of a specified company's 10-K and 10-Q excel reports by providing
+    this company's name and CIK number. And also it contains functionalities to download the reports.
+    """
+
+    def __init__(self, name: str, cik: str, timeout: int = 10):
+        """
+        Args:
+            name: Company's name.
+            cik: Company's CIK number.
+            timeout: Timeout for get requests will be used in the class, default to 10.
+        """
         self.name = name
         self.cik = cik
         self.url = f"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={cik}"
         self.timeout = timeout
         self._document_urls = []
         self._interactive_urls = []
-        # '10-K': {year: [url]}
-        # '10-Q': {year: [url]}
         self._excel_urls = {'10-K': {}, '10-Q': {}}
 
-    @property
-    def document_urls(self):
-        return list(set(self._document_urls))
-
-    def _get(self, url):
+    def _get(self, url: str) -> requests.models.Response:
         """
-        A private method for GET request.
+        Args:
+            url: A url that want to be sending GET request to.
+
+        Returns:
+            The response of the GET request if the request was successful within five tries,
+            and None if the request was not successful.
         """
         page = requests.get(url, timeout=self.timeout, allow_redirects=True)
         counter = 0
-        # Request up to 5 times if the request was not successful.
+
         while counter < 5 and not page.ok:
             page = requests.get(url, timeout=self.timeout, allow_redirects=True)
             counter = counter + 1
@@ -58,90 +52,59 @@ class Company:
 
         return page
 
-    def get_filings_url(self, filing_type="", prior_to="", ownership="include", no_of_entries=100) -> str:
+    def get_filings_url(self, filing_type: str = "", prior_to: str = "",
+                        ownership: str = "include", no_of_entries: int = 100) -> str:
         """
-        Return the url of filing page which contains information for 10-K or 10-Q reports.
+        Args:
+            filing_type: The type of document you want. i.e. 10-K, 10-Q. If not specified will return all documents.
+            prior_to: Time prior which documents are to be retrieved. If not specified will return all documents.
+            ownership: Defaults to include. Options are include, exclude, only.
+            no_of_entries: Number of reports can be returned. Defaults to 100 and the maximum is 100 as well.
+
+        Returns:
+            Returns the url of filing page which contains information for 10-K or 10-Q reports.
         """
         url = self.url + "&type=" + filing_type + "&dateb=" + prior_to + "&owner=" + ownership + "&count=" + str(
             no_of_entries)
         return url
 
-    def get_all_filings(self, filing_type="", prior_to="", ownership="include",
-                        no_of_entries=100) -> lxml.html.HtmlElement:
+    def get_all_filings(self, filing_type: str = "", prior_to: str = "",
+                        ownership: str = "include", no_of_entries: int = 100) -> lxml.html.HtmlElement:
         """
-        Return the HTML of the filing page. If the GET request to the filing url was not successful return None.
+        Args:
+            filing_type: The type of document you want. i.e. 10-K, 10-Q. If not specified will return all documents.
+            prior_to: Time prior which documents are to be retrieved. If not specified will return all documents.
+            ownership: Defaults to include. Options are include, exclude, only.
+            no_of_entries: Number of reports can be returned. Defaults to 100 and the maximum is 100 as well.
+
+        Returns:
+            Returns the HTML of the filing page. If the GET request to the filing url was not successful return None.
         """
-        # url of the filing page
         url = self.get_filings_url(filing_type, prior_to, ownership, no_of_entries)
-        # GET request to the filing page
         page = self._get(url)
 
-        return html.fromstring(page.content)
+        if page:
+            return html.fromstring(page.content)
+        else:
+            return None
 
-    def _get_company_10_k_excel_report(self):
+    def get_company_excel_reports_from(self, filing_type: str = "", prior_to: str = "",
+                                       ownership: str = "include", no_of_entries: int = 100) -> dict:
         """
-        A private method that parse the company's 10-K excel report urls.
+        Args:
+            filing_type: The type of document you want. i.e. 10-K, 10-Q. If not specified will return all documents.
+            prior_to: Time prior which documents are to be retrieved. If not specified will return all documents.
+            ownership: Defaults to include. Options are include, exclude, only.
+            no_of_entries: Number of reports can be returned. Defaults to 100 and the maximum is 100 as well.
+
+        Returns:
+            A dictionary of urls for the company's 10-K or 10-Q excel reports.
         """
-        processed = 0
-
-        for document_url in self._document_urls:
-            accession_num = get_accession_number(self._interactive_urls[processed])
-            # Check if the document_url corresponds to the interactive_url, means the document has excel report
-            if re.search(accession_num, document_url) is None:
-                continue
-
-            # split the original document url by '/', replace the last element with 'Financial_Report.xlsx'
-            new_url = '/'.join(document_url.split('/')[:-1] + ["Financial_Report.xlsx"])
-            year = get_10k_year_from_url(new_url)
-            self._excel_urls["10-K"][year] = [new_url]
-
-            processed += 1
-            # Check if all the excel reports has been processed
-            if processed == len(self._interactive_urls):
-                break
-
-    def _get_company_10_q_excel_report(self):
-        """
-        Parse the company's 10-Q excel report urls.
-        """
-        processed = 0
-
-        for document_url in self._document_urls:
-            accession_num = get_accession_number(self._interactive_urls[processed])
-            # Check if the document_url corresponds to the interactive_url, means the document has excel report
-            if re.search(accession_num, document_url) is None:
-                continue
-
-            # split the original document url by '/', replace the last element with 'Financial_Report.xlsx'
-            new_url = '/'.join(document_url.split('/')[:-1] + ["Financial_Report.xlsx"])
-            year, quarter_seq = get_10q_year_seq_number(new_url)
-            url_lst = self._excel_urls["10-Q"].get(year, [])
-            # The 10Q entry is formatted as (url, quarter_seq)
-            url_lst.append((new_url, quarter_seq))
-
-            self._excel_urls["10-Q"][year] = url_lst
-
-            processed += 1
-            # Check if all the excel reports has been processed
-            if processed == len(self._interactive_urls):
-                break
-
-        for _, url_lst in self._excel_urls["10-Q"].items():
-            # Sort the url_lst base on the quarter sequence number so that the entries are ordered based on quarter.
-            # [first_quarter, second_quarter, third_quarter]
-            url_lst.sort(key=lambda x: x[1])
-            url_lst[:] = list(map(lambda x: x[0], url_lst))
-
-    def get_company_excel_reports_from(self, report_type, prior_to="", no_of_entries=100) -> dict:
-        """
-        Retrieve the company's excel format 10-K or 10-Q report
-        """
-        # determine type of request
-        regex = re.search('10-K|10-Q', report_type)
+        regex = re.search('10-K|10-Q', filing_type)
         if not regex:
             return None
 
-        page = self.get_all_filings(filing_type=report_type, prior_to=prior_to, no_of_entries=no_of_entries)
+        page = self.get_all_filings(filing_type, prior_to, ownership, no_of_entries)
         if page is None:
             return None
 
@@ -151,16 +114,75 @@ class Company:
         self._interactive_urls = [BASE_URL + elem.attrib["href"]
                                   for elem in page.xpath("//*[@id='interactiveDataBtn']") if elem.attrib.get("href")]
 
-        if report_type == "10-K":
+        if filing_type == "10-K":
             self._get_company_10_k_excel_report()
         else:
             self._get_company_10_q_excel_report()
 
-        return self._excel_urls[report_type]
+        return self._excel_urls[filing_type]
+
+    def _get_company_10_k_excel_report(self) -> None:
+        """
+        A private method that parse the company's 10-K excel report urls and store them into the _excel_urls dictionary.
+        The urls are put into a dictionary with corresponding year as its key. For each year, the 10-K report is being
+        stored as a list containing one single url.
+
+        So the _excel_urls after calling this function could look like:
+            {"10-K": {"2020": [url], "2019": [url], "2018": [url]} }
+        """
+        processed = 0
+
+        for document_url in self._document_urls:
+            accession_num = get_accession_number(self._interactive_urls[processed])
+            if re.search(accession_num, document_url) is None:
+                continue
+
+            new_url = '/'.join(document_url.split('/')[:-1] + ["Financial_Report.xlsx"])
+            year = get_10k_year_from_url(new_url)
+            self._excel_urls["10-K"][year] = [new_url]
+
+            processed += 1
+            if processed == len(self._interactive_urls):
+                break
+
+    def _get_company_10_q_excel_report(self):
+        """
+        A private method that parse the company's 10-q excel report urls and store them into the _excel_urls dictionary.
+        The urls are put into a dictionary with corresponding year as its key. For each year, there is a list of 10-Q
+        urls that are sorted based on its quarter number.
+
+        So the _excel_urls after calling this function could look like:
+            {"10-Q": {"2020": [q1_url, q2_url, q3_url], "2019": [q1_url, q2_url, q3_url]} }
+        """
+        processed = 0
+
+        for document_url in self._document_urls:
+            accession_num = get_accession_number(self._interactive_urls[processed])
+            if re.search(accession_num, document_url) is None:
+                continue
+
+            new_url = '/'.join(document_url.split('/')[:-1] + ["Financial_Report.xlsx"])
+            year, quarter_seq = get_10q_year_seq_number(new_url)
+            url_lst = self._excel_urls["10-Q"].get(year, [])
+            url_lst.append((new_url, quarter_seq))
+
+            self._excel_urls["10-Q"][year] = url_lst
+
+            processed += 1
+            if processed == len(self._interactive_urls):
+                break
+
+        for _, url_lst in self._excel_urls["10-Q"].items():
+            url_lst.sort(key=lambda x: x[1])
+            url_lst[:] = list(map(lambda x: x[0], url_lst))
 
     def download_file(self, url) -> bool:
         """
-        Download the file from the given url.
+        Args:
+            url: The downloading url of the file wants to be downloaded.
+
+        Returns:
+            True is downloading is successful, False other wise.
         """
         req = self._get(url)
         if req is None:
@@ -208,27 +230,21 @@ class Company:
 
                 if req is not None:
                     company_name = '_'.join(self.name.split(' '))
-                    file = open(f'10Q_{year}_{quarter+1}_report_{company_name}.xlsx', 'wb')
+                    file = open(f'10Q_{year}_{quarter + 1}_report_{company_name}.xlsx', 'wb')
                     file.write(req.content)
                     file.close()
         return True
-
-    def get_existing_forms(self) -> dict:
-        """
-        Return all existing 10-K and 10-Q's url.
-        """
-        return self._excel_urls
 
     def get_10k_year(self, year) -> str:
         """
         Return the url of specified year's 10-K excel report.
         """
-        ten_k_dict = self._excel_urls['10-K']
-        if not ten_k_dict:
+        dict_10k = self._excel_urls['10-K']
+        if not dict_10k:
             self.get_company_excel_reports_from("10-K")
-            ten_k_dict = self._excel_urls['10-K']
+            dict_10k = self._excel_urls['10-K']
 
-        url_list = ten_k_dict.get(year)
+        url_list = dict_10k.get(year)
         if url_list:
             return url_list[0]
         return None
@@ -242,12 +258,12 @@ class Company:
         except ValueError:
             return None
 
-        ten_q_dict = self._excel_urls['10-Q']
-        if not ten_q_dict:
+        dict_10q = self._excel_urls['10-Q']
+        if not dict_10q:
             self.get_company_excel_reports_from("10-Q")
-            ten_q_dict = self._excel_urls['10-Q']
+            dict_10q = self._excel_urls['10-Q']
 
-        url_list = ten_q_dict.get(year)
+        url_list = dict_10q.get(year)
         if url_list:
             if quarter <= len(url_list):
                 return url_list[quarter - 1]
@@ -255,3 +271,40 @@ class Company:
         return None
 
 
+def get_10k_year_from_url(url: str) -> str:
+    """
+        Args:
+            url: The url to a 10-K excel document.
+
+        Returns:
+            A string represent the year corresponds to the 10-K excel document.
+    """
+    url = url.split('/')
+    return '20' + url[7][10:12]
+
+
+def get_10q_year_seq_number(url: str) -> tuple:
+    """
+    Args:
+        url: The url to a 10-Q excel document.
+
+    Returns:
+       A tuple of string with two elements, the first being the year corresponds to the 10-Q excel document,
+       the second being the sequence number of this document.
+    """
+    url = url.split('/')
+    return ['20' + url[7][10:12], url[7][12:]]
+
+
+def get_accession_number(interactive_url: str) -> str:
+    """
+    Args:
+        interactive_url: The url to a 10-Q excel document.
+
+    Returns:
+       A string of the accession number of the particular 10-Q document.
+    """
+    parsed = urlparse.urlparse(interactive_url)
+    accession_num = parse_qs(parsed.query)['accession_number']
+
+    return accession_num[0]

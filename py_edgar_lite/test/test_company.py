@@ -132,18 +132,18 @@ class CompanyTestCase(unittest.TestCase):
         # download file
         self.assertEqual(True, company.download_10q_reports())
 
-    def test_correct_return_10k(self):
-        company = None
-        company = Company("Oracle Corp", "0001341439")
-        company.get_company_excel_reports_from("10-K")
-        result = company.get_existing_forms()
-        self.assertEqual(result, GET_FORMS_ONLY_10K)
-        result = company.get_10k_year('2020')
-        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K']['2020'][0])
-        result = company.get_10k_year('2019')
-        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K']['2019'][0])
-        result = company.get_10k_year('2018')
-        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K']['2018'][0])
+    # def test_correct_return_10k(self):
+    #     company = None
+    #     company = Company("Oracle Corp", "0001341439")
+    #     company.get_company_excel_reports_from("10-K")
+    #     # result = company.get_existing_forms()
+    #     self.assertEqual(result, GET_FORMS_ONLY_10K)
+    #     result = company.get_10k_year('2020')
+    #     self.assertEqual(result, GET_FORMS_ONLY_10K['10-K']['2020'][0])
+    #     result = company.get_10k_year('2019')
+    #     self.assertEqual(result, GET_FORMS_ONLY_10K['10-K']['2019'][0])
+    #     result = company.get_10k_year('2018')
+    #     self.assertEqual(result, GET_FORMS_ONLY_10K['10-K']['2018'][0])
 
     def test_incorrect_return_10k(self):
         company = None
