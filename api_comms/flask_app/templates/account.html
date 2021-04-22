@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!--    as {{ name }}!-->
-   <b>Logged in!</b>
+
+   <b>Logged in as {{ name }}!</b>
    <p>
     <a href="logout">Logout</a>
     </p>
-<!--    how to pass this through to raw_reports-->
+    <p>Generated Report data from the website: </p>
+
+    {{ data_generated }}
+
     <p>Raw Report data from the website: </p>
-    <b/>
-    {{ data }}
-<!--    generated reports data -->
+
+    {{ raw_generated }}
     <p>
         <a href="generated_report">Generated Reports</a>
     </p>

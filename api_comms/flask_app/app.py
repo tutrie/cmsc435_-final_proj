@@ -38,13 +38,22 @@ def login():
         else:
             data = request.data
 
-        response = requests.get('http://18.217.8.244:8000/api/generated-reports/',
-                                auth=(data["username"], data["password"]), timeout=15)
+        # response_user = requests.get('http://18.217.8.244:8000/api/users/',
+        #                              auth=(data["username"], data["password"]), timeout=15)
 
-        if response.status_code == 200:
-            # how to pass response.json() to redirect url
-            # return redirect(url_for('account'))
-            return render_template('account.html', data=response.json())
+        response_generated = requests.get('http://18.217.8.244:8000/api/generated-reports/',
+                                          auth=(data["username"], data["password"]), timeout=15)
+
+        response_raw = requests.get('http://18.217.8.244:8000/api/raw-reports/',
+                                    auth=(data["username"], data["password"]), timeout=15)
+
+        if response_generated.status_code == 200 and response_raw.status_code == 200:
+            return render_template('account.html', data_generated=response_generated.json(),
+                                   data_raw=response_raw.json(), name=request.form['username'])
+
+        # if response_user.status_code == 200:
+        #     # how to pass response.json() to redirect url
+        #     return redirect(url_for('account'))
 
     return render_template('login.html', title='Login')
 
@@ -61,9 +70,21 @@ def account():
 
 @app.route('/raw_report')
 def raw_report():
+    # response_raw = requests.get('http://18.217.8.244:8000/api/raw-reports/',
+    #                             auth=(data["username"], data["password"]), timeout=15)
+    #
+    # if response_raw.status_code == 200:
+    #     return render_template('raw_report.html', title='Raw Report', data=response_raw.json())
+
     return render_template('raw_report.html', title='Raw Report', data=request)
 
 
 @app.route('/generated_report')
 def generated_report():
+    # response_generated = requests.get('http://18.217.8.244:8000/api/generated-reports/',
+    #                                   auth=(data["username"], data["password"]), timeout=15)
+    #
+    # if response_generated.status_code == 200:
+    #     return render_template('generated_report.html', title='Generated Report', data=response_generated.json())
+
     return render_template('generated_report.html', title='Generated Report')
