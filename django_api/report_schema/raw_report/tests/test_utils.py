@@ -108,3 +108,39 @@ class TestUtils(TestCase):
         for year, json_dict in returned_response['reports'].items():
             self.assertTrue(year in intended_response['reports'].keys())
             self.assertIsInstance(json_dict, dict)
+
+    def test_retrieve_raw_reports_response_company_already_exist(self):
+        company_model = Company.objects.create(name='Google', cik='123456')
+
+        for year in range(2015, 2021):
+            RawReport.objects.create(
+                company=company_model,
+                report_date=datetime.date(year, 1, 1),
+                excel_url='Google.com'
+            )
+
+        intended_response = {
+            'company': 'Google',
+            'cik': '123456',
+            'reports': {
+                '2015': 'json_2015',
+                '2016': 'json_2016',
+                '2017': 'json_2017',
+                '2018': 'json_2018',
+                '2019': 'json_2019',
+                '2020': 'json_2020',
+            }
+        }
+
+        inputted_request = {
+            'company': 'Google',
+            'cik': '123456',
+            'years': ['2015', '2016', '2017', '2018', '2019', '2020']
+        }
+
+        returned_response = utils.retrieve_raw_reports_response(
+            inputted_request)
+
+        for year, json_dict in returned_response['reports'].items():
+            self.assertTrue(year in intended_response['reports'].keys())
+            self.assertIsInstance(json_dict, dict)
