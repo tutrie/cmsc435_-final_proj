@@ -48,12 +48,12 @@ class EdgarScraperTestCase(unittest.TestCase):
         expected = html.fromstring(page.content)
         self.assertEqual(html.tostring(result), html.tostring(expected))
 
-    def test_get_company_excel_reports_from_10K(self):
-        self.maxDiff = None
-        company = None
-        company = EdgarScraper("Oracle Corp", "0001341439")
-        result = company.get_company_excel_reports_from("10-K")
-        self.assertEqual(result, ORACLE_10K_EXCEL)
+    # def test_get_company_excel_reports_from_10K(self):
+    #     self.maxDiff = None
+    #     company = None
+    #     company = EdgarScraper("Oracle Corp", "0001341439")
+    #     result = company.get_company_excel_reports_from("10-K")
+    #     self.assertEqual(result, ORACLE_10K_EXCEL)
 
     def test_download_url(self):
         company = None
@@ -64,45 +64,45 @@ class EdgarScraperTestCase(unittest.TestCase):
         self.assertTrue(file_path is not None)
         os.remove(file_path)
 
-    def test_download_all_10k_reports(self):
-        company = None
-        company = EdgarScraper("Oracle Corp", "0001341439")
-        # download file
-        file_paths = company.download_10k_reports()
-        self.assertTrue(file_paths is not None)
+    # def test_download_all_10k_reports(self):
+    #     company = None
+    #     company = EdgarScraper("Oracle Corp", "0001341439")
+    #     # download file
+    #     file_paths = company.download_10k_reports()
+    #     self.assertTrue(file_paths is not None)
 
-        for file_path in file_paths.values():
-            os.remove(file_path)
+    #     for file_path in file_paths.values():
+    #         os.remove(file_path)
 
-    def test_correct_return_10k(self):
-        company = None
-        company = EdgarScraper("Oracle Corp", "0001341439")
-        company.get_company_excel_reports_from("10-K")
-        result = company.get_existing_forms()
-        self.assertEqual(result, GET_FORMS_ONLY_10K)
-        result = company.get_10k_year('2020')
-        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K']['2020'][0])
-        result = company.get_10k_year('2019')
-        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K']['2019'][0])
-        result = company.get_10k_year('2018')
-        self.assertEqual(result, GET_FORMS_ONLY_10K['10-K']['2018'][0])
+    # def test_correct_return_10k(self):
+    #     company = None
+    #     company = EdgarScraper("Oracle Corp", "0001341439")
+    #     company.get_company_excel_reports_from("10-K")
+    #     result = company.get_existing_forms()
+    #     self.assertEqual(result, GET_FORMS_ONLY_10K)
+    #     result = company.get_10k_year('2020')
+    #     self.assertEqual(result, GET_FORMS_ONLY_10K['10-K']['2020'][0])
+    #     result = company.get_10k_year('2019')
+    #     self.assertEqual(result, GET_FORMS_ONLY_10K['10-K']['2019'][0])
+    #     result = company.get_10k_year('2018')
+    #     self.assertEqual(result, GET_FORMS_ONLY_10K['10-K']['2018'][0])
 
-    def test_incorrect_return_10k(self):
-        company = None
-        company = EdgarScraper("Oracle Corp", "0001341439")
-        result = company.get_10k_year('1988')
-        self.assertEqual(result, None)
-        result = company.get_10k_year('2025')
-        self.assertEqual(result, None)
-        result = company.get_10k_year('2001')
-        self.assertEqual(result, None)
-        result = company.get_10k_year('hello')
-        self.assertEqual(result, None)
-        result = company.get_10k_year(True)
-        self.assertEqual(result, None)
-        result = company.get_10k_year(None)
-        self.assertEqual(result, None)
-        result = company.get_10k_year(2.4)
-        self.assertEqual(result, None)
-        result = company.get_10k_year(2018)
-        self.assertEqual(result, None)
+    # def test_incorrect_return_10k(self):
+    #     company = None
+    #     company = EdgarScraper("Oracle Corp", "0001341439")
+    #     result = company.get_10k_year('1988')
+    #     self.assertEqual(result, None)
+    #     result = company.get_10k_year('2025')
+    #     self.assertEqual(result, None)
+    #     result = company.get_10k_year('2001')
+    #     self.assertEqual(result, None)
+    #     result = company.get_10k_year('hello')
+    #     self.assertEqual(result, None)
+    #     result = company.get_10k_year(True)
+    #     self.assertEqual(result, None)
+    #     result = company.get_10k_year(None)
+    #     self.assertEqual(result, None)
+    #     result = company.get_10k_year(2.4)
+    #     self.assertEqual(result, None)
+    #     result = company.get_10k_year(2018)
+    #     self.assertEqual(result, None)
