@@ -66,3 +66,6 @@ def raw_report():
 @app.route('/generated_report')
 def generated_report():
     return render_template('generated_report.html', title='Generated Report')
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
