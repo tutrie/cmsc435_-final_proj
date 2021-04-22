@@ -1,8 +1,8 @@
 from report_schema.raw_report.EdgarScraper import EdgarScraper
 from report_schema.raw_report.models import RawReport, Company
 from report_schema.raw_report import utils
-from unittest import TestCase
-from datetime import datetime
+from django.test import TestCase
+import datetime
 
 
 class TestUtils(TestCase):
@@ -40,7 +40,7 @@ class TestUtils(TestCase):
         self.assertTrue('Google.com/2016' == report2.excel_url)
 
     def test_create_raw_report_jsons_from_workbooks(self):
-        edgar_scraper = EdgarScraper('Basset', '0000010329')
+        edgar_scraper = EdgarScraper('Oracle Corp', '0001341439')
         file_paths = edgar_scraper.download_10k_reports()
 
         intended_years = ['2015', '2016', '2017', '2018', '2019', '2020']
@@ -53,6 +53,10 @@ class TestUtils(TestCase):
 
     def test_raw_reports_from_db(self):
         company_model = Company.objects.create(name='Google', cik='123456')
+
+        raw_reports = RawReport.objects.filter(company__name='Google')
+
+        self.assertTrue(len(raw_reports) == 0)
 
         raw_report_model1 = RawReport.objects.create(
             company=company_model,
@@ -84,8 +88,8 @@ class TestUtils(TestCase):
 
     def test_retrieve_raw_reports_response_company_does_not_exist(self):
         intended_response = {
-            'company': 'Basset',
-            'cik': '0000010329',
+            'company': 'Oracle Corp',
+            'cik': '0001341439',
             'reports': {
                 '2015': 'json_2015',
                 '2016': 'json_2016',
@@ -97,8 +101,8 @@ class TestUtils(TestCase):
         }
 
         inputted_request = {
-            'company': 'Basset',
-            'cik': '0000010329',
+            'company': 'Oracle Corp',
+            'cik': '0001341439',
             'years': ['2015', '2016', '2017', '2018', '2019', '2020']
         }
 

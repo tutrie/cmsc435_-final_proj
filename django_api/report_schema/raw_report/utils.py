@@ -8,14 +8,11 @@ import datetime
 import os
 
 
-def create_raw_report_models(request, company_model, jsons, urls) -> None:
+def create_raw_report_models(company_model, jsons, urls) -> None:
     """
     A function to create RawReport models and save them to the database.
 
     Args:
-        request: A request from the front-end with user inputted company, CIK,
-            years of reports wanted, and the report type.
-
         company_model: A Company model object from company_schema/models.py
             correspoding to the user inputted company name and CIK.
 
@@ -98,7 +95,7 @@ def retrieve_raw_reports_response(request: dict) -> dict:
         A response dictionary containing the urls for the raw reports.
     """
     response = {
-        'company_name': request['name'],
+        'company_name': request['company'],
         'company_cik': request['cik'],
         'reports': {}
     }
@@ -119,13 +116,13 @@ def retrieve_raw_reports_response(request: dict) -> dict:
             report_file_paths
         )
 
-        create_raw_report_models(request, company_model, jsons_by_year,
+        create_raw_report_models(company_model, jsons_by_year,
                                  edgar_scraper._excel_urls['10-K'])
 
         # Raw reports are now in database.
         raw_reports_in_db = raw_reports_from_db(request)
 
-    for report_model in raw_reports_from_db:
+    for report_model in raw_reports_in_db:
         year_str = str(report_model.report_date.year)
         if year_str in request['years']:
             response['reports'][year_str] = report_model.parsed_json

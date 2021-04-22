@@ -239,8 +239,11 @@ class Proxy:
         retrieve a response with raw reports in it.
 
         Args:
-            request:
-                {"cik": str, "years": list(str)}
+            request: {
+                        "company": str,
+                        "cik": str,
+                        "years": list(str)
+                    }
         Returns:
             A tuple of a dictionary (response) that is either an error message
             or a valid reponse, along with a status code, 400 or 200
@@ -261,6 +264,7 @@ class Proxy:
 
         Args:
             request: {
+                        "company": str,
                         "cik": str,
                         "years": list(str),
                         "report_filter": str

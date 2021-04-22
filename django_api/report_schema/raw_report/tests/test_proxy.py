@@ -1,6 +1,6 @@
-from unittest import TestCase
+from django.test import TestCase
 from os.path import dirname, realpath
-from report_schema.proxy import proxy
+from report_schema import proxy
 
 
 class TestStripRequest(TestCase):
@@ -8,7 +8,7 @@ class TestStripRequest(TestCase):
         intended_response = {
             'company': 'Google',
             'cik': '000000',
-            'years': [2015, 2016, 2017, 2018, 2019, 2020]
+            'years': ['2015', '2016', '2017', '2018', '2019', '2020']
         }
 
         request = {

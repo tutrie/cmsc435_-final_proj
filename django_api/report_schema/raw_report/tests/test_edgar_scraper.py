@@ -1,8 +1,9 @@
+from report_schema.raw_report.EdgarScraper import EdgarScraper
+from lxml import html
 import unittest
 import requests
-from lxml import html
+import os
 
-from report_schema.raw_report.EdgarScraper import EdgarScraper
 
 ORACLE_10K_EXCEL = {
     '2015': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312515235239/Financial_Report.xlsx'],
@@ -28,7 +29,7 @@ class EdgarScraperTestCase(unittest.TestCase):
         company = None
         company = EdgarScraper("Oracle Corp", "0001341439")
         result = company.get_filings_url(filing_type="10-K")
-        expected = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001341439&type=10-K&dateb=&owner" \
+        expected = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001341439&type=10-K&dateb=2015&owner" \
                    "=include&count=100"
         self.assertEqual(result, expected)
 
@@ -65,7 +66,11 @@ class EdgarScraperTestCase(unittest.TestCase):
         company = None
         company = EdgarScraper("Oracle Corp", "0001341439")
         # download file
-        self.assertTrue(company.download_10k_reports() is not None)
+        file_paths = company.download_10k_reports()
+        self.assertTrue(file_paths is not None)
+
+        for file_path in file_paths.values():
+            os.remove(file_path)
 
     def test_correct_return_10k(self):
         company = None
