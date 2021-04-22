@@ -9,7 +9,7 @@ import unittest
 
 # For development:
 file_path = dirname(realpath(__file__)).replace(
-    'report_schema/raw_report/test_files', 'downloaded_reports/') + '10-K-20.xlsx'
+    'report_schema/raw_report/tests', 'downloaded_reports/') + '10-K-20.xlsx'
 
 
 class TestReportCleaner(unittest.TestCase):

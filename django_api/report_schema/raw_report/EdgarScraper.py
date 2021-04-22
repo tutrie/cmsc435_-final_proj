@@ -142,7 +142,7 @@ class EdgarScraper:
         self._get_company_10_k_excel_report()
         return self._excel_urls[report_type]
 
-    def download_file(self, url) -> bool:
+    def download_file(self, url) -> str:
         """
         Download the file from the given url.
         """
@@ -151,14 +151,22 @@ class EdgarScraper:
             req = self._get(url[:-1])
 
         if req is not None:
-            file = open(
-                'report_' + '_'.join(self.name.split(' ')) + '.xlsx', 'wb')
+            # For production:
+            # dir_name = '~' + '/downloaded_reports/'
+
+            # For development:
+            dir_name = dirname(realpath(__file__)).replace(
+                'report_schema/raw_report', 'downloaded_reports/'
+            )
+            file_name = 'report_' + '_'.join(self.name.split(' ')) + '.xlsx'
+            file_path = f'{dir_name}{file_name}'
+            file = open(file_path, 'wb')
             file.write(req.content)
             file.close()
-            return True
-        return False
+            return file_path
+        return None
 
-    def download_10k_reports(self, prior_to="2015", no_of_entries=100):
+    def download_10k_reports(self, prior_to="2015", no_of_entries=100) -> dict:
         self.get_company_excel_reports_from(
             "10-K", prior_to=prior_to, no_of_entries=no_of_entries)
         ten_k_dict = self._excel_urls['10-K']
