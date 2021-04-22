@@ -1,9 +1,12 @@
 import requests
 from flask import Flask, request
 from flask import redirect, url_for, render_template
+import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '\xe0\x8d?8z\xdd\x87i}\xfc\xaa\x91\x8f\n1\x1a\xe4\xb3\xa7\xbd5\xf8\x96\xdd'
+
+UI_PORT = os.getenv("UI_PORT")
 
 
 @app.route('/')
@@ -88,3 +91,8 @@ def generated_report():
     #     return render_template('generated_report.html', title='Generated Report', data=response_generated.json())
 
     return render_template('generated_report.html', title='Generated Report')
+
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=UI_PORT)
+    
