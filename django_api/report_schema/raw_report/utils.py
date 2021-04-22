@@ -109,7 +109,7 @@ def retrieve_raw_reports_response(request: dict) -> dict:
 
         edgar_scraper = EdgarScraper(request['company'], request['cik'])
 
-        report_file_paths = edgar_scraper.download_10k_reports(prior_to='2015')
+        report_file_paths = edgar_scraper.download_10k_reports()
 
         # Must be called after downloading 10-K's (i.e. the previous statement)
         jsons_by_year = create_raw_report_jsons_from_workbooks(
