@@ -163,6 +163,8 @@ class EdgarScraper:
             "10-K", prior_to=prior_to, no_of_entries=no_of_entries)
         ten_k_dict = self._excel_urls['10-K']
 
+        file_paths = {}
+
         for year in ten_k_dict.keys():
             url = ten_k_dict[year][0]
             req = self._get(url)
@@ -186,7 +188,9 @@ class EdgarScraper:
                 file = open(full_file, 'wb')
                 file.write(req.content)
                 file.close()
-        return True
+
+                file_paths[year] = full_file
+        return file_paths
 
     def get_existing_forms(self) -> dict:
         """

@@ -65,7 +65,7 @@ class EdgarScraperTestCase(unittest.TestCase):
         company = None
         company = EdgarScraper("Oracle Corp", "0001341439")
         # download file
-        self.assertEqual(True, company.download_10k_reports())
+        self.assertTrue(company.download_10k_reports() is not None)
 
     def test_correct_return_10k(self):
         company = None
