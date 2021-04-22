@@ -36,6 +36,8 @@ class Company:
 
     def _get(self, url: str) -> requests.models.Response:
         """
+        A private function that send a GET request to a url.
+
         Args:
             url: A url that want to be sending GET request to.
 
@@ -58,6 +60,8 @@ class Company:
     def get_filings_url(self, filing_type: str = "", prior_to: str = "",
                         ownership: str = "include", no_of_entries: int = 100) -> str:
         """
+        A function that gets the url link to a company's overall filing page.
+
         Args:
             filing_type: The type of document you want. i.e. 10-K, 10-Q. If not specified will return all documents.
             prior_to: Time prior which documents are to be retrieved. If not specified will return all documents.
@@ -74,6 +78,8 @@ class Company:
     def get_all_filings(self, filing_type: str = "", prior_to: str = "",
                         ownership: str = "include", no_of_entries: int = 100) -> lxml.html.HtmlElement:
         """
+        A function that get the htmlElement from the GET result of the filing page of a company.
+
         Args:
             filing_type: The type of document you want. i.e. 10-K, 10-Q. If not specified will return all documents.
             prior_to: Time prior which documents are to be retrieved. If not specified will return all documents.
@@ -94,6 +100,8 @@ class Company:
     def get_company_excel_reports_from(self, filing_type: str = "", prior_to: str = "",
                                        ownership: str = "include", no_of_entries: int = 100) -> dict:
         """
+        A function that retrieve the either 10-Q or 10-K excel reports from the company's filing page.
+
         Args:
             filing_type: The type of document you want. i.e. 10-K, 10-Q. If not specified will return all documents.
             prior_to: Time prior which documents are to be retrieved. If not specified will return all documents.
@@ -258,6 +266,8 @@ class Company:
 
     def get_10k_year(self, year: str) -> str:
         """
+        Get the url of a specific year's 10-K excel report of a company.
+
         Args:
             year: The year of the report url that wants to be retrieved.
 
@@ -276,6 +286,8 @@ class Company:
 
     def get_10q_year_quarter(self, year: str, quarter: str) -> str:
         """
+        Get the url of a specific year and quarter's 10-Q excel report of a company.
+
         Args:
             year: The year of the report url that wants to be retrieved.
             quarter: The quarter of the report url that wants to be retrieved.
@@ -303,11 +315,13 @@ class Company:
 
 def get_10k_year_from_url(url: str) -> str:
     """
-        Args:
-            url: The url to a 10-K excel document.
+    Get the year and quarter of the given 10-K excel report url.
 
-        Returns:
-            A string represent the year corresponds to the 10-K excel document.
+    Args:
+        url: The url to a 10-K excel document.
+
+    Returns:
+        A string represent the year corresponds to the 10-K excel document.
     """
     url = url.split('/')
     return '20' + url[7][10:12]
@@ -315,6 +329,8 @@ def get_10k_year_from_url(url: str) -> str:
 
 def get_10q_year_seq_number(url: str) -> tuple:
     """
+    Get the year and sequence number of the given 10-Q excel report url.
+
     Args:
         url: The url to a 10-Q excel document.
 
@@ -328,6 +344,8 @@ def get_10q_year_seq_number(url: str) -> tuple:
 
 def get_accession_number(interactive_url: str) -> str:
     """
+    Get the accession number of the given 10-Q interactive button's url.
+
     Args:
         interactive_url: The url to a 10-Q excel document.
 
