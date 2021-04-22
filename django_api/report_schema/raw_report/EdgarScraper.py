@@ -67,7 +67,7 @@ class EdgarScraper:
 
     def get_filings_url(self,
                         filing_type: str = "10-K",
-                        prior_to: str = "2015",
+                        prior_to: str = "",
                         ownership: str = "include",
                         no_of_entries: int = 100) -> str:
         """
@@ -93,7 +93,7 @@ class EdgarScraper:
 
     def get_all_filings(self,
                         filing_type: str = "",
-                        prior_to: str = "2015",
+                        prior_to: str = "",
                         ownership: str = "include",
                         no_of_entries: int = 100) -> lxml.html.HtmlElement:
         """
@@ -151,7 +151,7 @@ class EdgarScraper:
 
     def get_company_excel_reports_from(self,
                                        filing_type: str = "10-K",
-                                       prior_to: str = "2015",
+                                       prior_to: str = "",
                                        ownership: str = "include",
                                        no_of_entries: int = 100) -> dict:
         """
