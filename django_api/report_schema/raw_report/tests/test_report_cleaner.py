@@ -3,13 +3,21 @@ from report_schema.raw_report.report_cleaner.excelToPandasToJson import (
 )
 from os.path import dirname, realpath
 import unittest
+import sys
 
 # # For production:
 # file_path = '~' + '/downloaded_reports/'
 
 # For development:
-file_path = dirname(realpath(__file__)).replace(
-    'report_schema/raw_report/tests', 'downloaded_reports/') + '10-K-20.xlsx'
+
+if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
+    file_path = dirname(realpath(__file__)).replace(
+        'report_schema/raw_report/tests', 'downloaded_reports/')
+elif sys.platform.startswith('win32') or sys.platform.startswith('cygwin'):
+    file_path = dirname(realpath(__file__)).replace(
+        r'report_schema\\raw_report\\tests', r'downloaded_reports\\')
+
+file_path += '10-K-20.xlsx'
 
 
 class TestReportCleaner(unittest.TestCase):
