@@ -124,13 +124,13 @@ class CompanyTestCase(unittest.TestCase):
         company = None
         company = Company("Oracle Corp", "0001341439")
         # download file
-        self.assertEqual(True, company.download_10k_reports())
+        self.assertEqual(None, company.download_10k_reports())
 
     def test_download_all_10q_reports(self):
         company = None
         company = Company("Oracle Corp", "0001341439")
         # download file
-        self.assertEqual(True, company.download_10q_reports())
+        self.assertEqual(None, company.download_10q_reports())
 
     # def test_correct_return_10k(self):
     #     company = None
