@@ -55,7 +55,7 @@ class EdgarScraper:
 
         return page
 
-    def get_filings_url(self, filing_type="", prior_to="",
+    def get_filings_url(self, filing_type="", prior_to="2015",
                         ownership="include", no_of_entries=100) -> str:
         """
         Return the url of filing page which
@@ -66,8 +66,9 @@ class EdgarScraper:
                 no_of_entries)
         return url
 
-    def get_all_filings(self, filing_type="", prior_to="", ownership="include",
-                        no_of_entries=100) -> lxml.html.HtmlElement:
+    def get_all_filings(self, filing_type="", prior_to="2015",
+                        ownership="include", no_of_entries=100) \
+            -> lxml.html.HtmlElement:
         """
         Return the HTML of the filing page. If the GET request
         to the filing url was not successful return None.
@@ -106,8 +107,8 @@ class EdgarScraper:
             if processed == len(self._interactive_urls):
                 break
 
-    def get_company_excel_reports_from(self, report_type,
-                                       prior_to="", no_of_entries=100) -> dict:
+    def get_company_excel_reports_from(self, report_type, prior_to="2015",
+                                       no_of_entries=100) -> dict:
         """
         Retrieve the company's excel format 10-K
         """
@@ -157,7 +158,7 @@ class EdgarScraper:
             return True
         return False
 
-    def download_10k_reports(self, prior_to="", no_of_entries=100):
+    def download_10k_reports(self, prior_to="2015", no_of_entries=100):
         self.get_company_excel_reports_from(
             "10-K", prior_to=prior_to, no_of_entries=no_of_entries)
         ten_k_dict = self._excel_urls['10-K']
@@ -172,10 +173,17 @@ class EdgarScraper:
             if req is not None:
                 company_name = '_'.join(self.name.split(' '))
 
-                dir_name = dirname(realpath(__file__)) + '/downloaded_reports/'
-                filename = f'10K_{year}_report_{company_name}.xlsx'
+                # For production:
+                # dir_name = '~' + '/downloaded_reports/'
 
-                file = open(f'{dir_name}{filename}', 'wb')
+                # For development:
+                dir_name = dirname(realpath(__file__)).replace(
+                    'report_schema/raw_report', 'downloaded_reports/'
+                )
+
+                filename = f'10K_{year}_report_{company_name}.xlsx'
+                full_file = f'{dir_name}{filename}'
+                file = open(full_file, 'wb')
                 file.write(req.content)
                 file.close()
         return True

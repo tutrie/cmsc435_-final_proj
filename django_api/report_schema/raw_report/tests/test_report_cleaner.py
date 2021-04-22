@@ -1,10 +1,18 @@
+from report_schema.raw_report.report_cleaner.excelToPandasToJson import (
+    ConvertCleanSave
+)
+from os.path import dirname, realpath
 import unittest
-from report_generator.utils.report_cleaner.excelToPandasToJson import ConvertCleanSave
 
-file_path = "../mocks/excel_reports/10-K-20.xlsx"
+# # For production:
+# file_path = '~' + '/downloaded_reports/'
+
+# For development:
+file_path = dirname(realpath(__file__)).replace(
+    'report_schema/raw_report', 'downloaded_reports/') + '10-K-20.xlsx'
 
 
-class MyTestCase(unittest.TestCase):
+class TestReportCleaner(unittest.TestCase):
     def test_CleanedExcelReport_notes(self):
         test_object = ConvertCleanSave(file_path)
         self.assertEqual(8, len(test_object.notes.keys()))

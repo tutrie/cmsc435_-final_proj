@@ -64,9 +64,10 @@ class RawReportViewSet(viewsets.ModelViewSet):
     queryset = RawReport.objects.all()
     serializer_class = RawReportSerializer
 
-    @action(methods=['GET'], detail=False, url_path='get_raw_reports',
-            url_name='get_raw_reports')
+    @action(methods=['GET'], detail=False, url_path='get-raw-reports',
+            url_name='get-raw-reports')
     def get_raw_reports(self, request):
+        # Leave import in here. Otherwise, circular import error occurs.
         from report_schema.proxy import Proxy
         response, status_code = Proxy().retrieve_raw_reports(request)
 

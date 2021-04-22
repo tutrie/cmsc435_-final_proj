@@ -1,27 +1,11 @@
-import pandas as pd
 import json
-import openpyxl as pyxl
-
-
-def workbook_to_dataframes_dict(excel_report: pyxl.Workbook) -> dict:
-    """
-    Args:
-        excel_report: openpyxl Workbook object
-
-    Returns:
-        Dictionary of dataframes for each sheet in excel workbook.
-    """
-    dataframes_dict = {}
-    for sheet in excel_report.worksheets:
-        data = sheet.values
-        cols = next(data)  # Headers (First Row)
-        data = list(data)  # Second until Last rows
-        dataframes_dict[sheet.title] = (pd.DataFrame(data, columns=cols))
-    return dataframes_dict
 
 
 def dataframes_dict_to_json_dict(dataframes_dict: dict) -> dict:
     """
+    Turns a dictionary of dataframes into a dictionary of dictionary
+    represntations of those dataframes.
+
     Args:
         dataframes_dict: Dictionary of Pandas dataframes where key is the sheet
             name of the dataframe while the value is the inner dictionary
@@ -40,6 +24,8 @@ def dataframes_dict_to_json_dict(dataframes_dict: dict) -> dict:
 
 def dataframe_to_dict(dataframe: object) -> dict:
     """
+    Turns a dataframe into its dictionary representation.
+
     Args:
         dataframe: A pandas dataframe
 
