@@ -36,6 +36,8 @@ services:
         command: python3 app.py
         volumes:
             - flask-data:/api_comms/code
+        env_file:
+            - ./.env/flask.env
         ports:
             - "5000:5000"
         depends_on:
