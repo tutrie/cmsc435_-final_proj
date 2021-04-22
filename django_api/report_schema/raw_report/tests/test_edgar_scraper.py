@@ -6,11 +6,6 @@ import os
 
 
 ORACLE_10K_EXCEL = {
-    '2010': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312510151896/Financial_Report.xlsx'],
-    '2011': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312511174819/Financial_Report.xlsx'],
-    '2012': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312512284007/Financial_Report.xlsx'],
-    '2013': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312513272832/Financial_Report.xlsx'],
-    '2014': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312514251351/Financial_Report.xlsx'],
     '2015': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312515235239/Financial_Report.xlsx'],
     '2016': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312516628942/Financial_Report.xlsx'],
     '2017': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312517214833/Financial_Report.xlsx'],
@@ -19,17 +14,13 @@ ORACLE_10K_EXCEL = {
     '2020': ['https://www.sec.gov/Archives/edgar/data/1341439/000156459020030125/Financial_Report.xlsx']}
 
 GET_FORMS_ONLY_10K = {'10-K': {
-    '2010': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312510151896/Financial_Report.xlsx'],
-    '2011': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312511174819/Financial_Report.xlsx'],
-    '2012': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312512284007/Financial_Report.xlsx'],
-    '2013': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312513272832/Financial_Report.xlsx'],
-    '2014': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312514251351/Financial_Report.xlsx'],
     '2015': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312515235239/Financial_Report.xlsx'],
     '2016': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312516628942/Financial_Report.xlsx'],
     '2017': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312517214833/Financial_Report.xlsx'],
     '2018': ['https://www.sec.gov/Archives/edgar/data/1341439/000119312518201034/Financial_Report.xlsx'],
     '2019': ['https://www.sec.gov/Archives/edgar/data/1341439/000156459019023119/Financial_Report.xlsx'],
-    '2020': ['https://www.sec.gov/Archives/edgar/data/1341439/000156459020030125/Financial_Report.xlsx']}}
+    '2020': ['https://www.sec.gov/Archives/edgar/data/1341439/000156459020030125/Financial_Report.xlsx']}
+}
 
 
 class EdgarScraperTestCase(unittest.TestCase):
@@ -38,7 +29,7 @@ class EdgarScraperTestCase(unittest.TestCase):
         company = None
         company = EdgarScraper("Oracle Corp", "0001341439")
         result = company.get_filings_url(filing_type="10-K")
-        expected = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001341439&type=10-K&dateb=&owner" \
+        expected = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001341439&type=10-K&dateb=2015&owner" \
                    "=include&count=100"
         self.assertEqual(result, expected)
 
@@ -84,7 +75,6 @@ class EdgarScraperTestCase(unittest.TestCase):
             os.remove(file_path)
 
     def test_correct_return_10k(self):
-        self.maxDiff = None
         company = None
         company = EdgarScraper("Oracle Corp", "0001341439")
         company.get_company_excel_reports_from("10-K")

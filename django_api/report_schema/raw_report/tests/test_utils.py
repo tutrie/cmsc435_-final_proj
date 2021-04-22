@@ -73,7 +73,7 @@ class TestUtils(TestCase):
         reports_in_db = utils.raw_reports_from_db({
             'company': company_model.name,
             'cik': company_model.cik,
-            'years': ["2015", "2016"]
+            'years': ["2015"]
         }).order_by('report_date__year')
 
         report1 = reports_in_db.first()
@@ -120,10 +120,7 @@ class TestUtils(TestCase):
             RawReport.objects.create(
                 company=company_model,
                 report_date=datetime.date(year, 1, 1),
-                excel_url='Google.com',
-                parsed_json={
-                    'year': str(year)
-                }
+                excel_url='Google.com'
             )
 
         intended_response = {
@@ -151,4 +148,3 @@ class TestUtils(TestCase):
         for year, json_dict in returned_response['reports'].items():
             self.assertTrue(year in intended_response['reports'].keys())
             self.assertIsInstance(json_dict, dict)
-            self.assertTrue(json_dict['year'] == year)
