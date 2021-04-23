@@ -1,4 +1,7 @@
-from report_generator.utils.convert_objects.object_conversions import (
+import sys
+sys.path.insert(0, sys.path[0].replace('/middleware/query_engine', ''))
+print(sys.path)
+from middleware.report_generator.utils.convert_objects.object_conversions import (
     json_dict_to_json_file,
     json_dict_to_dataframes_dict,
     dataframes_dict_to_workbook
@@ -8,8 +11,11 @@ from os.path import exists, isdir
 from re import match
 import requests
 
+# # For production:
+# base_url = 'http://18.217.8.244:8000/api/'
 
-base_url = 'http://18.217.8.244:8000/api/'
+# For developement:
+base_url = 'http://127.0.0.1:8000/api/'
 raw_report_url = base_url + 'raw-reports/get-raw-reports'
 generate_report_url = base_url + 'generate-report'
 user_report_url = base_url + 'user-report'
@@ -238,13 +244,18 @@ def basic_request() -> dict:
 def retrieve_raw_report() -> None:
     while True:
         request = basic_request()
-        response = requests.get(raw_report_url, data=request).json()
-
+        response = requests.get(raw_report_url, params=request)
+        print(f'Response: {response}\n')
+        print(f'Dir: {dir(response)}\n')
+        print(f'url: {response.url}\n')
+        print(f'test: {response.text}\n')
+        print(f'Json: {response.json()}\n')
+        print(f'Status_code: {response.status_code}\n')
         if is_error_response(response):
             print(f'Response returned with error code {response.status_code}')
-            print(f'Response error: {response["error"]}')
+            print(f'Response error: {response.json()["error"]}')
         else:
-            save_multiple_reports_locally(response['reports'])
+            save_multiple_reports_locally(response.json()['reports'])
 
 
 def choose_rows_in_sheet(sheet_name, sheet_values: dict) -> list:
@@ -271,7 +282,7 @@ def generate_instructions(merged_report: ActiveReport) -> dict:
     return instructions
 
 
-def create_generated_report(username: str, password: str) -> dict:
+def create_generated_report(username: str, password: str) -> None:
     reports = retrieve_raw_report()
     merged_report = ActiveReport.from_workbooks_by_years_dicts(
         reports['reports'])
