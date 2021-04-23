@@ -16,3 +16,40 @@
     font-size: 43px;
     position: relative;  
 }
+form {
+    padding-top: 50px;
+    width: 400px;
+    /* background-color: aliceblue; */
+}
+.form-group {
+    padding:12px; 
+    border-bottom:1px solid #eee;
+    position:relative;
+}
+label {
+    width:150px;
+    margin-top: 3px;
+    display:inline-block;
+    float:left;
+    padding:3px;
+}
+input {
+    height:30px; 
+    width:220px; 
+    padding:5px 8px;
+}
+button {
+    margin-left:156px;
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border-radius: 25px;
+}
+#response {
+    padding-top: 10px;
+}
+a {
+    /* text-decoration: none; */
+    color: #f8e9b8
+}
