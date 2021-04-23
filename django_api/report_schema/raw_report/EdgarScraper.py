@@ -218,7 +218,7 @@ class EdgarScraper:
             req = self._get(url[:-1])
 
         if req is not None:
-            dir_name = Path(os.getcwd()) / 'downloaded_reports'
+            dir_name = Path('downloaded_reports').absolute()
             file_name = 'report_' + '_'.join(self.name.split(' ')) + '.xlsx'
             file_path = dir_name / file_name
             file = open(file_path, 'wb')
@@ -264,7 +264,7 @@ class EdgarScraper:
                 if req is not None:
                     company_name = '_'.join(self.name.split(' '))
 
-                    dir_name = Path(os.getcwd()) / 'downloaded_reports'
+                    dir_name = Path('downloaded_reports').absolute()
                     
                     file_name = f'10K_{year}_report_{company_name}.xlsx'
                     full_file = dir_name / file_name
