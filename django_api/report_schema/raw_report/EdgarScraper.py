@@ -144,7 +144,8 @@ class EdgarScraper:
             new_url = '/'.join(document_url.split('/')
                                [:-1] + ["Financial_Report.xlsx"])
             year = get_10k_year_from_url(new_url)
-            self._excel_urls["10-K"][year] = [new_url]
+            if int(year) >= 2015:
+                self._excel_urls["10-K"][year] = [new_url]
 
             processed += 1
             if processed == len(self._interactive_urls):
@@ -264,6 +265,7 @@ class EdgarScraper:
         file_paths = {}
 
         for year in dict_10k.keys():
+            print(year)
             url = dict_10k[year][0]
             req = self._get(url)
 

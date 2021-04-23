@@ -54,6 +54,8 @@ def create_raw_report_jsons_from_workbooks(report_file_paths: dict) -> dict:
     """
     json_dict_by_year = {}
     for year, file_path in report_file_paths.items():
+        if year < '2015':
+            break
         conversion_obj = ConvertCleanSave(file_path)
 
         json_dict_by_year[year] = conversion_obj.convert_to_json()
