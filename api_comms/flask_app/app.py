@@ -1,6 +1,6 @@
 import os
 import requests
-from flask import Flask, session, flash, redirect, url_for, request, render_template
+from flask import Flask, session, redirect, url_for, request, render_template
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '\xe0\x8d?8z\xdd\x87i}\xfc\xaa\x91\x8f\n1\x1a\xe4\xb3\xa7\xbd5\xf8\x96\xdd'
@@ -23,27 +23,14 @@ def register():
         if response.status_code == 201 or response.status_code == 200:
             return redirect(url_for('login'))
 
-    return render_template('register.html', title='Register')
+    return render_template('register.html', title='Register', username=session.get('username'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        data = request.data
-
-        # response_user = requests.get('http://18.217.8.244:8000/api/users/',
-        #                              auth=(data['username'], data['password']), timeout=15)
-        #
-        # response_generated = requests.get('http://18.217.8.244:8000/api/generated-reports/',
-        #                                   auth=(data['username'], data['password']), timeout=15)
-        #
-        # response_raw = requests.get('http://18.217.8.244:8000/api/raw-reports/',
-        #                             auth=(data['username'], data['password']), timeout=15)
         session['username'] = request.form['username']
-        flash('You were successfully logged in as <b>{}</b>'.format(request.form['username']))
-        # if response_generated.status_code == 200 and response_raw.status_code == 200:
-        #     return render_template('account.html', data_generated=response_generated.json(),
-        #                            data_raw=response_raw.json(), name=request.form['username'])
+        session['password'] = request.form['password']
 
     return render_template('login.html', title='Login', username=session.get('username'))
 
@@ -84,13 +71,14 @@ def raw_report():
 
 @app.route('/generated_report')
 def generated_report():
-    # response_generated = requests.get('http://18.217.8.244:8000/api/generated-reports/',
-    #                                   auth=(data['username'], data['password']), timeout=15)
-    #
-    # if response_generated.status_code == 200:
-    #     return render_template('generated_report.html', title='Generated Report', data=response_generated.json())
-
-    return render_template('generated_report.html', title='Generated Report', username=session.get('username'))
+    username = session.get('username')
+    generated_report = None
+    if username:
+        response_generated = requests.get('http://18.217.8.244:8000/api/generated-reports/',
+                                    auth=(session.get('username'), session.get('password')), timeout=15)
+        if response_generated.status_code == 200:
+            generated_report = response_generated.json()
+    return render_template('generated_report.html', title='Generated Report', generated_report=generated_report, username=username)
 
 
 if __name__ == '__main__':

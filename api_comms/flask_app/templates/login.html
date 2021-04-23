@@ -27,6 +27,11 @@
                     <a href="register">Register Here</a>
                     </p>
                 </form>
+            {% else %}
+                <div class="logged-in">
+                    <h1 >You are logged in as <b>{{ username }}</b></h1>
+                    <p> Click <a href="logout"> here</a> to log out</p>
+                </div>
             {% endif %}
 
 <!--            {% with messages = get_flashed_messages() %}-->
@@ -39,12 +44,6 @@
 <!--                {% endif %}-->
 <!--            {% endwith %}-->
 
-            {% if username %}
-                <div class="logged-in">
-                    <h1 >You are logged in as <b>{{ username }}</b></h1>
-                    <p> Click <a href="logout"> here</a> to log out</p>
-            </div>
-            {% endif %}
         </div>
     </div>
 </body>
