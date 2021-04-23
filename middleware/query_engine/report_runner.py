@@ -1,4 +1,4 @@
-from report_generator.utils.convert_objects.object_conversions import (
+from middleware.report_generator.utils.convert_objects.object_conversions import (
     json_dict_to_json_file,
     json_dict_to_dataframes_dict,
     dataframes_dict_to_workbook
@@ -79,13 +79,13 @@ def get_database_path() -> str:
 
     if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
         dir_name = dirname(realpath(__file__)).replace(
-            "middleware/query_engine", "report_generator/mocks/")
+            "query_engine", "report_generator/mocks/")
         return dir_name + "mock_database/Users/"
 
     # To be deleted when put into Linux container
     elif sys.platform.startswith('win32') or sys.platform.startswith('cygwin'):
         dir_name = dirname(realpath(__file__)).replace(
-            "middleware\\query_engine", "report_generator\\mocks\\")
+            "query_engine", "report_generator\\mocks\\")
         return dir_name + "mock_database\\Users\\"
 
 
@@ -265,8 +265,7 @@ def start_report_retrieval():
         3. Generate a new Report
     """
     welcome_string = '''Welcome! We will now ask you to input some information
-        in order to generate your custom report. Enter 'back' at any time to
-        return to a previous step in the current report retrieval cycle.\n
+        in order to generate your custom report.\n
     '''
 
     print(welcome_string)
