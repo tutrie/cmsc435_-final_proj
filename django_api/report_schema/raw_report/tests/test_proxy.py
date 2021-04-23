@@ -44,16 +44,6 @@ class TestValidateYears(TestCase):
         self.assertFalse(response)
 
 
-class TestValidateReportType(TestCase):
-    def test_validate_report_type_valid_input(self):
-        response = proxy.is_valid_report_type('10-K')
-        self.assertTrue(response)
-
-    def test_validate_report_type_invalid_input(self):
-        response = proxy.is_valid_report_type('dksjfd')
-        self.assertFalse(response)
-
-
 class TestValidateInstructions(TestCase):
     def test_validate_instructions_valid_input(self):
         instructions = {
