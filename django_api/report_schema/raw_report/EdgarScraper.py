@@ -1,11 +1,10 @@
-from os.path import dirname, realpath
 from urllib.parse import parse_qs
 import urllib.parse as urlparse
 from lxml import html
 import requests
 import lxml
-import sys
 import re
+import os
 
 BASE_URL = "https://www.sec.gov"
 
@@ -218,18 +217,7 @@ class EdgarScraper:
             req = self._get(url[:-1])
 
         if req is not None:
-            # For production:
-            # dir_name = '~' + '/downloaded_reports/'
-
-            # For development:
-            plt = sys.platform
-            if plt.startswith('darwin') or plt.startswith('linux'):
-                dir_name = dirname(realpath(__file__)).replace(
-                    'report_schema/raw_report', 'downloaded_reports/')
-            elif plt.startswith('win32') or plt.startswith('cygwin'):
-                dir_name = dirname(realpath(__file__)).replace(
-                    r'report_schema\raw_report', 'downloaded_reports\\')
-
+            dir_name = os.path.join(os.getcwd(), 'downloaded_reports/')
             file_name = 'report_' + '_'.join(self.name.split(' ')) + '.xlsx'
             file_path = f'{dir_name}{file_name}'
             file = open(file_path, 'wb')
@@ -266,33 +254,24 @@ class EdgarScraper:
 
         for year in dict_10k.keys():
             url = dict_10k[year][0]
-            req = self._get(url)
+            if int(year) >= 2016:
+                req = self._get(url)
 
-            if req is None:
-                req = self._get(url[:-1])
+                if req is None:
+                    req = self._get(url[:-1])
 
-            if req is not None:
-                company_name = '_'.join(self.name.split(' '))
+                if req is not None:
+                    company_name = '_'.join(self.name.split(' '))
 
-                # For production:
-                # dir_name = '~' + '/downloaded_reports/'
+                    dir_name = os.path.join(os.getcwd(), 'downloaded_reports/')
+                    
+                    filename = f'10K_{year}_report_{company_name}.xlsx'
+                    full_file = f'{dir_name}{filename}'
+                    file = open(full_file, 'wb')
+                    file.write(req.content)
+                    file.close()
 
-                # For development:
-                plt = sys.platform
-                if plt.startswith('darwin') or plt.startswith('linux'):
-                    dir_name = dirname(realpath(__file__)).replace(
-                        'report_schema/raw_report', 'downloaded_reports/')
-                elif plt.startswith('win32') or plt.startswith('cygwin'):
-                    dir_name = dirname(realpath(__file__)).replace(
-                        r'report_schema\raw_report', 'downloaded_reports\\')
-
-                filename = f'10K_{year}_report_{company_name}.xlsx'
-                full_file = f'{dir_name}{filename}'
-                file = open(full_file, 'wb')
-                file.write(req.content)
-                file.close()
-
-                file_paths[year] = full_file
+                    file_paths[year] = full_file
         return file_paths
 
     def get_existing_forms(self) -> dict:

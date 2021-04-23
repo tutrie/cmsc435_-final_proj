@@ -60,7 +60,6 @@ def is_valid_years(years: list) -> bool:
     """
     for year in years:
         year = year.strip()
-        print(year)
         if not year.isnumeric() or len(year) != 4 or int(year) <= 2015:
             return False
 

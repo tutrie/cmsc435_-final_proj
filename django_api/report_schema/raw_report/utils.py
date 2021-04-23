@@ -59,7 +59,6 @@ def create_raw_report_jsons_from_workbooks(report_file_paths: dict) -> dict:
         conversion_obj = ConvertCleanSave(file_path)
 
         json_dict_by_year[year] = conversion_obj.convert_to_json()
-        print(file_path)
         os.remove(file_path)
 
     return json_dict_by_year
