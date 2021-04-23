@@ -265,7 +265,6 @@ class EdgarScraper:
         file_paths = {}
 
         for year in dict_10k.keys():
-            print(year)
             url = dict_10k[year][0]
             req = self._get(url)
 

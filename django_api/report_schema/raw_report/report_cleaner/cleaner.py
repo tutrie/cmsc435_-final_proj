@@ -82,7 +82,6 @@ def ten_k_excel_cleaning(excel_report: pyxl.Workbook) -> pyxl.Workbook:
         excel_report.remove(excel_report[sheet_name])
 
     for sheets in excel_report.worksheets:
-        #print(sheets.title)
         while sheets.merged_cells.ranges:
             my_range = str(sheets.merged_cells.ranges[0])
             sheets.unmerge_cells(my_range)
