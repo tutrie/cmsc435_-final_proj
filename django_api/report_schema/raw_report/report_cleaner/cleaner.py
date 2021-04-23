@@ -19,16 +19,16 @@ def ten_k_workbook_to_dataframes_dict(excel_report: pyxl.Workbook,
         data = list(data)  # Second until Last rows
         df = pd.DataFrame(data, columns=cols)
         for loc in range(len(df['index'])):
-            df.loc[loc, 'index'] = str(df['index'][loc].replace(' (loss)', ''))
-            df.loc[loc, 'index'] = str(df['index'][loc].replace(' (gain)', ''))
+            df.loc[loc, 'index'] = str(df['index'][loc]).replace(' (loss)', '')
+            df.loc[loc, 'index'] = str(df['index'][loc]).replace(' (gain)', '')
             df.loc[loc, 'index'] = str(
-                df['index'][loc].replace(' (benefit)', ''))
+                df['index'][loc]).replace(' (benefit)', '')
             df.loc[loc, 'index'] = str(
-                df['index'][loc].replace(' (losses)', ''))
+                df['index'][loc]).replace(' (losses)', '')
             df.loc[loc, 'index'] = str(
-                df['index'][loc].replace(' (gains)', ''))
+                df['index'][loc]).replace(' (gains)', '')
             df.loc[loc, 'index'] = str(
-                df['index'][loc].replace(' (expense)', ''))
+                df['index'][loc]).replace(' (expense)', '')
         df = df.set_index('index').fillna(value=np.nan)
         dup_count = 1
         while True in df.index.duplicated():
@@ -91,8 +91,8 @@ def ten_k_excel_cleaning(excel_report: pyxl.Workbook) -> pyxl.Workbook:
                     # haven't seen a spreadsheet yet where this isnt the
                     # case for merged cells at the top.
                     next_coord = col_cell.coordinate[0] + '2'
-                    sheets[next_coord].value = sheets[next_coord].value + \
-                        ' - ' + sheets[my_range][0][0].value
+                    sheets[next_coord].value = str(sheets[next_coord].value) + \
+                        ' - ' + str(sheets[my_range][0][0].value)
                 sheets[my_range][0][0].value = None
 
     # Fixing Sheet names to value in cell A1 and making cell A1 to be units
