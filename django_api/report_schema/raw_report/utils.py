@@ -96,8 +96,8 @@ def retrieve_raw_reports_response(request: dict) -> dict:
         A response dictionary containing the urls for the raw reports.
     """
     response = {
-        'company_name': request['company'],
-        'company_cik': request['cik'],
+        'company': request['company'],
+        'cik': request['cik'],
         'reports': {}
     }
 
