@@ -1,4 +1,4 @@
-from report_generator.utils.convert_objects.object_conversions import (
+from middleware.report_generator.utils.convert_objects.object_conversions import (
     json_dict_to_json_file,
     json_dict_to_dataframes_dict,
     dataframes_dict_to_workbook
@@ -87,11 +87,6 @@ def get_database_path() -> str:
         dir_name = dirname(realpath(__file__)).replace(
             'middleware\\query_engine', 'report_generator\\mocks\\')
         return dir_name + 'mock_database\\Users\\'
-
-
-def retrieve_raw_report() -> dict:
-    valid_input = False
-    report = {}
 
     while not valid_input:
         request = basic_request()
@@ -265,8 +260,7 @@ def start_report_retrieval():
         3. Generate a new Report
     """
     welcome_string = '''Welcome! We will now ask you to input some information
-        in order to generate your custom report. Enter 'back' at any time to
-        return to a previous step in the current report retrieval cycle.\n
+        in order to generate your custom report.\n
     '''
 
     print(welcome_string)

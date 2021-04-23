@@ -28,12 +28,6 @@ test-django-backend:
     - python manage.py migrate
     - python manage.py test
 
-test-pyedgar-lite:
-  stage: test
-  script:
-    - pytest py_edgar_lite/test
-
-
 flake8:
   stage: Static Analysis
   script:
