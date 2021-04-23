@@ -1,4 +1,4 @@
-from report_generator.src.active_report import ActiveReport
+from middleware.report_generator.src.active_report import ActiveReport
 from unittest import TestCase
 
 

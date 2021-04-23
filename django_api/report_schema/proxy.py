@@ -70,20 +70,6 @@ def is_valid_years(years: list) -> bool:
     return True
 
 
-def is_valid_report_type(report_type: str) -> bool:
-    """
-    Checks to see whether inputted string is equivalent to '10-K'.
-    Args:
-        report_type: A string corresponding to the report type requested.
-
-    Returns:
-        True if report_type is in a valid list of report types; False otherwise
-    """
-    report_types = ['10-K']
-
-    return report_type in report_types
-
-
 def is_valid_instructions(instructions: dict) -> bool:
     """
     Checks to see whether the items inside a dictionary are all numeric.
@@ -175,9 +161,6 @@ def validate_new_report_request(request: dict) -> tuple:
     if not is_valid_years(request['years']):
         return False, "Invalid Years"
 
-    if not is_valid_report_type(request['report_type']):
-        return False, "Invalid Report Type"
-
     if not is_valid_instructions(request['report_filter']):
         return False, "Invalid Report Filter"
 
@@ -202,9 +185,6 @@ def validate_raw_report_request(request: dict) -> tuple:
 
     if not is_valid_years(request['years']):
         return False, "Invalid Years"
-
-    if not is_valid_report_type(request['report_type']):
-        return False, "Invalid Report Type"
 
     return True, "success"
 

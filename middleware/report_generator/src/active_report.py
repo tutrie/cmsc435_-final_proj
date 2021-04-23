@@ -1,4 +1,4 @@
-from report_generator.utils.convert_objects.object_conversions import (
+from middleware.report_generator.utils.convert_objects.object_conversions import (
     json_file_to_json_dict,
     json_dict_to_dataframes_dict,
     dataframes_dict_to_json_dict
@@ -120,6 +120,7 @@ class ActiveReport:
         self.generated_report = {}
         for sheet, rows in instructions.items():
             int_rows = [int(val) for val in rows]
-            self.generated_report[sheet] = self.dataframes[sheet].loc[int_rows]  # rows is list of ints
+            # rows is list of ints
+            self.generated_report[sheet] = self.dataframes[sheet].loc[int_rows]
 
         return dataframes_dict_to_json_dict(self.generated_report)

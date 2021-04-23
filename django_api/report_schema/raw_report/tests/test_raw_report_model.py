@@ -234,3 +234,38 @@ class RawReportTests(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_raw_reports_endpoint(self):
+        client = Client()
+        google = Company.objects.create(name='Google', cik='123456')
+        RawReport.objects.create(company=google,
+                                 report_date='2020-05-22',
+                                 excel_url='Http://Google.com')
+
+        payload_1 = {
+            'company': 'Google',
+            'cik': '123456',
+            'years': ['2020'],
+        }
+
+        response = client.get(
+            reverse('raw-reports-get-raw-reports'),
+            data=payload_1,
+            content_type='application/json'
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        payload_2 = {  # CIK invalid
+            'company': 'Google',
+            'cik': 'dkfjs;d',
+            'years': '2020',
+        }
+
+        response = client.get(
+            reverse('raw-reports-get-raw-reports'),
+            data=payload_2,
+            content_type='application/json'
+        )
+
+        self.assertEqual(response.status_code, 400)
