@@ -41,7 +41,7 @@ coverage:
     #We should update this to run all tests. It is only running the py_edgar_lite tests
     - pip install pytest
     - pip install coverage
-    - coverage run -m pytest report_generator/test/report_generator
+    - coverage run -m pytest report_generator/test_report_generator
     - coverage run -m pytest django_api/report_schema/tests
     - cd django_api
     - virtualenv venv
