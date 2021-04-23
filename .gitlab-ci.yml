@@ -28,11 +28,6 @@ test-django-backend:
     - python manage.py migrate
     - python manage.py test
 
-test-pyedgar-lite:
-  stage: test
-  script:
-    - pytest py_edgar_lite/test
-
 
 flake8:
   stage: Static Analysis
@@ -44,6 +39,7 @@ coverage:
   stage: Static Analysis
   script:
     #We should update this to run all tests. It is only running the py_edgar_lite tests
+    - pip install pytest
     - coverage run -m pytest report_generator/test/report_generator
     - coverage run -m pytest django_api/report_schema/tests
     - cd django_api
