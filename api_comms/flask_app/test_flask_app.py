@@ -32,9 +32,9 @@ def test_login():
 
 def test_register():
     url = BASE_URL + 'register'
-    package = {"username": "q",
-               "password1": "q",
-               "email": "q@gmail.com"}
+    package = {'username': 'q',
+               'password1': 'q',
+               "'email": 'q@gmail.com'}
 
     response = requests.post(url, data=json.dumps(package))
     assert response.status_code == 200
