@@ -69,8 +69,16 @@ class RawReportViewSet(viewsets.ModelViewSet):
     def get_raw_reports(self, request):
         # Leave import in here. Otherwise, circular import error occurs.
         from report_schema.proxy import Proxy
-        query_params = request.query_params
-        response, status_code = Proxy().retrieve_raw_reports(query_params)
+        
+        query_params_copy = request.query_params.copy()
+
+        real_request = {
+            'company': query_params_copy.pop('company')[0],
+            'cik': query_params_copy.pop('cik')[0],
+            'years': query_params_copy.pop('years'),
+        }
+
+        response, status_code = Proxy().retrieve_raw_reports(real_request)
         if status_code == 400:
             return Response(
                 response, status=status.HTTP_400_BAD_REQUEST

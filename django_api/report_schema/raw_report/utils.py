@@ -54,12 +54,12 @@ def create_raw_report_jsons_from_workbooks(report_file_paths: dict) -> dict:
     """
     json_dict_by_year = {}
     for year, file_path in report_file_paths.items():
-        if year < '2015':
+        if year <= '2015':
             break
         conversion_obj = ConvertCleanSave(file_path)
 
         json_dict_by_year[year] = conversion_obj.convert_to_json()
-
+        print(file_path)
         os.remove(file_path)
 
     return json_dict_by_year
@@ -105,24 +105,31 @@ def retrieve_raw_reports_response(request: dict) -> dict:
     raw_reports_in_db = raw_reports_from_db(request)
 
     if not raw_reports_in_db:
-        company_model = Company.objects.create(
-            name=request['company'], cik=request['cik']
-        )
-
         edgar_scraper = EdgarScraper(request['company'], request['cik'])
 
         report_file_paths = edgar_scraper.download_10k_reports()
 
-        report_file_paths_filtered = {}
+        report_file_paths_filtered = report_file_paths
 
-        for year, file_path in report_file_paths.items():
-            if year in request['years']:
-                report_file_paths_filtered[year] = file_path
+        # report_file_paths_filtered = {}
+
+        # for year, file_path in report_file_paths.items():
+        #     if year in request['years']:
+        #         report_file_paths_filtered[year] = file_path
 
         # Must be called after downloading 10-K's (i.e. the previous statement)
         jsons_by_year = create_raw_report_jsons_from_workbooks(
             report_file_paths_filtered
         )
+
+        company_queryset = Company.objects.filter(
+            name=request['company'], cik=request['cik'])
+        if not company_queryset:
+            company_model = Company.objects.create(
+                name=request['company'], cik=request['cik']
+            )
+        else:
+            company_model = company_queryset.first()
 
         create_raw_report_models(company_model, jsons_by_year,
                                  edgar_scraper._excel_urls['10-K'])

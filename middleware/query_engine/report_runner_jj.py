@@ -1,15 +1,17 @@
 import sys
 sys.path.insert(0, sys.path[0].replace('/middleware/query_engine', ''))
 print(sys.path)
+import json
+import requests
+from re import match
+from os.path import exists, isdir
+from middleware.report_generator.src.active_report import ActiveReport
 from middleware.report_generator.utils.convert_objects.object_conversions import (
     json_dict_to_json_file,
     json_dict_to_dataframes_dict,
     dataframes_dict_to_workbook
 )
-from middleware.report_generator.src.active_report import ActiveReport
-from os.path import exists, isdir
-from re import match
-import requests
+
 
 # # For production:
 # base_url = 'http://18.217.8.244:8000/api/'
@@ -156,7 +158,7 @@ def choose_json_or_xlsx() -> str:
         if output_type in valid_inputs:
             return f'.{output_type}'
         else:
-            print(f'Invalid file type ({output_type})!')
+            print(f'\nInvalid file type ({output_type})!\n')
 
 
 def get_valid_file_name() -> str:
@@ -179,8 +181,8 @@ def get_valid_file_name() -> str:
         if match_obj:
             return match_obj[0]
         else:
-            print('''Invalid Input! Allowed characters are a-z, A-Z, 0-9,
-                underscores ('_'), and hypens ('-').''')
+            print('''\nInvalid Input! Allowed characters are a-z, A-Z, 0-9,
+                underscores ('_'), and hypens ('-').\n''')
 
 
 def get_user_folder_path() -> str:
@@ -193,7 +195,7 @@ def get_user_folder_path() -> str:
 
         if not isdir(output_folder):
             print(
-                f'{output_folder} is not an existing folder path. Please try again.')
+                f'\n{output_folder} is not an existing folder path. Please try again.\n')
         else:
             valid_input = True
 
@@ -215,8 +217,9 @@ def save_single_report(report_dict: dict) -> None:
 
         if can_save_to_location(output_file):
             save_as[file_extension](report_dict, output_file)
+            break
 
-    print(f'Successfully saved file at {output_file}.')
+    print(f'\nSuccessfully saved file at {output_file}.\n')
 
 
 def save_multiple_reports_locally(report: dict) -> None:
@@ -225,7 +228,7 @@ def save_multiple_reports_locally(report: dict) -> None:
         #ToDo prompt user if they want to overwrite or not
     """
     for year, report_dict in report.items():
-        print(f'For the report created in the year {year}:\n')
+        print(f'\nFor the report created in the year {year}:\n')
         save_single_report(report)
 
 
@@ -241,21 +244,26 @@ def basic_request() -> dict:
     }
 
 
-def retrieve_raw_report() -> None:
+def query_raw_report_api() -> None:
     while True:
         request = basic_request()
         response = requests.get(raw_report_url, params=request)
+        response_json = json.loads(response.json())
         print(f'Response: {response}\n')
-        print(f'Dir: {dir(response)}\n')
-        print(f'url: {response.url}\n')
-        print(f'test: {response.text}\n')
-        print(f'Json: {response.json()}\n')
-        print(f'Status_code: {response.status_code}\n')
+        print(f'Json: {response_json.keys()}')
+
         if is_error_response(response):
             print(f'Response returned with error code {response.status_code}')
-            print(f'Response error: {response.json()["error"]}')
+            print(f'Response error: {response_json["error"]}')
+            return None
         else:
-            save_multiple_reports_locally(response.json()['reports'])
+            return response_json
+
+
+def retrieve_raw_reports() -> None:
+    response_json = query_raw_report_api()
+    if response_json:
+        save_multiple_reports_locally(response_json['reports'])
 
 
 def choose_rows_in_sheet(sheet_name, sheet_values: dict) -> list:
@@ -283,9 +291,13 @@ def generate_instructions(merged_report: ActiveReport) -> dict:
 
 
 def create_generated_report(username: str, password: str) -> None:
-    reports = retrieve_raw_report()
+    response_json = query_raw_report_api()
+
+    if not response_json:
+        return
+
     merged_report = ActiveReport.from_workbooks_by_years_dicts(
-        reports['reports'])
+        response_json['reports'])
 
     instructions = generate_instructions(merged_report)
     generated_report_json = merged_report.filter_report(instructions)
@@ -317,7 +329,7 @@ def start_report_retrieval():
     print(welcome_string)
 
     # ToDo add functionality for getting user_report
-    function_map = {'1': retrieve_raw_report, '2': create_generated_report}
+    function_map = {'1': retrieve_raw_reports, '2': create_generated_report}
 
     while True:
         query_user_string = '''

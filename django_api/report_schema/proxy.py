@@ -29,11 +29,7 @@ def strip_request(request: dict) -> dict:
     cleaned = {}
     for key, val in request.items():
         if isinstance(val, str):
-            if key == 'years':
-                split_years = val.split(',')
-                cleaned[key] = [year.strip() for year in split_years]
-            else:
-                cleaned[key] = val.strip()
+            cleaned[key] = val.strip()
         else:
             cleaned[key] = val
     return cleaned
@@ -64,7 +60,8 @@ def is_valid_years(years: list) -> bool:
     """
     for year in years:
         year = year.strip()
-        if not year.isnumeric() or len(year) != 4:
+        print(year)
+        if not year.isnumeric() or len(year) != 4 or int(year) <= 2015:
             return False
 
     return True
