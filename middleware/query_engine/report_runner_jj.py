@@ -372,7 +372,7 @@ def generate_instructions(merged_report: ActiveReport) -> dict:
     return instructions
 
 
-def create_generated_report(username: str, password: str) -> None:
+def create_generated_report(username: str = None, password: str = None) -> None:
     """
     Creates a generated report for the user, per user input.
     """
@@ -389,13 +389,13 @@ def create_generated_report(username: str, password: str) -> None:
 
     print('Preparing to save generated report locally:\n')
     save_single_report(generated_report_json)
-    response = requests.post(generate_report_url, auth=(username, password),
-                             data=generated_report_json, timeout=15)
-    if response.status_code == 201:
-        print('Generated report successfully saved to database.')
-    else:
-        print(f'Response returned with error code {response.status_code}')
-        print(f'Full response: {response}')
+    # response = requests.post(generate_report_url, auth=(username, password),
+    #                          data=generated_report_json, timeout=15)
+    # if response.status_code == 201:
+    #     print('Generated report successfully saved to database.')
+    # else:
+    #     print(f'Response returned with error code {response.status_code}')
+    #     print(f'Full response: {response}')
 
 
 def start_report_retrieval() -> None:
@@ -431,7 +431,6 @@ def start_report_retrieval() -> None:
 
         if option in function_map:
             function_map[option]()
-
         else:
             print('Invalid response')
 
