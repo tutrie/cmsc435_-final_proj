@@ -1,5 +1,6 @@
 from urllib.parse import parse_qs
 import urllib.parse as urlparse
+from pathlib import Path
 from lxml import html
 import requests
 import lxml
@@ -217,9 +218,9 @@ class EdgarScraper:
             req = self._get(url[:-1])
 
         if req is not None:
-            dir_name = os.path.join(os.getcwd(), 'downloaded_reports/')
+            dir_name = Path(os.getcwd()) / 'downloaded_reports'
             file_name = 'report_' + '_'.join(self.name.split(' ')) + '.xlsx'
-            file_path = f'{dir_name}{file_name}'
+            file_path = dir_name / file_name
             file = open(file_path, 'wb')
             file.write(req.content)
             file.close()
@@ -263,10 +264,10 @@ class EdgarScraper:
                 if req is not None:
                     company_name = '_'.join(self.name.split(' '))
 
-                    dir_name = os.path.join(os.getcwd(), 'downloaded_reports/')
+                    dir_name = Path(os.getcwd()) / 'downloaded_reports'
                     
-                    filename = f'10K_{year}_report_{company_name}.xlsx'
-                    full_file = f'{dir_name}{filename}'
+                    file_name = f'10K_{year}_report_{company_name}.xlsx'
+                    full_file = dir_name / file_name
                     file = open(full_file, 'wb')
                     file.write(req.content)
                     file.close()

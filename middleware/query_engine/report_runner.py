@@ -48,7 +48,7 @@ def get_user_input_as_list(prompt: str) -> list:
 
 def basic_request() -> dict:
     return {
-        'company': get_user_input('Enter a company name: ')
+        'company': get_user_input('Enter a company name: '),
         'cik': get_user_input('Enter CIK for the company: '),
         'years': get_user_input_as_list('Enter list of years seperated by commas: '),
     }
