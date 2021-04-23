@@ -18,8 +18,7 @@ class GeneratedReport(models.Model):
     name = models.CharField(max_length=100)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE,
                                    related_name='created_by')
-    # TODO Need to create regular expression to use with match field and set the right path.
-    path = models.FilePathField(path='./', allow_folders=True)
+    json_schema = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f'Report created by {self.created_by}, named: {self.name}'
@@ -31,7 +30,7 @@ class GeneratedReportAdmin(admin.ModelAdmin):
 
     Inherits from the predefined model admin class.
     """
-    list_display = ('name', 'created_by', 'path')
+    list_display = ('name', 'created_by')
 
 
 class ReportSchemaConfig(AppConfig):
@@ -53,7 +52,7 @@ class GeneratedReportSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'created_by',
-            'path'
+            'json_schema'
         )
 
 
