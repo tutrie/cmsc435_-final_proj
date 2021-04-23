@@ -224,10 +224,10 @@ class EdgarScraper:
             plt = sys.platform
             if plt.startswith('darwin') or plt.startswith('linux'):
                 dir_name = dirname(realpath(__file__)).replace(
-                    'report_schema/raw_report/tests', 'downloaded_reports/')
+                    'report_schema/raw_report', 'downloaded_reports/')
             elif plt.startswith('win32') or plt.startswith('cygwin'):
                 dir_name = dirname(realpath(__file__)).replace(
-                    r'report_schema\raw_report\tests', 'downloaded_reports\\')
+                    r'report_schema\raw_report', 'downloaded_reports\\')
 
             file_name = 'report_' + '_'.join(self.name.split(' ')) + '.xlsx'
             file_path = f'{dir_name}{file_name}'
@@ -280,10 +280,10 @@ class EdgarScraper:
                 plt = sys.platform
                 if plt.startswith('darwin') or plt.startswith('linux'):
                     dir_name = dirname(realpath(__file__)).replace(
-                        'report_schema/raw_report/tests', 'downloaded_reports/')
+                        'report_schema/raw_report', 'downloaded_reports/')
                 elif plt.startswith('win32') or plt.startswith('cygwin'):
                     dir_name = dirname(realpath(__file__)).replace(
-                        r'report_schema\raw_report\tests', 'downloaded_reports\\')
+                        r'report_schema\raw_report', 'downloaded_reports\\')
 
                 filename = f'10K_{year}_report_{company_name}.xlsx'
                 full_file = f'{dir_name}{filename}'
