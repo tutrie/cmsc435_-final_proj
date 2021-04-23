@@ -21,25 +21,25 @@ class GeneratedReportTests(TestCase):
         GeneratedReport.objects.create(
             name='example name',
             created_by=User.objects.get(username='developer1'),
-            path='./main_app'
+            json_schema='{}'
         )
 
         self.assertTrue(GeneratedReport.objects.all())
 
     def test_can_retrieve_generated_report(self):
         report = GeneratedReport(name='example name', created_by=User.objects.get(username='developer1'),
-                                 path='./main_app')
+                                 json_schema='{}')
         report.save()
 
         retrieved_report = GeneratedReport.objects.get(name='example name')
         self.assertEqual(str(retrieved_report), str(report))
 
-        retrieved_report = GeneratedReport.objects.get(path='./main_app')
+        retrieved_report = GeneratedReport.objects.get(json_schema='{}')
         self.assertEqual(str(retrieved_report), str(report))
 
     def test_can_delete_generated_report(self):
         report = GeneratedReport(name='example name', created_by=User.objects.get(username='developer1'),
-                                 path='./main_app')
+                                 json_schema='{}')
         report.save()
 
         GeneratedReport.objects.get(name='example name').delete()
@@ -52,7 +52,7 @@ class GeneratedReportTests(TestCase):
         report_to_get = GeneratedReport.objects.create(
             name='example name',
             created_by=User.objects.get(username='developer1'),
-            path='./main_app'
+            json_schema='{}'
         )
 
         response = client.get(
@@ -71,12 +71,12 @@ class GeneratedReportTests(TestCase):
         GeneratedReport.objects.create(
             name='example name 1',
             created_by=User.objects.get(username='developer1'),
-            path='./main_app'
+            json_schema='{}'
         )
         GeneratedReport.objects.create(
             name='example name 2',
             created_by=User.objects.get(username='developer1'),
-            path='./main_app'
+            json_schema='{}'
         )
 
         response = client.get(
@@ -92,7 +92,7 @@ class GeneratedReportTests(TestCase):
         GeneratedReport.objects.create(
             name='example name',
             created_by=User.objects.get(username='developer1'),
-            path='./main_app'
+            json_schema='{}'
         )
 
         response = client.get(
@@ -106,7 +106,7 @@ class GeneratedReportTests(TestCase):
         client.login(username='developer1', password='developerpassword123')
         payload = {
             'name': 'example name',
-            'path': './main_app'
+            'json_schema': '{}'
         }
     
         response = client.post(
@@ -128,19 +128,19 @@ class GeneratedReportTests(TestCase):
             shkjhsdfkjlahsdfkashfhfkhsdfssdfaa
             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
             aaaaaaaaaadafasdfasdfasdfasdfasdfa''',  # Name that's too long
-            'path': './main_app'
+            'json_schema': '{}'
         }
         payload_2 = {
             'name': 'example name',
-            'path': './example'  # Path to file that doesn't exist
+            'json_schema': {}  # json_schema is a dictionary
         }
         payload_3 = {
             'name': '',  # No name
-            'path': './main_app'
+            'json_schema': '{}'
         }
         payload_4 = {
             'name': ['example name'],  # Incorrect name type
-            'path': './main_app'
+            'json_schema': '{}'
         }
 
         response_1 = client.post(
@@ -173,11 +173,11 @@ class GeneratedReportTests(TestCase):
         client = Client()
         client.login(username='developer1', password='developerpassword123')
         report = GeneratedReport(name='example name', created_by=User.objects.get(username='developer1'),
-                                 path='./report_schema')
+                                 json_schema='{}')
         report.save()
         payload = {  # Change name of report
             'name': 'a different name',
-            'path': './report_schema'
+            'json_schema': '{}'
         }
 
         response = client.put(
@@ -194,19 +194,19 @@ class GeneratedReportTests(TestCase):
         client = Client()
         client.login(username='developer1', password='developerpassword123')
         report = GeneratedReport.objects.create(name='example name', created_by=User.objects.get(username='developer1'),
-                                                path='./main_app')
+                                                json_schema='{}')
 
         payload_1 = {
             'name': 'example name',
-            'path': './example'  # Path to file that doesn't exist
+            'json_schema': {}  # json_schema thats actual json
         }
         payload_2 = {
             'name': '',  # No name
-            'path': './main_app'
+            'json_schema': '{}'
         }
         payload_3 = {
             'name': ['example name'],  # Incorrect name type
-            'path': './main_app'
+            'json_schema': '{}'
         }
 
         response_1 = client.put(
@@ -234,7 +234,7 @@ class GeneratedReportTests(TestCase):
         client.login(username='developer1', password='developerpassword123')
         report_to_delete = GeneratedReport.objects.create(name='example name',
                                                           created_by=User.objects.get(username='developer1'),
-                                                          path='./main_app')
+                                                          json_schema='{}')
 
         response = client.delete(
             reverse('generated-reports-detail', kwargs={'pk': report_to_delete.pk})
@@ -246,7 +246,7 @@ class GeneratedReportTests(TestCase):
         client = Client()
         client.login(username='developer1', password='developerpassword123')
         GeneratedReport.objects.create(name='example name',
-                                       created_by=User.objects.get(username='developer1'), path='./main_app')
+                                       created_by=User.objects.get(username='developer1'), json_schema='{}')
 
         response = client.delete(
             reverse('generated-reports-detail', kwargs={'pk': 10})
@@ -258,9 +258,9 @@ class GeneratedReportTests(TestCase):
         client = Client()
         client.login(username='admin', password='admin')
         GeneratedReport.objects.create(name='example name 1',
-                                       created_by=User.objects.get(username='developer1'), path='./main_app')
+                                       created_by=User.objects.get(username='developer1'), json_schema='{}')
         GeneratedReport.objects.create(name='example name 2',
-                                       created_by=User.objects.get(username='developer2'), path='./main_app')
+                                       created_by=User.objects.get(username='developer2'), json_schema='{}')
         
         response = client.get(
             reverse('generated-reports-list')
@@ -273,7 +273,7 @@ class GeneratedReportTests(TestCase):
         client = Client()
         payload = {
             'name': 'example name',
-            'path': './main_app'
+            'json_schema': '{}'
         }
     
         response = client.post(
@@ -293,9 +293,9 @@ class GeneratedReportTests(TestCase):
         client = Client()
         client.login(username='developer1', password='developerpassword123')
         GeneratedReport.objects.create(name='example name 1',
-                                       created_by=User.objects.get(username='developer2'), path='./main_app')
+                                       created_by=User.objects.get(username='developer2'), json_schema='{}')
         GeneratedReport.objects.create(name='example name 2',
-                                       created_by=User.objects.get(username='developer2'), path='./main_app')
+                                       created_by=User.objects.get(username='developer2'), json_schema='{}')
         
         response = client.get(
             reverse('generated-reports-list')
@@ -308,11 +308,11 @@ class GeneratedReportTests(TestCase):
         client = Client()
         client.login(username='developer1', password='developerpassword123')
         report = GeneratedReport(name='example name', created_by=User.objects.get(username='developer2'),
-                                 path='./report_schema')
+                                 json_schema='{}')
         report.save()
         payload = {  # Change name of report
             'name': 'a different name',
-            'path': './report_schema'
+            'json_schema': '{}'
         }
 
         response = client.put(

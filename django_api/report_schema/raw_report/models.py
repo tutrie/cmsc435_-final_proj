@@ -14,7 +14,7 @@ class RawReport(models.Model):
     """
     company = models.ForeignKey(Company, on_delete=models.deletion.CASCADE)
     report_date = models.DateField()
-    parsed_json = models.JSONField(blank=True, null=True)
+    parsed_json = models.TextField(blank=True, null=True)
     excel_url = models.URLField()
 
     def __str__(self):
