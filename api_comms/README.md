@@ -1,7 +1,7 @@
 ## Server:
 To run the server:
-1. cd into api_comms\flask_app
-2. run python3 -m flask run
+1. cd into ```team-project-xrbl-scraper\api_comms\flask_app```
+2. run ```python3 -m flask run```
 3. visit http://127.0.0.1:5000/
 
 
@@ -22,9 +22,20 @@ Located at http://127.0.0.1:5000/register, this method takes in a username, pass
 
 ```def login()```
 
-Located at http://127.0.0.1:5000/login, this method takes in a username and password from the user's input and sends a GET request to http://18.217.8.244:8000/api/generated-reports/.  Assuming valid credentials, the user will be taken to their account page where they can view their reports.
+Located at http://127.0.0.1:5000/login, this method takes in a username and password from the user's input and sends a GET request to http://18.217.8.244:8000/api/generated-reports/ and http://18.217.8.244:8000/api/raw-reports/.  Assuming valid credentials, the user will be taken to their account page where they can view their reports.
 
 ```def logout()```
 
+Located at http://127.0.0.1:5000/logout, this method displays a logout message when the user has logged out of their account.
+
+```def raw_report()```
+
+Located at http://127.0.0.1:5000/raw_report, this method will display the raw
+reports for the logged-in user. 
+
+
+```def generated_report()```
+
+Located at http://127.0.0.1:5000/generated_report, this method will display the generated reports for the logged-in user.  
 
 Note:  Timeout errors will be the result of network and internet speeds dropping.
