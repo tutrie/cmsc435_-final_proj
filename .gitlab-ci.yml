@@ -41,6 +41,7 @@ coverage:
     #We should update this to run all tests. It is only running the py_edgar_lite tests
     - pip install pytest
     - pip install coverage
+    - pip install virtualenv
     - cd django_api
     - virtualenv venv
     - source venv/bin/activate
