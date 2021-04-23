@@ -59,7 +59,6 @@ def create_raw_report_jsons_from_workbooks(report_file_paths: dict) -> dict:
         conversion_obj = ConvertCleanSave(file_path)
 
         json_dict_by_year[year] = conversion_obj.convert_to_json()
-        os.remove(file_path)
 
     return json_dict_by_year
 
@@ -108,17 +107,9 @@ def retrieve_raw_reports_response(request: dict) -> dict:
 
         report_file_paths = edgar_scraper.download_10k_reports()
 
-        report_file_paths_filtered = report_file_paths
-
-        # report_file_paths_filtered = {}
-
-        # for year, file_path in report_file_paths.items():
-        #     if year in request['years']:
-        #         report_file_paths_filtered[year] = file_path
-
         # Must be called after downloading 10-K's (i.e. the previous statement)
         jsons_by_year = create_raw_report_jsons_from_workbooks(
-            report_file_paths_filtered
+            report_file_paths
         )
 
         company_queryset = Company.objects.filter(

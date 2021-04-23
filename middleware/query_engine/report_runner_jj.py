@@ -25,6 +25,8 @@ user_report_url = base_url + 'user-report'
 
 def get_user_input(prompt: str) -> str:
     """
+    Prompts a user for input.
+
     Args:
         prompt: A prompt to the user.
 
@@ -37,6 +39,8 @@ def get_user_input(prompt: str) -> str:
 
 def get_user_input_as_list(prompt: str) -> list:
     """
+    Promps user for a list of inputs.
+
     Args:
         prompt: A prompt to the user.
 
@@ -56,6 +60,8 @@ def get_user_input_as_list(prompt: str) -> list:
 
 def get_user_int_list(target_list: list) -> list:
     """
+    Prompts user for a list of integers.
+
     Args:
         target_list: A list corresponding to items that the User may want to
             pull information from.
@@ -112,17 +118,36 @@ def get_user_int_list(target_list: list) -> list:
     return sorted(to_keep)
 
 
-def save_json(report_dict: dict, output_file: str):
+def save_json(report_dict: dict, output_file: str) -> None:
+    """
+    Saves a dictionary as a JSON file to the given output file path.
+
+    Args:
+        report_dict: A dictionary represntation of a report.
+
+        output_file: A full file path to where the report should be saved to.
+    """
     json_dict_to_json_file(report_dict, output_file)
 
 
 def save_xlsx(report_dict: dict, output_file: str):
+    """
+    Saves a dictionary as an Excel file to the given output file path.
+
+    Args:
+        report_dict: A dictionary represntation of a report.
+
+        output_file: A full file path to where the report should be saved to.
+    """
     dataframes_dict = json_dict_to_dataframes_dict(report_dict)
     dataframes_dict_to_workbook(dataframes_dict, output_file)
 
 
 def can_save_to_location(file_path: str) -> bool:
     """
+    Checks to see whether a given file path exists already and if so, prompts
+    the user and asks whether it is okay to overwrite a existing file.
+
     Args:
         file_path: A valid file path of the User's choice to the possibly
             existing file.
@@ -143,6 +168,9 @@ def can_save_to_location(file_path: str) -> bool:
 
 def choose_json_or_xlsx() -> str:
     """
+    Promps the user to choose to save a file in either as a json or xlsx file
+    format.
+
     Args:
         None
 
@@ -163,6 +191,8 @@ def choose_json_or_xlsx() -> str:
 
 def get_valid_file_name() -> str:
     """
+    Prompts the user for a valid file name.
+
     Args:
         None
 
@@ -186,6 +216,12 @@ def get_valid_file_name() -> str:
 
 
 def get_user_folder_path() -> str:
+    """
+    Prompts the user for a valid folder path.
+
+    Returns:
+        A valid folder path.
+    """
     valid_input = False
     output_folder = ''
 
@@ -206,10 +242,15 @@ def get_user_folder_path() -> str:
 
 
 def save_single_report(report_dict: dict) -> None:
-    save_as = {'.json': save_json, '.xlsx': save_xlsx}
+    """
+    Call functions to save a single report.
 
+    Args:
+        report_dict: A dictionary represntation of a report.
+    """
+    save_as = {'.json': save_json, '.xlsx': save_xlsx}
+    output_folder = get_user_folder_path()
     while True:
-        output_folder = get_user_folder_path()
         file_name = get_valid_file_name()
         file_extension = choose_json_or_xlsx()
 
@@ -224,19 +265,33 @@ def save_single_report(report_dict: dict) -> None:
 
 def save_multiple_reports_locally(report: dict) -> None:
     """
-        Saves report to a local folder and returns the file location
-        #ToDo prompt user if they want to overwrite or not
+    Saves report to a local folder and returns the file location
+    
+    Args:
+        report_dict: A dictionary represntation of a report.
     """
     for year, report_dict in report.items():
         print(f'\nFor the report created in the year {year}:\n')
-        save_single_report(report)
+        save_single_report(report_dict)
 
 
-def is_error_response(response):
+def is_error_response(response: object) -> bool:
+    """
+    Tests whether a response object returned a 200 OK status.
+
+    Returns:
+        True if response.status_code != 200; False otherwise.
+    """
     return response.status_code != 200
 
 
 def basic_request() -> dict:
+    """
+    Call functions to prompt user for basic report information.
+
+    Returns:
+        A request to be sent to the back-end to retrieve reports.
+    """
     return {
         'company': get_user_input('Enter a company name: '),
         'cik': get_user_input('Enter CIK for the company: '),
@@ -245,6 +300,10 @@ def basic_request() -> dict:
 
 
 def query_raw_report_api() -> None:
+    """
+    Uses the request library to send a request to the API and receive a
+    response from the API to process further.
+    """
     while True:
         request = basic_request()
         response = requests.get(raw_report_url, params=request)
@@ -261,18 +320,34 @@ def query_raw_report_api() -> None:
 
 
 def retrieve_raw_reports() -> None:
+    """
+    Get the json object of the response, and if the request was successfull,
+    save the reports to the local machine.
+    """
     response_json = query_raw_report_api()
     if response_json:
         save_multiple_reports_locally(response_json['reports'])
 
 
 def choose_rows_in_sheet(sheet_name, sheet_values: dict) -> list:
+    """
+    Prompts user to choose specific rows in Excel sheets.
+
+    Returns:
+        A list of indices corresponding to the selected rows.
+    """
     print(f'Preparing to choose rows for sheet {sheet_name}')
     rows_idxs_to_keep = get_user_int_list(sheet_values['index'])
     return rows_idxs_to_keep
 
 
 def choose_sheet_names(merged_report: ActiveReport) -> list:
+    """
+    Prompts user to choose specific sheets from a workbook.
+
+    Returns:
+        A list of indices corresponding to the selected sheets.
+    """
     sheet_names = list(merged_report.json.keys())
     print('Preparing to choose sheets to pull from:\n')
     sheet_idxs_to_keep = get_user_int_list(sheet_names)
@@ -280,6 +355,13 @@ def choose_sheet_names(merged_report: ActiveReport) -> list:
 
 
 def generate_instructions(merged_report: ActiveReport) -> dict:
+    """
+    Generate instructions to filter report.
+
+    Returns:
+        Instructions dictionary with key being a sheet name and the values
+        being rows for that sheet to keep.
+    """
     instructions = {}
 
     sheets_to_keep = choose_sheet_names(merged_report)
@@ -291,6 +373,9 @@ def generate_instructions(merged_report: ActiveReport) -> dict:
 
 
 def create_generated_report(username: str, password: str) -> None:
+    """
+    Creates a generated report for the user, per user input.
+    """
     response_json = query_raw_report_api()
 
     if not response_json:
@@ -313,7 +398,7 @@ def create_generated_report(username: str, password: str) -> None:
         print(f'Full response: {response}')
 
 
-def start_report_retrieval():
+def start_report_retrieval() -> None:
     """
     This function simply queries the user and ask them to choose one of three
     options:
