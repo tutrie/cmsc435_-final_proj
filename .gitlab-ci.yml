@@ -43,8 +43,6 @@ coverage:
     - pip install coverage
     - pip install virtualenv
     - cd django_api
-    - virtualenv venv
-    - source venv/bin/activate
     - pip install Django
     - pip install djangorestframework
     - pip install psycopg2-binary
