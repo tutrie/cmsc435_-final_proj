@@ -15,7 +15,7 @@ if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
         'report_schema/raw_report/tests', 'downloaded_reports/')
 elif sys.platform.startswith('win32') or sys.platform.startswith('cygwin'):
     file_path = dirname(realpath(__file__)).replace(
-        r'report_schema\\raw_report\\tests', r'downloaded_reports\\')
+        r'report_schema\raw_report\tests', 'downloaded_reports\\')
 
 file_path += '10-K-20.xlsx'
 

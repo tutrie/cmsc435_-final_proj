@@ -4,6 +4,7 @@ import urllib.parse as urlparse
 from lxml import html
 import requests
 import lxml
+import sys
 import re
 
 BASE_URL = "https://www.sec.gov"
@@ -220,9 +221,14 @@ class EdgarScraper:
             # dir_name = '~' + '/downloaded_reports/'
 
             # For development:
-            dir_name = dirname(realpath(__file__)).replace(
-                'report_schema/raw_report', 'downloaded_reports/'
-            )
+            plt = sys.platform
+            if plt.startswith('darwin') or plt.startswith('linux'):
+                dir_name = dirname(realpath(__file__)).replace(
+                    'report_schema/raw_report/tests', 'downloaded_reports/')
+            elif plt.startswith('win32') or plt.startswith('cygwin'):
+                dir_name = dirname(realpath(__file__)).replace(
+                    r'report_schema\raw_report\tests', 'downloaded_reports\\')
+
             file_name = 'report_' + '_'.join(self.name.split(' ')) + '.xlsx'
             file_path = f'{dir_name}{file_name}'
             file = open(file_path, 'wb')
@@ -271,9 +277,13 @@ class EdgarScraper:
                 # dir_name = '~' + '/downloaded_reports/'
 
                 # For development:
-                dir_name = dirname(realpath(__file__)).replace(
-                    'report_schema/raw_report', 'downloaded_reports/'
-                )
+                plt = sys.platform
+                if plt.startswith('darwin') or plt.startswith('linux'):
+                    dir_name = dirname(realpath(__file__)).replace(
+                        'report_schema/raw_report/tests', 'downloaded_reports/')
+                elif plt.startswith('win32') or plt.startswith('cygwin'):
+                    dir_name = dirname(realpath(__file__)).replace(
+                        r'report_schema\raw_report\tests', 'downloaded_reports\\')
 
                 filename = f'10K_{year}_report_{company_name}.xlsx'
                 full_file = f'{dir_name}{filename}'
