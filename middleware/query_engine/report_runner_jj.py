@@ -4,10 +4,9 @@ from report_generator.utils.convert_objects.object_conversions import (
     dataframes_dict_to_workbook
 )
 from middleware.report_generator.src.active_report import ActiveReport
-from os.path import realpath, dirname, exists, isdir
+from os.path import exists, isdir
 from re import match
 import requests
-import sys
 
 
 base_url = 'http://18.217.8.244:8000/api/'
@@ -45,78 +44,6 @@ def get_user_input_as_list(prompt: str) -> list:
             as_list.append(val)
 
     return as_list
-
-
-def basic_request() -> dict:
-    return {
-        'company': get_user_input('Enter a company name: '),
-        'cik': get_user_input('Enter CIK for the company: '),
-        'years': get_user_input_as_list('Enter list of years seperated by commas: '),
-    }
-
-
-def is_error_response(response):
-    if response.status_code != 200:
-        print(f'Response returned with error code {response.status_code}')
-        print(f'Response error: {response["error"]}')
-        return True
-
-    return False
-
-
-def get_rows_for_sheets(sheets: list) -> dict:
-    sheet_map = {}
-
-    for sheet in sheets:
-        print(f'Sheet Name: {sheet}\n')
-
-        rows_to_get = get_user_input_as_list('Enter the rows you would like: ')
-        sheet_map[sheet] = rows_to_get
-
-    return sheet_map
-
-
-# def get_database_path() -> str:
-#     """Returns the path to the database."""
-
-#     if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
-#         dir_name = dirname(realpath(__file__)).replace(
-#             'middleware/query_engine', 'report_generator/mocks/')
-#         return dir_name + 'mock_database/Users/'
-
-#     # To be deleted when put into Linux container
-#     elif sys.platform.startswith('win32') or sys.platform.startswith('cygwin'):
-#         dir_name = dirname(realpath(__file__)).replace(
-#             'middleware\\query_engine', 'report_generator\\mocks\\')
-#         return dir_name + 'mock_database\\Users\\'
-
-
-def retrieve_raw_report() -> dict:
-    while True:
-        request = basic_request()
-        response = requests.get(raw_report_url, data=request).json()
-
-        if not is_error_response(response):
-            return response['reports']
-
-
-"""
-def retrieve_user_report() -> dict:
-    valid_input = False
-    report = {}
-
-    while not valid_input:
-        request = basic_request()
-        request["user"] = "USERNAME"  # ToDo get username of the person using the program
-
-        response = requests.get(user_report_url, request).json()
-
-        if not is_error_response(response):
-            report = response["report"]
-            valid_input = True
-
-    return report
-"""
 
 
 def get_user_int_list(target_list: list) -> list:
@@ -177,89 +104,33 @@ def get_user_int_list(target_list: list) -> list:
     return sorted(to_keep)
 
 
-def choose_rows_in_sheet(sheet_name, sheet_values: dict) -> list:
-    print(f'Preparing to choose rows for sheet {sheet_name}')
-    rows_idxs_to_keep = get_user_int_list(sheet_values['index'])
-    return rows_idxs_to_keep
+def save_json(report_dict: dict, output_file: str):
+    json_dict_to_json_file(report_dict, output_file)
 
 
-def choose_sheet_names(merged_report: ActiveReport) -> list:
-    sheet_names = list(merged_report.json.keys())
-    print('Preparing to choose sheets to pull from:\n')
-    sheet_idxs_to_keep = get_user_int_list(sheet_names)
-    return [sheet_names[idx] for idx in sheet_idxs_to_keep]
+def save_xlsx(report_dict: dict, output_file: str):
+    dataframes_dict = json_dict_to_dataframes_dict(report_dict)
+    dataframes_dict_to_workbook(dataframes_dict, output_file)
 
 
-def generate_instructions(merged_report: ActiveReport) -> dict:
-    instructions = {}
+def can_save_to_location(file_path: str) -> bool:
+    """
+    Args:
+        file_path: A valid file path of the User's choice to the possibly
+            existing file.
 
-    sheets_to_keep = choose_sheet_names(merged_report)
+    Returns:
+        True if User is allowed/allows the file to be saved to the specified
+        file path; False otherwise.
+    """
+    if exists(file_path):
+        prompt = f'''The file {file_path} already exists. Do
+            you want to overwrite this file (y/n)? (This operation
+            cannot be undone!): '''
+        answer = get_user_input(prompt)
+        return answer == 'y'
 
-    for sheet in sheets_to_keep:
-        instructions[sheet] = choose_rows_in_sheet(sheet, merged_report[sheet])
-
-    return instructions
-
-
-def generate_new_report(username: str, password: str) -> dict:
-    reports = retrieve_raw_report()
-    merged_report = ActiveReport.from_workbooks_by_years_dicts(
-        reports['reports'])
-
-    instructions = generate_instructions(merged_report)
-    generated_report_json = merged_report.filter_report(instructions)
-
-    print('Preparing to save generated report locally:\n')
-    save_single_report(generated_report_json)
-    response = requests.post(generate_report_url, auth=(username, password),
-                             data=generated_report_json, timeout=15)
-    if response.status_code == 201:
-        print('Generated report successfully saved to database.')
-    else:
-        print(f'Response returned with error code {response.status_code}')
-        print(f'Full response: {response}')
-
-
-# def generate_new_report() -> dict:
-#     reports = retrieve_raw_report()
-
-#     merged_repo
-#     valid_input = False
-#     report = {}
-
-#     while not valid_input:
-#         request = basic_request()
-#         sheets = get_user_input_as_list(
-#             'Enter a list of sheets you want to pull from: ')
-#         request['report_filter'] = get_rows_for_sheets(sheets)
-
-#         response = requests.get(generate_report_url, json=request).json()
-
-#         if not is_error_response(response):
-#             report = response['report']
-#             valid_input = True
-
-#     return report
-
-
-def get_user_folder_path() -> str:
-    valid_input = False
-    output_folder = ''
-
-    while not valid_input:
-        output_folder = get_user_input("""Please enter a folder path to save
-                            your files in: (<directory>/<sub_directory>/): """)
-
-        if not isdir(output_folder):
-            print(
-                f'{output_folder} is not an existing folder path. Please try again.')
-        else:
-            valid_input = True
-
-    if output_folder[-1] == '/':
-        return output_folder
-
-    return output_folder + '/'
+    return True
 
 
 def choose_json_or_xlsx() -> str:
@@ -306,44 +177,38 @@ def get_valid_file_name() -> str:
                 underscores ('_'), and hypens ('-').''')
 
 
-# def can_save_to_location(file_path: str) -> bool:
-#     """
-#     Args:
-#         file_path: A valid file path of the User's choice to the possibly
-#             existing file.
+def get_user_folder_path() -> str:
+    valid_input = False
+    output_folder = ''
 
-#     Returns:
-#         True if User is allowed/allows the file to be saved to the specified
-#         file path; False otherwise.
-#     """
-#     if exists(file_path):
-#         prompt = f'''The file {file_path} already exists. Do
-#             you want to overwrite this file (y/n)? (This operation
-#             cannot be undone!): '''
-#         answer = get_user_input(prompt)
-#         return answer == 'y'
+    while not valid_input:
+        output_folder = get_user_input("""Please enter a folder path to save
+                            your files in: (<directory>/<sub_directory>/): """)
 
-#     return True
+        if not isdir(output_folder):
+            print(
+                f'{output_folder} is not an existing folder path. Please try again.')
+        else:
+            valid_input = True
 
+    if output_folder[-1] == '/':
+        return output_folder
 
-def save_json(report_dict: dict, output_file: str):
-    json_dict_to_json_file(report_dict, output_file)
-
-
-def save_xlsx(report_dict: dict, output_file: str):
-    dataframes_dict = json_dict_to_dataframes_dict(report_dict)
-    dataframes_dict_to_workbook(dataframes_dict, output_file)
+    return output_folder + '/'
 
 
 def save_single_report(report_dict: dict) -> None:
     save_as = {'.json': save_json, '.xlsx': save_xlsx}
-    output_folder = get_user_folder_path()
-    file_name = get_valid_file_name()
-    file_extension = choose_json_or_xlsx()
 
-    output_file = '{}{}{}'.format(output_folder, file_name, file_extension)
+    while True:
+        output_folder = get_user_folder_path()
+        file_name = get_valid_file_name()
+        file_extension = choose_json_or_xlsx()
 
-    save_as[file_extension](report_dict, output_file)
+        output_file = '{}{}{}'.format(output_folder, file_name, file_extension)
+
+        if can_save_to_location(output_file):
+            save_as[file_extension](report_dict, output_file)
 
     print(f'Successfully saved file at {output_file}.')
 
@@ -356,6 +221,73 @@ def save_multiple_reports_locally(report: dict) -> None:
     for year, report_dict in report.items():
         print(f'For the report created in the year {year}:\n')
         save_single_report(report)
+
+
+def is_error_response(response):
+    return response.status_code != 200
+
+
+def basic_request() -> dict:
+    return {
+        'company': get_user_input('Enter a company name: '),
+        'cik': get_user_input('Enter CIK for the company: '),
+        'years': get_user_input_as_list('Enter list of years seperated by commas: '),
+    }
+
+
+def retrieve_raw_report() -> None:
+    while True:
+        request = basic_request()
+        response = requests.get(raw_report_url, data=request).json()
+
+        if is_error_response(response):
+            print(f'Response returned with error code {response.status_code}')
+            print(f'Response error: {response["error"]}')
+        else:
+            save_multiple_reports_locally(response['reports'])
+
+
+def choose_rows_in_sheet(sheet_name, sheet_values: dict) -> list:
+    print(f'Preparing to choose rows for sheet {sheet_name}')
+    rows_idxs_to_keep = get_user_int_list(sheet_values['index'])
+    return rows_idxs_to_keep
+
+
+def choose_sheet_names(merged_report: ActiveReport) -> list:
+    sheet_names = list(merged_report.json.keys())
+    print('Preparing to choose sheets to pull from:\n')
+    sheet_idxs_to_keep = get_user_int_list(sheet_names)
+    return [sheet_names[idx] for idx in sheet_idxs_to_keep]
+
+
+def generate_instructions(merged_report: ActiveReport) -> dict:
+    instructions = {}
+
+    sheets_to_keep = choose_sheet_names(merged_report)
+
+    for sheet in sheets_to_keep:
+        instructions[sheet] = choose_rows_in_sheet(sheet, merged_report[sheet])
+
+    return instructions
+
+
+def create_generated_report(username: str, password: str) -> dict:
+    reports = retrieve_raw_report()
+    merged_report = ActiveReport.from_workbooks_by_years_dicts(
+        reports['reports'])
+
+    instructions = generate_instructions(merged_report)
+    generated_report_json = merged_report.filter_report(instructions)
+
+    print('Preparing to save generated report locally:\n')
+    save_single_report(generated_report_json)
+    response = requests.post(generate_report_url, auth=(username, password),
+                             data=generated_report_json, timeout=15)
+    if response.status_code == 201:
+        print('Generated report successfully saved to database.')
+    else:
+        print(f'Response returned with error code {response.status_code}')
+        print(f'Full response: {response}')
 
 
 def start_report_retrieval():
@@ -374,7 +306,7 @@ def start_report_retrieval():
     print(welcome_string)
 
     # ToDo add functionality for getting user_report
-    function_map = {'1': retrieve_raw_report, '2': generate_new_report}
+    function_map = {'1': retrieve_raw_report, '2': create_generated_report}
 
     while True:
         query_user_string = '''
@@ -390,8 +322,8 @@ def start_report_retrieval():
             break
 
         if option in function_map:
-            reports = function_map[option]()
-            save_multiple_reports_locally(reports)
+            function_map[option]()
+
         else:
             print('Invalid response')
 
