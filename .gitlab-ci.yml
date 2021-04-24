@@ -51,7 +51,7 @@ coverage:
     - pip install coverage
     #We should update this to run all tests. It is only running the py_edgar_lite tests
     - cd django_api
-    - coverage run --omit '.venv/*' --source='.' manage.py test
+    - coverage run --omit './venv/*' --source='.' manage.py test
     - coverage report
     - coverage erase
 
