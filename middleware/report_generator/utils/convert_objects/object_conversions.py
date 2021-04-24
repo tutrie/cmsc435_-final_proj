@@ -2,34 +2,34 @@ import pandas as pd
 import json
 import openpyxl as pyxl
 
-def workbook_to_dataframes_dict(excel_report: pyxl.Workbook) -> dict:
-    """
-    Args:
-        excel_report: openpyxl Workbook object
+# def workbook_to_dataframes_dict(excel_report: pyxl.Workbook) -> dict:
+#     """
+#     Args:
+#         excel_report: openpyxl Workbook object
+#
+#     Returns:
+#         Dictionary of dataframes for each sheet in excel workbook.
+#     """
+#     dataframes_dict = {}
+#     for sheet in excel_report.worksheets:
+#         data = sheet.values
+#         cols = next(data)  # Headers (First Row)
+#         data = list(data)  # Second until Last rows
+#         dataframes_dict[sheet.title] = (pd.DataFrame(data, columns=cols))
+#     return dataframes_dict
+#
 
-    Returns:
-        Dictionary of dataframes for each sheet in excel workbook.
-    """
-    dataframes_dict = {}
-    for sheet in excel_report.worksheets:
-        data = sheet.values
-        cols = next(data)  # Headers (First Row)
-        data = list(data)  # Second until Last rows
-        dataframes_dict[sheet.title] = (pd.DataFrame(data, columns=cols))
-    return dataframes_dict
-
-
-def json_file_to_json_dict(json_file_path: str) -> dict:
-    """
-    Args:
-        json_file_path: File path to the JSON file
-
-    Returns:
-        Dictionary of dictionaries that represents the JSON.
-    """
-    with open(json_file_path, 'r') as json_file:
-        return json.load(json_file)
-
+# def json_file_to_json_dict(json_file_path: str) -> dict:
+#     """
+#     Args:
+#         json_file_path: File path to the JSON file
+#
+#     Returns:
+#         Dictionary of dictionaries that represents the JSON.
+#     """
+#     with open(json_file_path, 'r') as json_file:
+#         return json.load(json_file)
+#
 
 def json_dict_to_dataframes_dict(json_dict: dict) -> dict:
     """
@@ -93,23 +93,23 @@ def dataframes_dict_to_workbook(dataframes_dict: dict, file_path: str):
         writer.save()
 
 
-def json_dict_to_json_file(json_dict: dict, file_path: str):
-    """
-    Args:
-        json_dict: Dictionary of dictionaries where key is the sheet name of
-            the dataframe while the value is the dictionary representation of
-            the dataframe.
-
-        file_path: File path to save the JSON file to.
-            Ex: '<directory>/<inner_directory>/<file_name_without_extension>'
-
-    Returns:
-        None
-    """
-    # Dict into JSON file
-    with open(f'{file_path}', 'w') as jsonFile:
-        json.dump(json_dict, jsonFile)
-
+# def json_dict_to_json_file(json_dict: dict, file_path: str):
+#     """
+#     Args:
+#         json_dict: Dictionary of dictionaries where key is the sheet name of
+#             the dataframe while the value is the dictionary representation of
+#             the dataframe.
+#
+#         file_path: File path to save the JSON file to.
+#             Ex: '<directory>/<inner_directory>/<file_name_without_extension>'
+#
+#     Returns:
+#         None
+#     """
+#     # Dict into JSON file
+#     with open(f'{file_path}', 'w') as jsonFile:
+#         json.dump(json_dict, jsonFile)
+#
 
 def dataframe_to_dict(dataframe: object) -> dict:
     """

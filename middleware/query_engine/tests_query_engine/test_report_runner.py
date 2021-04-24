@@ -1,16 +1,14 @@
-from io import StringIO
-from middleware.report_generator.src.active_report import ActiveReport
-from middleware.query_engine import report_runner_jj as qry
+#from middleware.report_generator.src.active_report import ActiveReport
+from middleware.query_engine import report_runner as qry
 import pandas as pd
-import sys
+from os import remove
 from os.path import exists
 from unittest import TestCase
 from unittest.mock import patch
-import os
 
 
+@patch(qry.__name__ + '.input', create=True)
 class TestGetUserInput(TestCase):
-    @patch(qry.__name__ + '.input', create=True)
     def test_get_user_input(self, mocked_input):
         mocked_input.side_effect = ["input"]
 
@@ -19,8 +17,8 @@ class TestGetUserInput(TestCase):
         self.assertEqual("input", value)
 
 
+@patch(qry.__name__ + '.input', create=True)
 class TestGetUserInputAsList(TestCase):
-    @patch(qry.__name__ + '.input', create=True)
     def test_get_user_input_list_single_value(self, mocked_input):
         mocked_input.side_effect = ["1"]
 
@@ -28,7 +26,6 @@ class TestGetUserInputAsList(TestCase):
 
         self.assertEqual(["1"], value)
 
-    @patch(qry.__name__ + '.input', create=True)
     def test_get_user_input_list_multiple_values(self, mocked_input):
         mocked_input.side_effect = ["1, 2, 3"]
 
@@ -36,7 +33,6 @@ class TestGetUserInputAsList(TestCase):
 
         self.assertEqual(["1", "2", "3"], value)
 
-    @patch(qry.__name__ + '.input', create=True)
     def test_get_user_input_list_trailing_comma(self, mocked_input):
         mocked_input.side_effect = ["1, 2, "]
 
@@ -57,9 +53,8 @@ class TestBasicRequest(TestCase):
         self.assertEqual(valid_request, value)
 
 
+@patch(qry.__name__ + '.input', create=True)
 class TestIsError(TestCase):
-    @patch(qry.__name__ + '.input', create=True)
-    #@patch('sys.stdout', new_callable=StringIO)
     def test_is_error_true_when_error(self, mocked_input: patch):
         # , mock_stdout: patch):
 
@@ -72,7 +67,6 @@ class TestIsError(TestCase):
 
         self.assertEqual(value, None)
 
-    @patch(qry.__name__ + '.input', create=True)
     def test_is_error_false_when_no_error(self, mocked_input: patch):
         mocked_input.side_effect = ["Bassett", "0000010329", "2016"]
         value = qry.query_raw_report_api()
@@ -81,8 +75,8 @@ class TestIsError(TestCase):
         self.assertEqual(good_response.keys(), value.keys())
 
 
+@patch(qry.__name__ + '.input', create=True)
 class TestGetRowsForSheets(TestCase):
-    @patch(qry.__name__ + '.input', create=True)
     def test_get_rows_for_sheets_maps_single_sheet_to_single_row(self, mocked_input):
         mocked_input.side_effect = ["0"]
         sheets = pd.DataFrame(data={"test": ["1"]})
@@ -92,7 +86,6 @@ class TestGetRowsForSheets(TestCase):
 
         self.assertEqual(valid, value)
 
-    @patch(qry.__name__ + '.input', create=True)
     def test_get_rows_for_sheets_maps_single_sheet_to_multiple_rows(self, mocked_input):
         mocked_input.side_effect = ["0, 1, 2"]
         sheets = pd.DataFrame(data={"test": ["1", "2", "2"]})
@@ -124,8 +117,8 @@ class TestGetRowsForSheets(TestCase):
  #       self.assertEqual(valid, value)
 
 
+@patch(qry.__name__ + '.input', create=True)
 class TestGetUserFolderPath(TestCase):
-    @patch(qry.__name__ + '.input', create=True)
     def test_get_user_folder_path_valid_with_slash(self, mocked_input):
         directory = './../'
         mocked_input.side_effect = [directory]
@@ -133,7 +126,6 @@ class TestGetUserFolderPath(TestCase):
         result = qry.get_user_folder_path()
         self.assertEqual(directory, result)
 
-    @patch(qry.__name__ + '.input', create=True)
     def test_get_user_folder_path_valid_without_slash(self, mocked_input):
         directory = './..'
         mocked_input.side_effect = [directory]
@@ -141,7 +133,6 @@ class TestGetUserFolderPath(TestCase):
         result = qry.get_user_folder_path()
         self.assertEqual(directory + '/', result)
 
-    @patch(qry.__name__ + '.input', create=True)
     def test_get_user_folder_path_invalid_then_valid(self, mocked_input):
         directory_one = ' '
         directory_two = './..'
@@ -151,29 +142,26 @@ class TestGetUserFolderPath(TestCase):
         self.assertEqual(directory_two + '/', result)
 
 
+@patch(qry.__name__ + '.input', create=True)
 class TestChooseJsonOrXlsx(TestCase):
-    @patch(qry.__name__ + '.input', create=True)
     def test_choose_json_or_xlsx_as_xlsx(self, mocked_input):
         mocked_input.side_effect = ["xlsx"]
 
         result = qry.choose_json_or_xlsx()
         self.assertEqual(".xlsx", result)
 
-    @patch(qry.__name__ + '.input', create=True)
     def test_choose_json_or_xlsx_invalid_then_xlsx(self, mocked_input):
         mocked_input.side_effect = ["invalid", "xlsx"]
 
         result = qry.choose_json_or_xlsx()
         self.assertEqual(".xlsx", result)
 
-    @patch(qry.__name__ + '.input', create=True)
     def test_choose_json_or_xlsx_as_json(self, mocked_input):
         mocked_input.side_effect = ["json"]
 
         result = qry.choose_json_or_xlsx()
         self.assertEqual(".json", result)
 
-    @patch(qry.__name__ + '.input', create=True)
     def test_choose_json_or_xlsx_invalid_then_json(self, mocked_input):
         mocked_input.side_effect = ["invalid", "json"]
 
@@ -181,15 +169,14 @@ class TestChooseJsonOrXlsx(TestCase):
         self.assertEqual(".json", result)
 
 
+@patch(qry.__name__ + '.input', create=True)
 class TestGetValidFileName(TestCase):
-    @patch(qry.__name__ + '.input', create=True)
     def test_get_valid_file_name_valid_input(self, mocked_input):
         mocked_input.side_effect = ["im-a_File09"]
 
         result = qry.get_valid_file_name()
         self.assertEqual(result, "im-a_File09")
 
-    @patch(qry.__name__ + '.input', create=True)
     def test_get_valid_file_name_invalid_then_valid_input(self, mocked_input):
         mocked_input.side_effect = ["$", "im-a_File09"]
 
@@ -197,15 +184,14 @@ class TestGetValidFileName(TestCase):
         self.assertEqual(result, "im-a_File09")
 
 
+@patch(qry.__name__ + '.input', create=True)
 class TestCanSaveToLocation(TestCase):
-    @patch(qry.__name__ + '.input', create=True)
     def test_can_save_to_location_when_doesnt_exist(self, mocked_input):
         mocked_input.side_effect = ["im-a_File09"]
 
         result = qry.can_save_to_location("im-aFile089")
         self.assertTrue(result)
 
-    @patch(qry.__name__ + '.input', create=True)
     def test_can_save_to_location_when_does_exist(self, mocked_input):
         mocked_input.side_effect = ["y"]
 
@@ -214,44 +200,34 @@ class TestCanSaveToLocation(TestCase):
         self.assertTrue(result)
 
 
-class TestCanQueryandSaveRawReport(TestCase):
+class TestCanQueryAndSaveRawReport(TestCase):
     @patch(qry.__name__ + '.input', create=True)
     def test_save_json_report(self, mocked_input):
         mocked_input.side_effect = ['Bassett', "0000010329", "2020", 'test', 'test', 'json']
-
         report = qry.retrieve_raw_reports()
-
-        #file_loc = qry.save_report_locally(report.json)
         file_loc = 'test/test.json'
-
         self.assertTrue(exists(file_loc))
-        os.remove(file_loc)
+        remove(file_loc)
 
     @patch(qry.__name__ + '.input', create=True)
     def test_save_xlsx_report(self, mocked_input):
         mocked_input.side_effect = ['Bassett', "0000010329", "2020", 'test', 'test', 'xlsx']
-
         report = qry.retrieve_raw_reports()
-
-        #file_loc = qry.save_report_locally(report.json)
         file_loc = 'test/test.xlsx'
-
         self.assertTrue(exists(file_loc))
-        os.remove(file_loc)
+        remove(file_loc)
 
 
+@patch(qry.__name__ + '.input', create=True)
 class TestStartReportRetrieval(TestCase):
-    @patch(qry.__name__ + '.input', create=True)
     def test_input_done(self, mocked_input):
         mocked_input.side_effect = ["done"]
         qry.start_report_retrieval()
 
-    @patch(qry.__name__ + '.input', create=True)
     def test_input_invalid_then_done(self, mocked_input):
         mocked_input.side_effect = ["invalid", "done"]
         qry.start_report_retrieval()
 
-    @patch(qry.__name__ + '.input', create=True)
     def test_input_valid(self, mocked_input):
         mocked_input.side_effect = ["1"]
 
@@ -259,3 +235,4 @@ class TestStartReportRetrieval(TestCase):
             qry.start_report_retrieval()
         except Exception:
             print("")
+

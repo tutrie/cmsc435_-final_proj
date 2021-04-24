@@ -1,4 +1,4 @@
-from report_generator.src.active_report import ActiveReport
+from middleware.report_generator.src.active_report import ActiveReport
 
 
 def get_active_report(request) -> ActiveReport:

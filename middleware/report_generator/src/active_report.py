@@ -1,5 +1,4 @@
 from middleware.report_generator.utils.convert_objects.object_conversions import (
-    json_file_to_json_dict,
     json_dict_to_dataframes_dict,
     dataframes_dict_to_json_dict
 )
@@ -12,7 +11,6 @@ def join_pandas_dataframes(report_dict: dict) -> dict:
     dataframes_dict = {}
     for json in report_dict:
         dataframes_dict[json] = json_dict_to_dataframes_dict(report_dict[json])
-        #print(dataframes_dict[json])
     list_of_views = []
     for df_dict in dataframes_dict.values():
         list_of_views.append(list(df_dict.items()))
@@ -28,7 +26,6 @@ def join_pandas_dataframes(report_dict: dict) -> dict:
         to_return[keys] = pd.concat(
            to_return[keys], axis=1)
         to_return[keys].columns = to_return[keys].columns.astype(str)
-    # dataframes_dict_to_workbook(to_return, '../test')
 
     return to_return
 
@@ -111,16 +108,8 @@ class ActiveReport:
 
     @classmethod
     def from_workbooks_by_years_dicts(cls, wbks_by_year: dict) -> object:
-        json_dicts = {}
-        for years in wbks_by_year.keys():
-            json_dicts[years] = wbks_by_year[years]
-            #print(wbks_by_year[years])
-
-
-
-        dataframes_dict = join_pandas_dataframes(json_dicts)
+        dataframes_dict = join_pandas_dataframes(wbks_by_year)
         json_dict = dataframes_dict_to_json_dict(dataframes_dict)
-
         return cls(json_dict, dataframes_dict)
 
     def filter_report(self, instructions: dict) -> dict:
