@@ -32,8 +32,8 @@ pages:
   stage: deploy
   script:
     - pip install sphinx sphinx-rtd-theme
-    - cd docs
-    - sphinx-build -b html . public
+    - sphinx-build -d _build/doctrees . _build/html
+    - mv _build/html public
   artifacts:
     paths:
       - public
