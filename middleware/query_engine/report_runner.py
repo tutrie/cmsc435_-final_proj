@@ -19,8 +19,7 @@ from middleware.report_generator.utils.convert_objects.object_conversions import
 # For developement:
 base_url = 'http://localhost:8000/api/'
 raw_report_url = base_url + 'raw-reports/get-raw-reports'
-generate_report_url = base_url + 'generate-report'
-user_report_url = base_url + 'user-report'
+generate_report_url = base_url + 'generated-reports'
 
 
 def get_user_input(prompt: str) -> str:
@@ -392,15 +391,20 @@ def create_generated_report(username: str = None, password: str = None) -> None:
 
     payload = {
         'name': report_name,
-        'json_schema': generated_report_json
+        'json_schema': json.dumps(generated_report_json)
     }
+    print(generated_report_json)
     response = requests.post(generate_report_url, auth=(username, password),
-                             data=payload, timeout=15)
+                            data=payload, timeout=15)
+
+    # response = requests.post('http://18.217.8.244:8000/api/generated-reports/', auth=(username, password),
+    #                         data=payload, timeout=15)
+
     if response.status_code == 201:
         print('Generated report successfully saved to database.')
     else:
         print(f'Response returned with error code {response.status_code}')
-        print(f'Full response: {response}')
+        print(f'Full response: {response.json()}')
 
 
 def start_report_retrieval() -> None:
