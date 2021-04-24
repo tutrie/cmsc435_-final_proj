@@ -85,7 +85,12 @@ def is_valid_sheet_names(sheet_names: list) -> bool:
         True if all sheet names match the regex; False otherwise.
     """
     for sheet_name in sheet_names:
-        match_obj = re.match(r'^\S([\-\(\)_a-zA-Z0-9 ]+)\S$', sheet_name)  # could you explain what would pass/fail?
+        match_obj = re.match(r'^\S([\-\(\)_a-zA-Z0-9 ]+)\S$', sheet_name)
+        # Accepts a-z, A-Z, 0-9, hypens, paratheses, underscores, and spaces.
+        # So with this regex, anything that starts with non-whitespace
+        # characters, has any of the characters I specified above, and ends in
+        # a non-whitespace character will pass this test. Testing can be done
+        # on https://regexr.com.
         if match_obj is None:
             return False
 

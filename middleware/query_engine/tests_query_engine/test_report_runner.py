@@ -1,4 +1,4 @@
-from report_generator.src.active_report import ActiveReport
+from middleware.report_generator.src.active_report import ActiveReport
 from middleware.query_engine import report_runner as qry
 
 from os.path import exists
