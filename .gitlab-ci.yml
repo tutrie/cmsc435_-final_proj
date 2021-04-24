@@ -14,7 +14,7 @@ cache:
 
 stages:
   - build
-  - test
+ # - test
   - Static Analysis
   - deploy
 
@@ -73,8 +73,7 @@ coverage:
   stage: Static Analysis
   script:
     #ToDo add all of the other tests once the file structures are final
-    - cd django_api
-    - coverage run --omit 'venv/*' --source='.' manage.py test
+    - coverage run -m --omit 'venv/*' --source='.' django_api/manage.py test api_comms/flask_app/test_flask_app.py
     - coverage report
     - coverage erase
   retry:
