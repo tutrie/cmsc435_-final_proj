@@ -1,11 +1,4 @@
 import sys
-
-plt = sys.platform
-if plt.startswith('linux') or plt.startswith('darwin'):
-    sys.path.insert(0, sys.path[0].replace('/middleware/query_engine', ''))
-elif plt.startswith('win32') or plt.startswith('cygwin'):
-    sys.path.insert(0, sys.path[0].replace(r'\\middleware\\query_engine', ''))
-
 import json
 import requests
 from re import match
@@ -16,6 +9,13 @@ from middleware.report_generator.utils.convert_objects.object_conversions import
     json_dict_to_dataframes_dict,
     dataframes_dict_to_workbook
 )
+
+
+plt = sys.platform
+if plt.startswith('linux') or plt.startswith('darwin'):
+    sys.path.insert(0, sys.path[0].replace('/middleware/query_engine', ''))
+elif plt.startswith('win32') or plt.startswith('cygwin'):
+    sys.path.insert(0, sys.path[0].replace(r'\\middleware\\query_engine', ''))
 
 
 # # For production:
