@@ -93,6 +93,7 @@ deploy-prod:
     - cp -R docs/build/html/_static api_comms/flask_app/_static
     - rm -d -r docs/build/html/_static
     - rm -d -r docs/build/html/_sources
-    - mkdir api_comms/flask_app/templates/docs/html
+    - mkdir -p api_comms/flask_app/templates/docs
+    - mkdir -p api_comms/flask_app/templates/docs/html
     - cp -R docs/build/html api_comms/flask_app/templates/docs/html
     - rm -d -r docs/build
