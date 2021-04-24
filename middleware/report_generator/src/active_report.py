@@ -22,7 +22,7 @@ def join_pandas_dataframes(report_dict: dict) -> dict:
             to_return[list_of_views[0][idx][0]].append(other_df[idx][1])
 
     for keys in to_return:
-        print(to_return[keys])
+        #print(to_return[keys])
         to_return[keys] = pd.concat(
             to_return[keys], axis=1)
     # dataframes_dict_to_workbook(to_return, '../test')
@@ -111,6 +111,9 @@ class ActiveReport:
         json_dicts = {}
         for years in wbks_by_year.keys():
             json_dicts[years] = wbks_by_year[years]
+            #print(wbks_by_year[years])
+
+
 
         dataframes_dict = join_pandas_dataframes(json_dicts)
         json_dict = dataframes_dict_to_json_dict(dataframes_dict)
