@@ -140,6 +140,6 @@ class ActiveReport:
         for sheet, rows in instructions.items():
             int_rows = [int(val) for val in rows]
             # rows is list of ints
-            self.generated_report[sheet] = self.dataframes[sheet].loc[int_rows]
+            self.generated_report[sheet] = self.dataframes[sheet].iloc[int_rows]
 
         return dataframes_dict_to_json_dict(self.generated_report)

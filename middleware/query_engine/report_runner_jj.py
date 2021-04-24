@@ -337,7 +337,7 @@ def choose_rows_in_sheet(sheet_name, sheet_values: dict) -> list:
         A list of indices corresponding to the selected rows.
     """
     print(f'Preparing to choose rows for sheet {sheet_name}')
-    rows_idxs_to_keep = get_user_int_list(sheet_values['index'])
+    rows_idxs_to_keep = get_user_int_list(sheet_values.index)
     return rows_idxs_to_keep
 
 
@@ -367,7 +367,7 @@ def generate_instructions(merged_report: ActiveReport) -> dict:
     sheets_to_keep = choose_sheet_names(merged_report)
 
     for sheet in sheets_to_keep:
-        instructions[sheet] = choose_rows_in_sheet(sheet, merged_report[sheet])
+        instructions[sheet] = choose_rows_in_sheet(sheet, merged_report.dataframes[sheet])
 
     return instructions
 
