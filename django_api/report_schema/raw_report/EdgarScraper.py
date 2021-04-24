@@ -1,12 +1,11 @@
 from urllib.parse import parse_qs
 import urllib.parse as urlparse
-from pathlib import Path, PureWindowsPath
+from pathlib import Path
 from lxml import html
 import requests
 import lxml
 import sys
 import re
-import os
 
 BASE_URL = "https://www.sec.gov"
 
@@ -223,7 +222,7 @@ class EdgarScraper:
             if plt.startswith('linux') or plt.startswith('darwin'):
                 dir_name = Path('downloaded_reports').absolute()
             elif plt.startswith('win32') or plt.startswith('cygwin'):
-                dir_name = Path(PureWindowsPath('downloaded_reports')).absolute()
+                dir_name = Path('django_api/downloaded_reports').absolute()
             file_name = 'report_' + '_'.join(self.name.split(' ')) + '.xlsx'
             file_path = dir_name / file_name
             file = open(file_path, 'wb')
@@ -273,7 +272,7 @@ class EdgarScraper:
                     if plt.startswith('linux') or plt.startswith('darwin'):
                         dir_name = Path('downloaded_reports').absolute()
                     elif plt.startswith('win32') or plt.startswith('cygwin'):
-                        dir_name = Path(PureWindowsPath('downloaded_reports')).absolute()
+                        dir_name = Path('django_api/downloaded_reports').absolute()
                     
                     file_name = f'10K_{year}_report_{company_name}.xlsx'
                     full_file = dir_name / file_name

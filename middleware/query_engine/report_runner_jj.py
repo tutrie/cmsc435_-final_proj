@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, sys.path[0].replace('/middleware/query_engine', ''))
+sys.path.insert(0, sys.path[0].replace(r'\middleware\query_engine', ''))
 print(sys.path)
 import json
 import requests
@@ -17,7 +17,7 @@ from middleware.report_generator.utils.convert_objects.object_conversions import
 # base_url = 'http://18.217.8.244:8000/api/'
 
 # For developement:
-base_url = 'http://127.0.0.1:8000/api/'
+base_url = 'http://localhost:8000/api/'
 raw_report_url = base_url + 'raw-reports/get-raw-reports'
 generate_report_url = base_url + 'generate-report'
 user_report_url = base_url + 'user-report'
