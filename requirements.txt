@@ -13,3 +13,4 @@ openpyxl
 essential_generators
 flask
 randomtimestamp
+sphinx
