@@ -1,9 +1,7 @@
-from report_generator.utils.object_conversions import (
-    json_file_to_json_dict,
+from middleware.report_generator.utils.convert_objects.object_conversions import (
     json_dict_to_dataframes_dict,
     dataframes_dict_to_json_dict
 )
-from os.path import join, dirname, realpath
 import pandas as pd
 
 
@@ -22,7 +20,7 @@ def join_pandas_dataframes(report_dict: dict) -> dict:
 
     for keys in to_return:
         to_return[keys] = pd.concat(
-            to_return[keys], join='outer', ignore_index=True)
+            to_return[keys], axis=1)
     # dataframes_dict_to_workbook(to_return, '../test')
 
     return to_return
@@ -51,55 +49,62 @@ class ActiveReport:
         self.json = json_dict
         self.dataframes = dataframes_dict
 
+    # @classmethod
+    # def from_year(cls, cik: str, year: str, report_type: str):
+    #     """
+    #     Args:
+    #         cik: CIK number of target company.
+
+    #         year: Year to pull financial files from.
+
+    #         report_type: Report type to pull information from (10-K or 10-Q).
+
+    #     Returns:
+    #         An ActiveReport object
+    #     """
+    #     # TODO: this file path thing may need updating. Quick solution
+    #     dir_path = dirname(realpath(__file__)).replace("src", "mocks")
+    #     file_name = f'{report_type}-{year[-2:]}.json'
+    #     json_file_path = join(dir_path, 'mock_database', cik,
+    #                           year, report_type, file_name)
+
+    #     json_dict = json_file_to_json_dict(json_file_path)
+    #     dataframes_dict = json_dict_to_dataframes_dict(json_dict)
+
+    #     return cls(json_dict, dataframes_dict)
+
+    # @classmethod
+    # def from_year_list(cls, cik: str, years: list, report_type: str):
+    #     """
+    #     Args:
+    #         cik: CIK number of target company.
+
+    #         years: List of years (of type string) to pull financial files from.
+
+    #         report_type: Report type to pull information from (10-K or 10-Q).
+
+    #     Returns:
+    #         An ActiveReport object of the collated/merged reports across years.
+    #     """
+    #     dir_path = dirname(realpath(__file__)).replace("src", "mocks")
+
+    #     report_dicts = {}
+    #     for year in years:
+    #         file_name = f'{report_type}-{year[-2:]}.json'
+    #         json_file_path = join(dir_path, 'mock_database', cik,
+    #                               year, report_type, file_name)
+
+    #         report_dicts[file_name] = json_file_to_json_dict(json_file_path)
+
+    #     # DUMMY FUNCTION HERE!!! Don't forget to import the function first!
+    #     dataframes_dict = join_pandas_dataframes(report_dicts)
+    #     json_dict = dataframes_dict_to_json_dict(dataframes_dict)
+
+    #     return cls(json_dict, dataframes_dict)
+
     @classmethod
-    def from_year(cls, cik: str, year: str, report_type: str):
-        """
-        Args:
-            cik: CIK number of target company.
-
-            year: Year to pull financial files from.
-
-            report_type: Report type to pull information from (10-K or 10-Q).
-
-        Returns:
-            An ActiveReport object
-        """
-        # TODO: this file path thing may need updating. Quick solution
-        dir_path = dirname(realpath(__file__)).replace("src", "mocks")
-        file_name = f'{report_type}-{year[-2:]}.json'
-        json_file_path = join(dir_path, 'mock_database', cik,
-                              year, report_type, file_name)
-
-        json_dict = json_file_to_json_dict(json_file_path)
-        dataframes_dict = json_dict_to_dataframes_dict(json_dict)
-
-        return cls(json_dict, dataframes_dict)
-
-    @classmethod
-    def from_year_list(cls, cik: str, years: list, report_type: str):
-        """
-        Args:
-            cik: CIK number of target company.
-
-            years: List of years (of type string) to pull financial files from.
-
-            report_type: Report type to pull information from (10-K or 10-Q).
-
-        Returns:
-            An ActiveReport object of the collated/merged reports across years.
-        """
-        dir_path = dirname(realpath(__file__)).replace("src", "mocks")
-
-        report_dicts = {}
-        for year in years:
-            file_name = f'{report_type}-{year[-2:]}.json'
-            json_file_path = join(dir_path, 'mock_database', cik,
-                                  year, report_type, file_name)
-
-            report_dicts[file_name] = json_file_to_json_dict(json_file_path)
-
-        # DUMMY FUNCTION HERE!!! Don't forget to import the function first!
-        dataframes_dict = join_pandas_dataframes(report_dicts)
+    def from_workbooks_by_years_dicts(cls, wbks_by_year: dict) -> object:
+        dataframes_dict = join_pandas_dataframes(wbks_by_year)
         json_dict = dataframes_dict_to_json_dict(dataframes_dict)
 
         return cls(json_dict, dataframes_dict)
@@ -120,6 +125,7 @@ class ActiveReport:
         self.generated_report = {}
         for sheet, rows in instructions.items():
             int_rows = [int(val) for val in rows]
-            self.generated_report[sheet] = self.dataframes[sheet].loc[int_rows]  # rows is list of ints
+            # rows is list of ints
+            self.generated_report[sheet] = self.dataframes[sheet].loc[int_rows]
 
         return dataframes_dict_to_json_dict(self.generated_report)

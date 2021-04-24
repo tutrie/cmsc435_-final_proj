@@ -81,9 +81,16 @@ def dataframes_dict_to_workbook(dataframes_dict: dict, file_path: str):
     Returns:
         None
     """
+    names = {}
     with pd.ExcelWriter(f'{file_path}') as writer:
         for df_name, df in dataframes_dict.items():
-            df.to_excel(writer, sheet_name=df_name, index=False)
+            if df_name[:31] in names:
+                names[df_name[:31]] += 1
+                df_name = df_name[:29] + '_' + str(names[df_name[:31]])
+                df.to_excel(writer, sheet_name=df_name, index=True)
+            else:
+                names[df_name[:31]] = 1
+                df.to_excel(writer, sheet_name=df_name, index=True)
         writer.save()
 
 

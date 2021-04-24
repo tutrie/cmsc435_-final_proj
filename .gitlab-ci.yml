@@ -49,7 +49,6 @@ test-django-backend:
       - runner_system_failure
       - stuck_or_timeout_failure
 
-
 flake8:
   stage: Static Analysis
   script:
