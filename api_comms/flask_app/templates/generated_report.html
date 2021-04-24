@@ -7,8 +7,19 @@
     {% include 'header.html' %}
     <div class="container">
         <div class="content">
-            <h1>Nothing to see yet</h1>
+            {% if username %}
+            <h1>Generated Report Information</h1>
+                {% if generated_report %}
+                    <p id="response">{{generated_report}}</p>
+                {% else %}
+                    <p id="response">No generated report yet.</p>
+                {% endif %}
+            {% else %}
+            <h1>You have not logged in yet</h1>
+            {% endif %}
+
         </div>
+        
     </div>
 </body>
 </html>

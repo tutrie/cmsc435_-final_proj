@@ -7,9 +7,37 @@
     {% include 'header.html' %}
     <div class="container">
         <div class="content">
-            <h1>Nothing to see yet</h1>
+            {% if username %}
+            <h1>10-K Excel Raw Report Retrieval</h1>
+            <form action="" method="post">
+                <div class="form-group">
+                    <label>Company Name: </label>
+                    <input type="text" placeholder="Walmart" name="name" class="form-control" required>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label>CIK Number: </label>
+                    <input type="text" placeholder="12345678" name="cik" class="form-control" required>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label>Report Date: </label>
+                    <input type="text" placeholder="2021-04-02" name="report_date" class="form-control" required>
+                </div>
+                <br>
+                <button class="submit" type="submit">Submit Request</button>
+            </form>
+                {% if excel_url %}
+                    <p id="response">Download Link: 
+                        <a href="{{excel_url}}" target="_blank">{{excel_url}}</a>
+                    </p>
+                {% endif %}
+            {% else %}
+            <h1>You have not logged in yet</h1>
+            {% endif %}
+
         </div>
-        {{ data }}
+        
     </div>
 </body>
 </html>
