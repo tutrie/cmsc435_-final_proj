@@ -5,8 +5,8 @@ from flask import Flask, session, redirect, url_for, request, render_template
 """
 A file that defines the routes for the frontend Flask application.
 
-This file configures the routes and render templates for the UI. Calls the Django API for data retrieval and 
-stores the user's information in the session 
+This file configures the routes and render templates for the UI. Calls the Django API for data retrieval and
+stores the user's information in the session.
 
 Fields:
     app: The Flask app instance
