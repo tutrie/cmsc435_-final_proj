@@ -7,7 +7,6 @@ from re import match
 from os.path import exists, isdir
 from middleware.report_generator.src.active_report import ActiveReport
 from middleware.report_generator.utils.convert_objects.object_conversions import (
-    json_dict_to_json_file,
     json_dict_to_dataframes_dict,
     dataframes_dict_to_workbook
 )
