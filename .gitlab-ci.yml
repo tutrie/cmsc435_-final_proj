@@ -37,27 +37,27 @@ build-start:
       - runner_system_failure
       - stuck_or_timeout_failure
 
-test-django-backend:
-  stage: test
-  script:
-    - cd django_api
-    - python manage.py migrate
-    - python manage.py test
-  retry:
-    max: 2
-    when:
-      - runner_system_failure
-      - stuck_or_timeout_failure
+#test-django-backend:
+#  stage: test
+#  script:
+#    - cd django_api
+#    - python manage.py migrate
+#    - python manage.py test
+#  retry:
+#    max: 2
+#    when:
+#      - runner_system_failure
+#      - stuck_or_timeout_failure
 
-test-flask-ui:
-  stage: test
-  script:
-    - pytest api_comms/flask_app/test_flask_app.py
-  retry:
-    max: 2
-    when:
-      - runner_system_failure
-      - stuck_or_timeout_failure
+#test-flask-ui:
+#  stage: test
+#  script:
+#    - pytest api_comms/flask_app/test_flask_app.py
+#  retry:
+#    max: 2
+#    when:
+#      - runner_system_failure
+#      - stuck_or_timeout_failure
 
 flake8:
   stage: Static Analysis
