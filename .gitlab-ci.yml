@@ -87,3 +87,7 @@ coverage:
 #  stage: deploy
 #  script:
 #    - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
+#    - cd docs
+#    - make html
+#    - cd ..
+#    - cp docs/html/_static/index.html api_comms/flask_app/templates/docs.html
