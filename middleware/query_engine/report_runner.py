@@ -1,6 +1,11 @@
 import sys
-sys.path.insert(0, sys.path[0].replace('/middleware/query_engine', ''))
-print(sys.path)
+
+plt = sys.platform
+if plt.startswith('linux') or plt.startswith('darwin'):
+    sys.path.insert(0, sys.path[0].replace('/middleware/query_engine', ''))
+elif plt.startswith('win32') or plt.startswith('cygwin'):
+    sys.path.insert(0, sys.path[0].replace(r'\\middleware\\query_engine', ''))
+
 import json
 import requests
 from re import match
