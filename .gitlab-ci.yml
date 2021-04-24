@@ -15,7 +15,7 @@ cache:
 stages:
   - build
 #  - test
-#  - Static Analysis
+  - Static Analysis
   - deploy
 
 before_script:
@@ -69,19 +69,19 @@ before_script:
 #      - runner_system_failure
 #      - stuck_or_timeout_failure
 
-#coverage:
-#  stage: Static Analysis
-#  script:
+coverage:
+  stage: Static Analysis
+  script:
     #ToDo add all of the other tests once the file structures are final
-#    - coverage run --omit 'venv/*','*/migrations/*' --source=django_api/company_schema/,django_api/report_schema django_api/manage.py test
-    #- coverage run -m api_comms/flask_app/test_flask_app.py --source=api_comms/flask_app/app.py
-#    - coverage report
-#    - coverage erase
-#  retry:
-#    max: 2
-#    when:
-#      - runner_system_failure
-#      - stuck_or_timeout_failure
+    #- coverage run --omit 'venv/*','*/migrations/*' --source=django_api/company_schema/,django_api/report_schema django_api/manage.py test
+    - coverage run -m api_comms/flask_app/test_flask_app.py --source=api_comms/flask_app/app.py
+    - coverage report
+    - coverage erase
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
 
 deploy-prod:
   stage: deploy
