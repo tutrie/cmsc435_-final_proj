@@ -1,13 +1,8 @@
-import json
-import requests
-import os
 import unittest
 from app import app
 
-BASE_URL = 'http://127.0.0.1:5000/'
 
-
-class BasicTests(unittest.TestCase):
+class AppTests(unittest.TestCase):
 
     # executed prior to each test
     def setUp(self):
@@ -30,51 +25,51 @@ class BasicTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_register_page_post(self):
-        data = {'username': 'myName',
-                'password': "12345678",
-                'email': '123456@gmail.com'}
+        data = {
+            'username': 'myName',
+            'password': "12345678",
+            'email': '123456@gmail.com'
+        }
         response = self.app.post('/register', follow_redirects=True, data=data)
         self.assertEqual(response.status_code, 200)
 
     def test_login_page_get(self):
-        response = self.app.get('/register')
+        response = self.app.get('/login')
+        self.assertEqual(response.status_code, 200)
+
+    def test_login_page_post(self):
+        data = {
+            'username': 'admin',
+            'password': "admin",
+        }
+        response = self.app.post('/login', data=data, follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_logout_page(self):
+        response = self.app.get('/login', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_raw_report_page_get(self):
+        data = {'username': 'admin'}
+        response = self.app.get('/raw_report', data=data, follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_raw_report_page_post(self):
+        data = {
+            'name': 'Walmart',
+            'cik': '12345678',
+            'report_date': '2021-04-02',
+            'username': 'admin'
+        }
+
+        response = self.app.post('/raw_report', data=data, follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_generated_report_page_get(self):
+        data = {'username': 'admin'}
+        response = self.app.get('/generated_report', data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
 
-# # make sure pages load correctly
-# def test_main():
-#     response = requests.get(BASE_URL)
-#     assert response.status_code == 200
-#     response = requests.get(BASE_URL + 'login')
-#     assert response.status_code == 200
-#     response = requests.get(BASE_URL + 'register')
-#     assert response.status_code == 200
-#     response = requests.get(BASE_URL + 'logout')
-#     assert response.status_code == 200
-#     response = requests.get(BASE_URL + 'asdasas')
-#     assert response.status_code != 200
-#
-#
-# def test_login():
-#     url = BASE_URL + 'login'
-#     package = {'username': 'admin',
-#                'password': 'admin'}
-#
-#     response = requests.get(url, data=json.dumps(package))
-#     assert response.status_code == 200
-#
-#
-# def test_register():
-#     url = BASE_URL + 'register'
-#     package = {'username': 'q',
-#                'password1': 'q',
-#                "'email": 'q@gmail.com'}
-#
-#     response = requests.post(url, data=json.dumps(package))
-#     assert response.status_code == 200
-#
-#
-# def test_logout():
-#     url = BASE_URL + 'logout'
-#     response = requests.get(url)
-#     assert response.status_code == 200
+if __name__ == "__main__":
+    unittest.main()
