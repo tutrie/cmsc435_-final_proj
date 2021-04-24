@@ -103,17 +103,17 @@ pages:
     paths:
       - public
 
-deploy-prod:
-  stage: deploy
-  script:
-    - pip install sphinx sphinx-rtd-theme
-    - cd docs
-    - make html
-    - cd ..
-    - cp -R docs/build/html/_static api_comms/flask_app/_static
-    - rm -d -r docs/build/html/_static
-    - rm -d -r docs/build/html/_sources
-    - mkdir -p api_comms/flask_app/templates/docs
-    - mkdir -p api_comms/flask_app/templates/docs/html
-    - cp -R docs/build/html api_comms/flask_app/templates/docs/html
-    - rm -d -r docs/build
+#deploy-prod:
+#  stage: deploy
+#  script:
+#    - pip install sphinx sphinx-rtd-theme
+#    - cd docs
+#    - make html
+#    - cd ..
+#    - cp -R docs/build/html/_static api_comms/flask_app/_static
+#    - rm -d -r docs/build/html/_static
+#    - rm -d -r docs/build/html/_sources
+#    - mkdir -p api_comms/flask_app/templates/docs
+#    - mkdir -p api_comms/flask_app/templates/docs/html
+#    - cp -R docs/build/html api_comms/flask_app/templates/docs/html
+#    - rm -d -r docs/build
