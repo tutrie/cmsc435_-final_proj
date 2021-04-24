@@ -19,24 +19,83 @@ stages:
   - deploy
 
 before_script:
-  - python -V               # Print out python version for debugging
+  - python -V
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
 
-# Change pip's cache directory to be inside the project directory since we can
-# only cache local items.
-
-
-pages:
-  stage: deploy
+build-start:
+  stage: build
   script:
-    - pip install sphinx sphinx-rtd-theme
-    - sphinx-build -d _build/doctrees docs/source _build/html
-    - mv _build/html public
-  artifacts:
-    paths:
-      - public
+    - echo "Hello, $GITLAB_USER_LOGIN!"
+    - pip install -r requirements.txt
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
+test-django-backend:
+  stage: test
+  script:
+    - cd django_api
+    - python manage.py migrate
+    - python manage.py test
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
+test-flask-ui:
+  stage: test
+  script:
+    - pytest api_comms/flask_app/test_flask_app.py
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
+test-middleware:
+  stage: test
+  script:
+    - pytest middleware/
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
+flake8:
+  stage: Static Analysis
+  script:
+    - flake8 --ignore=W293,W391 --exclude 'venv/*' --max-line-length=120 .
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
+coverage:
+  stage: Static Analysis
+  script:
+    - coverage run --omit venv/*,*/migrations*,*test* --source django_api/company_schema/,django_api/report_schema django_api/manage.py test
+    - coverage run --omit venv/*,*test* -m pytest api_comms/flask_app/test_flask_app.py
+    - coverage run --omit venv/*,*test* -m pytest middleware/
+    - coverage report
+    - coverage erase
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
+deploy-prod:
+  stage: deploy
+  script: echo 'ToDo deploy'
+  only:
+    - master
 
 #deploy-prod:
 #  stage: deploy
