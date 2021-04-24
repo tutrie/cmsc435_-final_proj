@@ -249,8 +249,8 @@ def save_single_report(report_dict: dict) -> None:
         report_dict: A dictionary represntation of a report.
     """
     save_as = {'.json': save_json, '.xlsx': save_xlsx}
-    output_folder = get_user_folder_path()
     while True:
+        output_folder = get_user_folder_path()
         file_name = get_valid_file_name()
         file_extension = choose_json_or_xlsx()
 
@@ -308,8 +308,6 @@ def query_raw_report_api() -> None:
         request = basic_request()
         response = requests.get(raw_report_url, params=request)
         response_json = json.loads(response.json())
-        print(f'Response: {response}\n')
-        print(f'Json: {response_json.keys()}')
 
         if is_error_response(response):
             print(f'Response returned with error code {response.status_code}')
