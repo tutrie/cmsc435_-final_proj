@@ -92,11 +92,11 @@ To run the tests:
 Located at http://127.0.0.1:5000/, this method renders the welcome page for the website.  It has links to navigate to the Login and Register pages.
 
 ```def register()```
-Located at http://127.0.0.1:5000/register, this method takes in a username, password, and email address from the user's input and sends a POST request to http://18.217.8.244:8000/api/users/create_user/.  Assuming a successful response is received(ie no duplicate users or network connectivity issues), there will be a redirect to the login page for the user to login with their credentials.
+Located at http://127.0.0.1:5000/register, this method takes in a username, password, and email address from the user's input and sends a POST request to http://18.217.8.244:8000/api/users/create_user/.  Assuming a successful response is received(ie no duplicate users or network connectivity issues), there will be a user created with the given credentials and email ready for a login.
 
 ```def login()```
 
-Located at http://127.0.0.1:5000/login, this method takes in a username and password from the user's input and sends a GET request to http://18.217.8.244:8000/api/generated-reports/ and http://18.217.8.244:8000/api/raw-reports/.  Assuming valid credentials, the user will be taken to their account page where they can view their reports.
+Located at http://127.0.0.1:5000/login, this method takes in a username and password from the user's input and renders the login template, setting the username and password to their respective variables in the session object. user will be taken to their account page where they can navigate to tabs to view/create reports.
 
 ```def logout()```
 
@@ -104,13 +104,11 @@ Located at http://127.0.0.1:5000/logout, this method displays a logout message w
 
 ```def raw_report()```
 
-Located at http://127.0.0.1:5000/raw_report, this method will display the raw
-reports for the logged-in user. 
-
+Located at http://127.0.0.1:5000/raw_report, this method will issue a GET request and display the raw reports for the logged-in user and allow them to create new raw reports. 
 
 ```def generated_report()```
 
-Located at http://127.0.0.1:5000/generated_report, this method will display the generated reports for the logged-in user.  
+Located at http://127.0.0.1:5000/generated_report, this method will issue a GET request and display the generated reports for the logged-in user and allow them to create new generated reports.  
 
 Note:  Timeout errors will be the result of network and internet speeds dropping.
 
