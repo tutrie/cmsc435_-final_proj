@@ -15,7 +15,7 @@ cache:
 stages:
   - build
  # - test
-#  - Static Analysis
+   - Static Analysis
 #  - deploy
 
 before_script:
