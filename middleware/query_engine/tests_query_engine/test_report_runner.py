@@ -10,28 +10,28 @@ from unittest.mock import patch
 @patch(qry.__name__ + '.input', create=True)
 class TestGetUserInput(TestCase):
     def test_get_user_input(self, mocked_input):
-        mocked_input.side_effect = ["input"]
+        mocked_input.side_effect = ['input']
 
-        value = qry.get_user_input("enter: ")
+        value = qry.get_user_input('enter: ')
 
-        self.assertEqual("input", value)
+        self.assertEqual('input', value)
 
 
 @patch(qry.__name__ + '.input', create=True)
 class TestGetUserInputAsList(TestCase):
     def test_get_user_input_list_single_value(self, mocked_input):
-        mocked_input.side_effect = ["1"]
+        mocked_input.side_effect = ['1']
 
-        value = qry.get_user_input_as_list("seperate by commas: ")
+        value = qry.get_user_input_as_list('seperate by commas: ')
 
-        self.assertEqual(["1"], value)
+        self.assertEqual(['1'], value)
 
     def test_get_user_input_list_multiple_values(self, mocked_input):
-        mocked_input.side_effect = ["1, 2, 3"]
+        mocked_input.side_effect = ['1, 2, 3']
 
-        value = qry.get_user_input_as_list("seperate by commas: ")
+        value = qry.get_user_input_as_list('seperate by commas: ')
 
-        self.assertEqual(["1", "2", "3"], value)
+        self.assertEqual(['1', '2', '3'], value)
 
     def test_get_user_input_list_trailing_comma(self, mocked_input):
         mocked_input.side_effect = ["1, 2, "]
@@ -145,43 +145,44 @@ class TestGetUserFolderPath(TestCase):
 @patch(qry.__name__ + '.input', create=True)
 class TestChooseJsonOrXlsx(TestCase):
     def test_choose_json_or_xlsx_as_xlsx(self, mocked_input):
-        mocked_input.side_effect = ["xlsx"]
+        mocked_input.side_effect = ['xlsx']
 
         result = qry.choose_json_or_xlsx()
-        self.assertEqual(".xlsx", result)
+        self.assertEqual('.xlsx', result)
 
     def test_choose_json_or_xlsx_invalid_then_xlsx(self, mocked_input):
-        mocked_input.side_effect = ["invalid", "xlsx"]
+        mocked_input.side_effect = ['invalid', 'xlsx']
 
         result = qry.choose_json_or_xlsx()
-        self.assertEqual(".xlsx", result)
+        self.assertEqual('.xlsx', result)
 
     def test_choose_json_or_xlsx_as_json(self, mocked_input):
-        mocked_input.side_effect = ["json"]
+        mocked_input.side_effect = ['json']
 
         result = qry.choose_json_or_xlsx()
-        self.assertEqual(".json", result)
+        self.assertEqual('.json', result)
 
     def test_choose_json_or_xlsx_invalid_then_json(self, mocked_input):
-        mocked_input.side_effect = ["invalid", "json"]
+        mocked_input.side_effect = ['invalid', 'json']
 
         result = qry.choose_json_or_xlsx()
-        self.assertEqual(".json", result)
+        self.assertEqual('.json', result)
 
 
 @patch(qry.__name__ + '.input', create=True)
 class TestGetValidFileName(TestCase):
     def test_get_valid_file_name_valid_input(self, mocked_input):
-        mocked_input.side_effect = ["im-a_File09"]
+        mocked_input.side_effect = ['im-a_File09']
 
         result = qry.get_valid_file_name()
-        self.assertEqual(result, "im-a_File09")
+        self.assertEqual(result, 'im-a_File09')
 
     def test_get_valid_file_name_invalid_then_valid_input(self, mocked_input):
-        mocked_input.side_effect = ["$", "im-a_File09"]
+        mocked_input.side_effect = ['$', 'im-a_File09']
 
         result = qry.get_valid_file_name()
-        self.assertEqual(result, "im-a_File09")
+        self.assertEqual(result, 'im-a_File09')
+
 
 
 @patch(qry.__name__ + '.input', create=True)
@@ -235,4 +236,9 @@ class TestStartReportRetrieval(TestCase):
             qry.start_report_retrieval()
         except Exception:
             print("")
+
+class TestChooseSheetNames(TestCase):
+    @patch(qry.__name__ + '.input', create=True)
+    def test_choose_sheet_names_success(self, mocked_input):
+        mocked_input.side_effect = ['1, 2, 3']
 

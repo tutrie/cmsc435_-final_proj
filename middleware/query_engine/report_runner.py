@@ -1,17 +1,21 @@
 import sys
-sys.path.insert(0, sys.path[0].replace(r'\middleware\query_engine', ''))
-print(sys.path)
 import json
 import requests
 from re import match
 from os.path import exists, isdir
 from middleware.report_generator.src.active_report import ActiveReport
 from middleware.report_generator.utils.convert_objects.object_conversions import (
+    json_dict_to_json_file,
     json_dict_to_dataframes_dict,
-    dataframes_dict_to_workbook,
-    json_dict_to_json_file
+    dataframes_dict_to_workbook
 )
 
+
+plt = sys.platform
+if plt.startswith('linux') or plt.startswith('darwin'):
+    sys.path.insert(0, sys.path[0].replace('/middleware/query_engine', ''))
+elif plt.startswith('win32') or plt.startswith('cygwin'):
+    sys.path.insert(0, sys.path[0].replace(r'\\middleware\\query_engine', ''))
 
 # # For production:
 # base_url = 'http://18.217.8.244:8000/api/'
@@ -225,8 +229,8 @@ def get_user_folder_path() -> str:
     output_folder = ''
 
     while not valid_input:
-        output_folder = input('''Please enter a folder path to save
-                            your files in: (<directory>/<sub_directory>/): ''')
+        output_folder = get_user_input("""Please enter a folder path to save
+                            your files in: (<directory>/<sub_directory>/): """)
 
         if not isdir(output_folder):
             print(
@@ -248,8 +252,8 @@ def save_single_report(report_dict: dict) -> None:
         report_dict: A dictionary represntation of a report.
     """
     save_as = {'.json': save_json, '.xlsx': save_xlsx}
-    output_folder = get_user_folder_path()
     while True:
+        output_folder = get_user_folder_path()
         file_name = get_valid_file_name()
         file_extension = choose_json_or_xlsx()
 
@@ -265,7 +269,7 @@ def save_single_report(report_dict: dict) -> None:
 def save_multiple_reports_locally(report: dict) -> None:
     """
     Saves report to a local folder and returns the file location
-    
+
     Args:
         report_dict: A dictionary represntation of a report.
     """

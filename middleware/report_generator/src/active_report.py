@@ -2,8 +2,6 @@ from middleware.report_generator.utils.convert_objects.object_conversions import
     json_dict_to_dataframes_dict,
     dataframes_dict_to_json_dict
 )
-from functools import reduce
-from os.path import join, dirname, realpath
 import pandas as pd
 
 
@@ -21,8 +19,6 @@ def join_pandas_dataframes(report_dict: dict) -> dict:
             to_return[list_of_views[0][idx][0]].append(other_df[idx][1])
 
     for keys in to_return:
-        #print(to_return[keys])
-        #to_return[keys] = reduce(lambda x, y: x.join(y, how='outer', on=x.columns.tolist().append(y.columns.tolist()), rsuffix='_dp'), to_return[keys])
         to_return[keys] = pd.concat(
            to_return[keys], axis=1)
         to_return[keys].columns = to_return[keys].columns.astype(str)

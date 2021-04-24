@@ -5,6 +5,7 @@ from report_schema.raw_report.report_cleaner.excelToPandasToJson import (
 from report_schema.raw_report.EdgarScraper import EdgarScraper
 from report_schema.raw_report.models import RawReport, Company
 import datetime
+import json
 import os
 
 
@@ -28,12 +29,12 @@ def create_raw_report_models(company_model, jsons, urls) -> None:
     Returns:
         None
     """
-    for year, json in jsons.items():
+    for year, json_dict in jsons.items():
         RawReport.objects.create(
             company=company_model,
             # Edgar Scaper only able to get year of report, not full date.
             report_date=datetime.date(int(year), 1, 1),
-            parsed_json=json,
+            parsed_json=json.dumps(json_dict),
             excel_url=urls[year]
         )
 
@@ -96,8 +97,8 @@ def retrieve_raw_reports_response(request: dict) -> dict:
         A response dictionary containing the urls for the raw reports.
     """
     response = {
-        'company_name': request['company'],
-        'company_cik': request['cik'],
+        'company': request['company'],
+        'cik': request['cik'],
         'reports': {}
     }
 

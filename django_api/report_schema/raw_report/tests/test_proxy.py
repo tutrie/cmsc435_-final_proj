@@ -8,13 +8,13 @@ class TestStripRequest(TestCase):
         intended_response = {
             'company': 'Google',
             'cik': '000000',
-            'years': ['2015', '2016', '2017', '2018', '2019', '2020']
+            'years': ['2016', '2017', '2018', '2019', '2020']
         }
 
         request = {
             'company': '   Google   ',
             'cik': ' 000000 ',
-            'years': ' 2015, 2016,2017  ,2018, 2019   ,   2020'
+            'years': ['2016', '2017', '2018', '2019', '2020']
         }
 
         response = proxy.strip_request(request)
@@ -36,11 +36,11 @@ class TestValidateCIK(TestCase):
 
 class TestValidateYears(TestCase):
     def test_validate_years_valid_input(self):
-        response = proxy.is_valid_years(['2015', '2016', '2017', '2018'])
+        response = proxy.is_valid_years(['2016', '2017', '2018', '2019'])
         self.assertTrue(response)
 
     def test_validate_years_invalid_input(self):
-        response = proxy.is_valid_years(['2015', '2016', '2017', '2dkfsj018'])
+        response = proxy.is_valid_years(['2015', '2016', '2017', '2018'])
         self.assertFalse(response)
 
 
@@ -106,8 +106,7 @@ class TestValidateNewRequest(TestCase):
     def test_validate_new_request_1(self):
         request = {
             'cik': '342893',
-            'years': ['2015', '2016', '2017', '2018'],
-            'report_type': '10-K',
+            'years': ['2016', '2017', '2018'],
             'report_filter': {
                 'sheet1': ['1', '2', '3', '4'],
                 'sheet2': ['5', '6', '7', '8'],
@@ -119,8 +118,7 @@ class TestValidateNewRequest(TestCase):
     def test_validate_new_request_2(self):
         request = {
             'cik': '342893',
-            'years': ['2015', '2016', '2017', '2018'],
-            'report_type': '10-K',
+            'years': ['2015', '2016', '2017'],
             'sheet_names': ['sljfjfd', '394_3', '-i383fs0()'],
             'report_filter': {
                 'sheet1': ['1', '2', '3', '4'],
@@ -134,18 +132,18 @@ class TestValidateNewRequest(TestCase):
 class TestValidateRawRequest(TestCase):
     def test_validate_raw_request_valid_input(self):
         request = {
+            'company': 'Google',
             'cik': '342893',
-            'years': ['2015', '2016', '2017', '2018'],
-            'report_type': '10-K'
+            'years': ['2016', '2017', '2018', '2019'],
         }
         response, msg = proxy.validate_raw_report_request(request)
         self.assertTrue(response)
 
     def test_validate_raw_request_invalid_input(self):
         request = {
+            'company': 'Google',
             'cik': '342893',
-            'years': ['2015', '2016kg', '2017', '2018'],
-            'report_type': '10-K'
+            'years': ['2015', '2016', '2017', '2018'],
         }
         response, msg = proxy.validate_raw_report_request(request)
         self.assertFalse(response)

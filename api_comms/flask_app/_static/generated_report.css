@@ -1,10 +1,10 @@
-.raw-report {
+.generated-report {
     color: #fff !important;
 }
-.generated-report, .mainpage {
+.raw-report, .mainpage {
     color: #5a5a5a;
 }
-.content{
+.content {
     height: 70%;
     top: 23%;
     left: 80px;
@@ -15,4 +15,7 @@
 .content h1 {
     font-size: 43px;
     position: relative;  
+}
+#response {
+    padding-top: 50px;
 }

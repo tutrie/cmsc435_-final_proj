@@ -1,9 +1,6 @@
-.generated-report {
-    color: #fff !important;
-}
-.raw-report, .mainpage {
+.generated-report, .raw-report, .mainpage {
     color: #5a5a5a;
-}
+  }
 .content {
     height: 70%;
     top: 23%;
@@ -11,8 +8,5 @@
     position: absolute;
     color: #fff;
     margin-left: 40px;
-}
-.content h1 {
-    font-size: 43px;
-    position: relative;  
+    font-size: 25px;
 }

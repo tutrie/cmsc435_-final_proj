@@ -218,11 +218,13 @@ class EdgarScraper:
             req = self._get(url[:-1])
 
         if req is not None:
+
             plt = sys.platform
             if plt.startswith('linux') or plt.startswith('darwin'):
                 dir_name = Path('downloaded_reports').absolute()
             elif plt.startswith('win32') or plt.startswith('cygwin'):
                 dir_name = Path('django_api/downloaded_reports').absolute()
+
             file_name = 'report_' + '_'.join(self.name.split(' ')) + '.xlsx'
             file_path = dir_name / file_name
             file = open(file_path, 'wb')
@@ -276,7 +278,6 @@ class EdgarScraper:
                     
                     file_name = f'10K_{year}_report_{company_name}.xlsx'
                     full_file = dir_name / file_name
-                    print(full_file)
                     file = open(full_file, 'wb')
                     file.write(req.content)
                     file.close()
