@@ -49,6 +49,16 @@ test-django-backend:
       - runner_system_failure
       - stuck_or_timeout_failure
 
+test-flask-ui:
+  stage: test
+  script:
+    - pytest api_comms/flask_app/test_flask_app.py
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
 flake8:
   stage: Static Analysis
   script:
@@ -62,7 +72,6 @@ flake8:
 coverage:
   stage: Static Analysis
   script:
-    - pip install coverage
     #ToDo add all of the other tests once the file structures are final
     - cd django_api
     - coverage run --omit 'venv/*' --source='.' manage.py test
