@@ -90,9 +90,9 @@ deploy-prod:
     - cd docs
     - make html
     - cd ..
-    - ls
     - cp -R docs/build/html/_static api_comms/flask_app/_static
     - rm -d -r docs/build/html/_static
     - rm -d -r docs/build/html/_sources
+    - mkdir api_comms/flask_app/templates/docs/html
     - cp -R docs/build/html api_comms/flask_app/templates/docs/html
     - rm -d -r docs/build
