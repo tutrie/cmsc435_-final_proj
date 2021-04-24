@@ -1,63 +1,19 @@
+
+from report_schema.raw_report.report_cleaner.excelToPandasToJson import (
+    ConvertCleanSave
+)
 from report_schema.raw_report.EdgarScraper import EdgarScraper
 from report_schema.raw_report.models import RawReport, Company
-from report_schema.raw_report.object_conversions import (
-    dataframes_dict_to_json_dict,
-    workbook_to_dataframes_dict
-)
-from os.path import dirname, realpath
-from openpyxl import load_workbook
 import datetime
+import json
 import os
 
 
-def raw_reports_from_db(request: dict) -> object:
-    """
-    Args:
-        request: A request from the front-end with user inputted company, CIK,
-        years of reports wanted, and the report type.
-
-    Returns:
-        Django Queryset of all reports in database that match user input
-        values.
-    """
-    company_reports_in_db = RawReport.objects.filter(
-        company__cik=request['cik'],
-        report_date__in=request['years']
-    )
-    return company_reports_in_db
-
-
-def create_raw_report_jsons_from_workbooks(request: dict) -> dict:
-    """
-     Args:
-        request: A request from the front-end with user inputted company, CIK,
-        years of reports wanted, and the report type.
-
-    Returns:
-        A dictionary where keys are years and values are dictionary
-        representations of Excel workbooks corresponding to that year.
-    """
-    json_dict_by_year = {}
-    for year in request['years']:
-        dir_name = dirname(realpath(__file__)) + '/downloaded_reports/'
-        filename = f'10K_{year}_report_{request["company"]}.xlsx'
-        wb = load_workbook(f'{dir_name}{filename}')
-
-        df_dict = workbook_to_dataframes_dict(wb)
-        json_dict_by_year[year] = dataframes_dict_to_json_dict(df_dict)
-
-        os.remove(f'10K_{year}_report_{request["company"]}.xlsx')
-    return json_dict_by_year
-
-
-def create_raw_report_models(request, company_model, jsons, urls) -> None:
+def create_raw_report_models(company_model, jsons, urls) -> None:
     """
     A function to create RawReport models and save them to the database.
 
     Args:
-        request: A request from the front-end with user inputted company, CIK,
-            years of reports wanted, and the report type.
-
         company_model: A Company model object from company_schema/models.py
             correspoding to the user inputted company name and CIK.
 
@@ -73,72 +29,109 @@ def create_raw_report_models(request, company_model, jsons, urls) -> None:
     Returns:
         None
     """
-    for year, json in jsons.items():
+    for year, json_dict in jsons.items():
         RawReport.objects.create(
             company=company_model,
             # Edgar Scaper only able to get year of report, not full date.
             report_date=datetime.date(int(year), 1, 1),
-            parsed_json=json,
+            parsed_json=json.dumps(json_dict),
             excel_url=urls[year]
         )
 
 
-def download_and_create_reports(request: dict, company_model: Company) -> dict:
+def create_raw_report_jsons_from_workbooks(report_file_paths: dict) -> dict:
     """
-    Args:
-        request: A request from the front-end with user inputted company, CIK,
-            years of reports wanted, and the report type.
+    Assuming the raw report Excel workbooks are already downloaded, given a
+    list of years, convert the excel workbooks into their dictionary
+    representation.
 
-        company_model: A Company model object from company_schema/models.py
-            correspoding to the user inputted company name and CIK.
+    Args:
+        report_file_paths: A dictionary where key is a year string and the
+            value is a file path to a raw report corresponding to that year.
 
     Returns:
-        A dictionary where keys are years and values are urls
-        corresponding to the urls where the actual Excel files of the raw
-        reports can be donwloaded from.
+        A dictionary where keys are years and values are dictionary
+        representations of Excel workbooks corresponding to that year.
     """
-    edgar_scraper = EdgarScraper(request['company'], request['cik'])
+    json_dict_by_year = {}
+    for year, file_path in report_file_paths.items():
+        if year <= '2015':
+            break
+        conversion_obj = ConvertCleanSave(file_path)
 
-    edgar_scraper.download_10k_reports(prior_to='2015')
+        json_dict_by_year[year] = conversion_obj.convert_to_json()
+        os.remove(file_path)
+        
+    return json_dict_by_year
 
-    # Must be called after downloading 10-K's (i.e. the previous statement)
-    jsons_by_year = create_raw_report_jsons_from_workbooks(request)
 
-    create_raw_report_models(request, company_model, jsons_by_year,
-                             edgar_scraper._excel_urls['10-K']
-                             )
+def raw_reports_from_db(request: dict) -> object:
+    """
+    Gets RawReport models with specfic CIK and year attributes from the
+    database.
 
-    return edgar_scraper._excel_urls['10-K']
+    Args:
+        request: A request from the front-end with user inputted company, CIK,
+        years of reports wanted, and the report type.
+
+    Returns:
+        Django Queryset of all reports in database that match user input
+        values.
+    """
+    company_reports_in_db = RawReport.objects.filter(
+        company__cik=request['cik'],
+        report_date__year__in=request['years']
+    )
+    return company_reports_in_db
 
 
 def retrieve_raw_reports_response(request: dict) -> dict:
     """
+    Create a response object containing the company name and CIK in the
+    request, as well as the urls of the Excel files for the requested years.
     Args:
         request: A request from the front-end with user inputted company, CIK,
-            years of reports wanted, and the report type.
+            and years of reports wanted.
 
     Returns:
         A response dictionary containing the urls for the raw reports.
     """
     response = {
-        'company_name': request['name'],
-        'company_cik': request['cik'],
+        'company': request['company'],
+        'cik': request['cik'],
         'reports': {}
     }
 
     raw_reports_in_db = raw_reports_from_db(request)
 
     if not raw_reports_in_db:
-        company_model = Company.objects.create(
-            name=request['company'], cik=request['cik']
+        edgar_scraper = EdgarScraper(request['company'], request['cik'])
+
+        report_file_paths = edgar_scraper.download_10k_reports()
+
+        # Must be called after downloading 10-K's (i.e. the previous statement)
+        jsons_by_year = create_raw_report_jsons_from_workbooks(
+            report_file_paths
         )
 
-        response['reports'] = download_and_create_reports(
-            request, company_model
-        )
-    else:
-        for report_model in raw_reports_from_db:
-            year_str = str(report_model.report_date.year)
-            response['reports'][year_str] = report_model.excel_url
+        company_queryset = Company.objects.filter(
+            name=request['company'], cik=request['cik'])
+        if not company_queryset:
+            company_model = Company.objects.create(
+                name=request['company'], cik=request['cik']
+            )
+        else:
+            company_model = company_queryset.first()
+
+        create_raw_report_models(company_model, jsons_by_year,
+                                 edgar_scraper._excel_urls['10-K'])
+
+        # Raw reports are now in database.
+        raw_reports_in_db = raw_reports_from_db(request)
+
+    for report_model in raw_reports_in_db:
+        year_str = str(report_model.report_date.year)
+        if year_str in request['years']:
+            response['reports'][year_str] = report_model.parsed_json
 
     return response

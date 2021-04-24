@@ -1,18 +1,24 @@
 from report_schema.raw_report.utils import (
     retrieve_raw_reports_response
 )
-from typing import List
 import json
 import os
 import re
 
 """
-ToDo: Explain the file and what it will be used for
+This file contains the Proxy class and the functions that it calls. This class
+will be used to validate a request sent by the User from the front-end, and
+will return a response with object from the backend with the help of the
+functions in the utils.py file.
 """
 
 
 def strip_request(request: dict) -> dict:
     """
+    Removes whitespaces at the ends of each string value within a dictionary,
+    as well as splits a list of comma-separated strings into a list of those
+    strings without the whitespaces and commmas.
+
     Args:
         request: A request dictionary sent from the front-end.
 
@@ -22,9 +28,7 @@ def strip_request(request: dict) -> dict:
     """
     cleaned = {}
     for key, val in request.items():
-        if isinstance(val, List[str]):
-            cleaned[key] = [item.strip() for item in val]
-        elif isinstance(val, str):
+        if isinstance(val, str):
             cleaned[key] = val.strip()
         else:
             cleaned[key] = val
@@ -33,6 +37,8 @@ def strip_request(request: dict) -> dict:
 
 def is_valid_cik(cik: str) -> bool:
     """
+    Checks to see whether the parameter is numeric.
+
     Args:
         cik: A CIK of a company.
 
@@ -44,6 +50,8 @@ def is_valid_cik(cik: str) -> bool:
 
 def is_valid_years(years: list) -> bool:
     """
+    Checks to see if a list of strings are numeric and length of 4.
+
     Args:
         years: A list of strings representing years.
 
@@ -52,27 +60,16 @@ def is_valid_years(years: list) -> bool:
     """
     for year in years:
         year = year.strip()
-        if not year.isnumeric() or len(year) != 4:
+        if not year.isnumeric() or len(year) != 4 or int(year) <= 2015:
             return False
 
     return True
 
 
-def is_valid_report_type(report_type: str) -> bool:
-    """
-    Args:
-        report_type: A string corresponding to the report type requested.
-
-    Returns:
-        True if report_type is in a valid list of report types; False otherwise
-    """
-    report_types = ['10-K']
-
-    return report_type in report_types
-
-
 def is_valid_instructions(instructions: dict) -> bool:
     """
+    Checks to see whether the items inside a dictionary are all numeric.
+
     Args:
         instructions: A dictionary where key is the Excel sheet name and the
             value is a list of integer strings corresponding to the rows wanted
@@ -91,6 +88,8 @@ def is_valid_instructions(instructions: dict) -> bool:
 
 def is_valid_file_path(file_path: str) -> bool:
     """
+    Checks to see whether the file path inputted exists.
+
     Args:
         file_path: A path/directory to where the file should be saved to.
 
@@ -102,6 +101,9 @@ def is_valid_file_path(file_path: str) -> bool:
 
 def is_valid_sheet_names(sheet_names: list) -> bool:
     """
+    Checks to see whether a list of strings pass an regex pattern for Excel
+    sheet names.
+
     Args:
         sheet_names: Names of sheets to pull data from.
 
@@ -123,6 +125,8 @@ def is_valid_sheet_names(sheet_names: list) -> bool:
 
 def is_valid_file_name(file_name: str) -> bool:
     """
+    Checks to see whether an inputted file name is valid.
+
     Args:
         file_name: Names file to save data to.
 
@@ -135,6 +139,9 @@ def is_valid_file_name(file_name: str) -> bool:
 
 def validate_new_report_request(request: dict) -> tuple:
     """
+    Validates a request to generate a new report by validating each item in the
+    request.
+
     Args:
         request: A dictionary containing the user inputted values with its
             corresponding keys.
@@ -149,9 +156,6 @@ def validate_new_report_request(request: dict) -> tuple:
 
     if not is_valid_years(request['years']):
         return False, "Invalid Years"
-
-    if not is_valid_report_type(request['report_type']):
-        return False, "Invalid Report Type"
 
     if not is_valid_instructions(request['report_filter']):
         return False, "Invalid Report Filter"
@@ -161,6 +165,9 @@ def validate_new_report_request(request: dict) -> tuple:
 
 def validate_raw_report_request(request: dict) -> tuple:
     """
+    Validates a request to generate a raw report by validating each item in the
+    request.
+
     Args:
         request: A dictionary containing the user inputted values with its
             corresponding keys.
@@ -175,14 +182,14 @@ def validate_raw_report_request(request: dict) -> tuple:
     if not is_valid_years(request['years']):
         return False, "Invalid Years"
 
-    if not is_valid_report_type(request['report_type']):
-        return False, "Invalid Report Type"
-
     return True, "success"
 
 
 def validate_old_request(request: dict) -> tuple:
     """
+    Validates a request to retrieve an old report by validating each item in
+    the request.
+
     Args:
         request: A dictionary containing the user inputted values with its
             corresponding keys.
@@ -204,10 +211,15 @@ class Proxy:
 
     def retrieve_raw_reports(self, request: dict) -> dict:
         """
+        Calls validation methods on request and if the request validates,
+        retrieve a response with raw reports in it.
 
         Args:
-            request:
-                {"cik": str, "years": list(str), "report_type": str}
+            request: {
+                        "company": str,
+                        "cik": str,
+                        "years": list(str)
+                    }
         Returns:
             A tuple of a dictionary (response) that is either an error message
             or a valid reponse, along with a status code, 400 or 200
@@ -223,12 +235,14 @@ class Proxy:
 
     def generate_new_report(self, request: dict) -> dict:
         """
+        Calls validation methods on request and if the request validates,
+        retrieve a response with a generated report in it.
 
         Args:
             request: {
+                        "company": str,
                         "cik": str,
                         "years": list(str),
-                        "report_type": str,
                         "report_filter": str
                     }
         Returns:

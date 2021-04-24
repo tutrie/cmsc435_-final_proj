@@ -3,7 +3,8 @@ import openpyxl as pyxl
 import numpy as np
 
 
-def ten_k_workbook_to_dataframes_dict(excel_report: pyxl.Workbook, notes: dict) -> dict:
+def ten_k_workbook_to_dataframes_dict(excel_report: pyxl.Workbook,
+                                      notes: dict) -> dict:
     """
     Args:
         excel_report: openpyxl Workbook object
@@ -18,23 +19,28 @@ def ten_k_workbook_to_dataframes_dict(excel_report: pyxl.Workbook, notes: dict) 
         data = list(data)  # Second until Last rows
         df = pd.DataFrame(data, columns=cols)
         for loc in range(len(df['index'])):
-            df.loc[loc, 'index'] = str(df['index'][loc].replace(' (loss)', ''))
-            df.loc[loc, 'index'] = str(df['index'][loc].replace(' (gain)', ''))
-            df.loc[loc, 'index'] = str(df['index'][loc].replace(' (benefit)', ''))
-            df.loc[loc, 'index'] = str(df['index'][loc].replace(' (losses)', ''))
-            df.loc[loc, 'index'] = str(df['index'][loc].replace(' (gains)', ''))
-            df.loc[loc, 'index'] = str(df['index'][loc].replace(' (expense)', ''))
+            df.loc[loc, 'index'] = str(df['index'][loc]).replace(' (loss)', '')
+            df.loc[loc, 'index'] = str(df['index'][loc]).replace(' (gain)', '')
+            df.loc[loc, 'index'] = str(
+                df['index'][loc]).replace(' (benefit)', '')
+            df.loc[loc, 'index'] = str(
+                df['index'][loc]).replace(' (losses)', '')
+            df.loc[loc, 'index'] = str(
+                df['index'][loc]).replace(' (gains)', '')
+            df.loc[loc, 'index'] = str(
+                df['index'][loc]).replace(' (expense)', '')
         df = df.set_index('index').fillna(value=np.nan)
         dup_count = 1
         while True in df.index.duplicated():
-            df.index = df.index.where(~df.index.duplicated(), df.index+' dp_'+str(dup_count))
+            df.index = df.index.where(
+                ~df.index.duplicated(), df.index + ' dp_' + str(dup_count))
             dup_count += 1
 
 
 #        dataframes_dict[sheet.title] = pd.DataFrame(data, columns=cols).set_index(keys='index').fillna(value=np.nan)
         dataframes_dict[sheet.title] = df
 
-    #return dataframes_dict
+    # return dataframes_dict
     return normalize_data(dataframes_dict, notes)
 
 
@@ -44,13 +50,14 @@ def normalize_data(dataframes_dict: dict, notes: dict) -> dict:
             multiplier = get_multiplier(notes[sheet_name])
             df = frame.T
             if index == 0:
-                df['Entity Public Float'] = df['Entity Public Float']*multiplier
+                df['Entity Public Float'] = df['Entity Public Float'] * multiplier
                 dataframes_dict[sheet_name] = df.T
             else:
                 for row_name in df.columns:
-                    row_to_skip = ('(in shares)' in row_name or '(in dollars per share)' in row_name)
+                    row_to_skip = (
+                        '(in shares)' in row_name or '(in dollars per share)' in row_name)
                     if not row_to_skip:
-                        df[row_name] = df[row_name]*multiplier
+                        df[row_name] = df[row_name] * multiplier
                 dataframes_dict[sheet_name] = df.T
     return dataframes_dict
 
@@ -81,9 +88,11 @@ def ten_k_excel_cleaning(excel_report: pyxl.Workbook) -> pyxl.Workbook:
             # Fixing merged cells tha say '# Months Ended'
             if len(sheets[my_range]) == 1:  # Len = 1 if Merged Horizontally
                 for col_cell in sheets[my_range][0]:
-                    # haven't seen a spreadsheet yet where this isnt the case for merged cells at the top.
+                    # haven't seen a spreadsheet yet where this isnt the
+                    # case for merged cells at the top.
                     next_coord = col_cell.coordinate[0] + '2'
-                    sheets[next_coord].value = sheets[next_coord].value + ' - ' + sheets[my_range][0][0].value
+                    sheets[next_coord].value = str(sheets[next_coord].value) + \
+                        ' - ' + str(sheets[my_range][0][0].value)
                 sheets[my_range][0][0].value = None
 
     # Fixing Sheet names to value in cell A1 and making cell A1 to be units
@@ -103,7 +112,8 @@ def ten_k_excel_cleaning(excel_report: pyxl.Workbook) -> pyxl.Workbook:
             elif cell.value is not None and cell.font.b:
                 cell.value += ' - CATEGORY'
 
-        notes[sheets.title] = sheets['A1'].value  # Units in US Dollars (most likely)
+        # Units in US Dollars (most likely)
+        notes[sheets.title] = sheets['A1'].value
 
         # If only merged cells existed in first row
         # and were dealt with in previous for-loop
@@ -127,11 +137,5 @@ def ten_k_excel_cleaning(excel_report: pyxl.Workbook) -> pyxl.Workbook:
 
         # this is needed for the json to work properly
         sheets['A1'].value = 'index'
-
-        # Can't modify styles. Must create copy and set cell font equal to copy.
-        #copy_style = copy(sheets['A1'].font)
-        #copy_style.b = True  # Bold
-        #copy_style.i = True  # Italicize
-        #sheets['A1'].font = copy_style
 
     return excel_report, notes

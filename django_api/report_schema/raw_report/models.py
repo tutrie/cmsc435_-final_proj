@@ -16,7 +16,7 @@ class RawReport(models.Model):
     """
     company = models.ForeignKey(Company, on_delete=models.deletion.CASCADE)
     report_date = models.DateField()
-    parsed_json = models.JSONField(blank=True, null=True)
+    parsed_json = models.TextField(blank=True, null=True)
     excel_url = models.URLField()
 
     def __str__(self):
@@ -64,15 +64,24 @@ class RawReportViewSet(viewsets.ModelViewSet):
     queryset = RawReport.objects.all()
     serializer_class = RawReportSerializer
 
-    @action(methods=['GET'], detail=False, url_path='get_raw_reports',
-            url_name='get_raw_reports')
+    @action(methods=['GET'], detail=False, url_path='get-raw-reports',
+            url_name='get-raw-reports')
     def get_raw_reports(self, request):
+        # Leave import in here. Otherwise, circular import error occurs.
         from report_schema.proxy import Proxy
-        response, status_code = Proxy().retrieve_raw_reports(request)
+        
+        query_params_copy = request.query_params.copy()
 
+        real_request = {
+            'company': query_params_copy.pop('company')[0],
+            'cik': query_params_copy.pop('cik')[0],
+            'years': query_params_copy.pop('years'),
+        }
+
+        response, status_code = Proxy().retrieve_raw_reports(real_request)
         if status_code == 400:
             return Response(
-                response, status=status.HTTP_400_INVALID
+                response, status=status.HTTP_400_BAD_REQUEST
             )
 
         return Response(response, status=status.HTTP_200_OK)

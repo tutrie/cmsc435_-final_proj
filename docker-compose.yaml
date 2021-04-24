@@ -13,13 +13,13 @@ services:
             - "5432:5432"
         networks:
             - main
-    web:
+    django-server:
         container_name: django-server
         build: ./django_api
         image: django-server:latest
         command: python3 manage.py runserver 0.0.0.0:8000
         volumes:
-            - web-django:/django_api/code
+            - django-data:/django_api/code
         env_file:
             - ./.env/django.env
         ports:
@@ -29,10 +29,29 @@ services:
         restart: always
         networks:
             - main
+    flask-server:
+        container_name: flask-server
+        build: ./api_comms
+        image: flask-server:latest
+        command: python3 app.py
+        volumes:
+            - flask-data:/api_comms/code
+        env_file:
+            - ./.env/flask.env
+        ports:
+            - "5000:5000"
+        depends_on:
+            - postgres-db
+            - django-server
+        restart: always
+        networks:
+            - main
 
 volumes:
     pgdata:
-    web-django:
+    django-data:
+    flask-data:
+    
 
 networks:
     main:
