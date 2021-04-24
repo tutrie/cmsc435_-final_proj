@@ -86,10 +86,14 @@ class TestSaveJson(TestCase):
 class TestSaveExcel(TestCase):
     def test_save_excel_success(self):
         report = {
-            'line1': 'I am a data value!'
+            'sheet1': {
+                'index': {
+                    'row1': 'I am a data value!'
+                }
+            }
         }
         curr_dir = os.path.dirname(os.path.realpath(__file__))
-        output_file_path = os.path.join(curr_dir, 'test-save-excel.excel')
+        output_file_path = os.path.join(curr_dir, 'test-save-excel.xlsx')
 
         qry.save_xlsx(report, output_file_path)
 
@@ -103,7 +107,6 @@ class TestCanSaveToLocation(TestCase):
         output_file_path = os.path.join(curr_dir, 'test.json')
         answer = qry.can_save_to_location(output_file_path)
         self.assertTrue(answer)
-        os.remove(output_file_path)
 
     @mock.patch(qry.__name__ + '.input', create=True)
     def test_can_save_to_location_yes_overwrite(self, mocked_input):
@@ -122,6 +125,7 @@ class TestCanSaveToLocation(TestCase):
         answer = qry.can_save_to_location(output_file_path)
 
         self.assertTrue(answer)
+        os.remove(output_file_path)
 
     @mock.patch(qry.__name__ + '.input', create=True)
     def test_can_save_to_location_no_overwrite(self, mocked_input):
@@ -211,9 +215,17 @@ class TestSaveSingleReport(TestCase):
             'test-save-single-report',
             'json'
         ]
+
+        report_dict = {
+            'test': 'test-save-single-report-success'
+        }
+        qry.save_single_report(report_dict)
+
         file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                  'test-save-single-report.json')
+
         self.assertTrue(os.path.isfile(file_path))
+        os.remove(file_path)
 
 
 class TestMultipleReports(TestCase):
@@ -246,7 +258,7 @@ class TestMultipleReports(TestCase):
 
         file_path_2 = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
-            'test-save-multi-report-1.json')
+            'test-save-multi-report-2.json')
         self.assertTrue(os.path.isfile(file_path_2))
         os.remove(file_path_2)
 
@@ -289,7 +301,8 @@ class TestQueryRawReportApi(TestCase):
         self.assertEqual(result['company'], 'Basset')
         self.assertEqual(result['cik'], '0000010329')
         self.assertEqual(
-            result(list(result['reports'].keys()), ['2016, 2017']))
+            sorted(list(result['reports'].keys())), ['2016', '2017']
+        )
 
 
 class TestChooseRowsInSheet(TestCase):
