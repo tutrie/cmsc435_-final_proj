@@ -119,6 +119,12 @@ def dataframe_to_dict(dataframe: object) -> dict:
     Returns:
         Dictionary representation of pandas dataframe
     """
+    dup_count = 1
+    while True in dataframe.columns.duplicated():
+        dataframe.columns = dataframe.columns.where(
+            ~dataframe.columns.duplicated(), dataframe.columns + ' dp_' + str(dup_count))
+        dup_count += 1
+
     return json.loads(dataframe.to_json(force_ascii=False))
 
 
