@@ -1,249 +1,321 @@
-# from middleware.report_generator.src.active_report import ActiveReport
-# from middleware.query_engine import report_runner as qry
+from middleware.query_engine import report_runner as qry
 
-# from os.path import exists
-# from unittest import TestCase, mock
-# import os
+from unittest import TestCase, mock
+import os
 
 
-# class TestGetUserInput(TestCase):
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_get_user_input(self, mocked_input):
-#         mocked_input.side_effect = ["input"]
+class TestGetUserInput(TestCase):
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_get_user_input(self, mocked_input):
+        mocked_input.side_effect = ['input']
 
-#         value = qry.get_user_input("enter: ")
+        value = qry.get_user_input('enter: ')
 
-#         self.assertEqual("input", value)
+        self.assertEqual('input', value)
 
 
-# class TestGetUserInputAsList(TestCase):
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_get_user_input_list_single_value(self, mocked_input):
-#         mocked_input.side_effect = ["1"]
+class TestGetUserInputAsList(TestCase):
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_get_user_input_list_single_value(self, mocked_input):
+        mocked_input.side_effect = ['1']
 
-#         value = qry.get_user_input_as_list("seperate by commas: ")
+        value = qry.get_user_input_as_list('seperate by commas: ')
 
-#         self.assertEqual(["1"], value)
+        self.assertEqual(['1'], value)
 
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_get_user_input_list_multiple_values(self, mocked_input):
-#         mocked_input.side_effect = ["1, 2, 3"]
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_get_user_input_list_multiple_values(self, mocked_input):
+        mocked_input.side_effect = ['1, 2, 3']
 
-#         value = qry.get_user_input_as_list("seperate by commas: ")
+        value = qry.get_user_input_as_list('seperate by commas: ')
 
-#         self.assertEqual(["1", "2", "3"], value)
+        self.assertEqual(['1', '2', '3'], value)
 
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_get_user_input_list_trailing_comma(self, mocked_input):
-#         mocked_input.side_effect = ["1, 2, "]
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_get_user_input_list_trailing_comma(self, mocked_input):
+        mocked_input.side_effect = ['1, 2, ']
 
-#         value = qry.get_user_input_as_list("seperate by commas: ")
+        value = qry.get_user_input_as_list('seperate by commas: ')
 
-#         self.assertEqual(["1", "2"], value)
+        self.assertEqual(['1', '2'], value)
 
 
-# class TestBasicRequest(TestCase):
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_basic_returns_dict_of_user_input(self, mocked_input):
-#         mocked_input.side_effect = ["cik", "2010", "type"]
+class TestGetUserIntList(TestCase):
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_get_user_int_list_single_value(self, mocked_input):
+        mocked_input.side_effect = ['1']
 
-#         valid_request = {"cik": "cik", "years": [
-#             "2010"], "report_type": "type"}
+        target = [1, 2, 3]
+        value = qry.get_user_int_list(target)
 
-#         value = qry.basic_request()
+        self.assertEqual([1], value)
 
-#         self.assertEqual(valid_request, value)
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_get_user_int_list_multiple_values(self, mocked_input):
+        mocked_input.side_effect = ['1, 2, 3']
 
+        target = [1, 2, 3]
+        value = qry.get_user_int_list(target)
 
-# class TestIsError(TestCase):
-#     def test_is_error_true_when_error(self):
-#         error = {"error": "msg"}
+        self.assertEqual([1, 2, 3], value)
 
-#         value = qry.is_error_response(error)
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_get_user_int_list_invalid_then_valid(self, mocked_input):
+        mocked_input.side_effect = ['1, 2, 3, 4', '1, 2']
 
-#         self.assertTrue(value)
+        target = [1, 2, 3]
+        value = qry.get_user_int_list(target)
 
-#     def test_is_error_false_when_no_error(self):
-#         response = {"report": "msg"}
+        self.assertEqual([1, 2], value)
 
-#         value = qry.is_error_response(response)
 
-#         self.assertFalse(value)
+class TestSaveJson(TestCase):
+    def test_save_json_success(self):
+        report = {
+            'line1': 'I am a data value!'
+        }
+        curr_dir = os.path.dirname(os.path.realpath(__file__))
+        output_file_path = os.path.join(curr_dir, 'test-save-json.json')
 
+        qry.save_json(report, output_file_path)
 
-# class TestGetRowsForSheets(TestCase):
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_get_rows_for_sheets_maps_single_sheet_to_single_row(self, mocked_input):
-#         mocked_input.side_effect = ["1"]
-#         sheets = ["test"]
-#         valid = {"test": ["1"]}
+        self.assertTrue(os.path.isfile(output_file_path))
+        os.remove(output_file_path)
 
-#         value = qry.get_rows_for_sheets(sheets)
 
-#         self.assertEqual(valid, value)
+class TestSaveExcel(TestCase):
+    def test_save_excel_success(self):
+        report = {
+            'sheet1': {
+                'index': {
+                    'row1': 'I am a data value!'
+                }
+            }
+        }
+        curr_dir = os.path.dirname(os.path.realpath(__file__))
+        output_file_path = os.path.join(curr_dir, 'test-save-excel.xlsx')
 
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_get_rows_for_sheets_maps_single_sheet_to_multiple_rows(self, mocked_input):
-#         mocked_input.side_effect = ["1, 2, 3"]
-#         sheets = ["test"]
-#         valid = {"test": ["1", "2", "3"]}
+        qry.save_xlsx(report, output_file_path)
 
-#         value = qry.get_rows_for_sheets(sheets)
+        self.assertTrue(os.path.isfile(output_file_path))
+        os.remove(output_file_path)
 
-#         self.assertEqual(valid, value)
 
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_get_rows_for_sheets_maps_multiple_sheets_to_single_rows(self, mocked_input):
-#         mocked_input.side_effect = ["1", "2", "3"]
-#         sheets = ["test1", "test2", "test3"]
-#         valid = {"test1": ["1"], "test2": ["2"], "test3": ["3"]}
+class TestCanSaveToLocation(TestCase):
+    def test_can_save_to_location_new_file_path(self):
+        curr_dir = os.path.dirname(os.path.realpath(__file__))
+        output_file_path = os.path.join(curr_dir, 'test.json')
+        answer = qry.can_save_to_location(output_file_path)
+        self.assertTrue(answer)
 
-#         value = qry.get_rows_for_sheets(sheets)
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_can_save_to_location_yes_overwrite(self, mocked_input):
+        mocked_input.side_effect = ['y']
 
-#         self.assertEqual(valid, value)
+        report = {
+            'line1': {
+                'row1': 'data1'
+            }
+        }
+        curr_dir = os.path.dirname(os.path.realpath(__file__))
+        output_file_path = os.path.join(curr_dir, 'test.json')
 
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_get_rows_for_sheets_maps_multiple_sheets_to_multiple_rows(self, mocked_input):
-#         mocked_input.side_effect = ["1, 2, 3", "4, 5, 6", "7, 8, 9"]
-#         sheets = ["test1", "test2", "test3"]
-#         valid = {"test1": ["1", "2", "3"], "test2": [
-#             "4", "5", "6"], "test3": ["7", "8", "9"]}
+        qry.save_json(report, output_file_path)
 
-#         value = qry.get_rows_for_sheets(sheets)
+        answer = qry.can_save_to_location(output_file_path)
 
-#         self.assertEqual(valid, value)
+        self.assertTrue(answer)
+        os.remove(output_file_path)
 
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_can_save_to_location_no_overwrite(self, mocked_input):
+        mocked_input.side_effect = ['n']
 
-# class TestGetUserFolderPath(TestCase):
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_get_user_folder_path_valid_with_slash(self, mocked_input):
-#         directory = './../'
-#         mocked_input.side_effect = [directory]
+        report = {
+            'line1': 'I am a data value!'
+        }
+        curr_dir = os.path.dirname(os.path.realpath(__file__))
+        output_file_path = os.path.join(curr_dir, 'test-save-to-loc.json')
 
-#         result = qry.get_user_folder_path()
-#         self.assertEqual(directory, result)
+        qry.save_json(report, output_file_path)
 
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_get_user_folder_path_valid_without_slash(self, mocked_input):
-#         directory = './..'
-#         mocked_input.side_effect = [directory]
+        answer = qry.can_save_to_location(output_file_path)
 
-#         result = qry.get_user_folder_path()
-#         self.assertEqual(directory + '/', result)
+        self.assertFalse(answer)
+        os.remove(output_file_path)
 
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_get_user_folder_path_invalid_then_valid(self, mocked_input):
-#         directory_one = ' '
-#         directory_two = './..'
-#         mocked_input.side_effect = [directory_one, directory_two]
 
-#         result = qry.get_user_folder_path()
-#         self.assertEqual(directory_two + '/', result)
+class TestChooseJsonOrXlsx(TestCase):
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_choose_json_or_xlsx_as_xlsx(self, mocked_input):
+        mocked_input.side_effect = ['xlsx']
 
+        result = qry.choose_json_or_xlsx()
+        self.assertEqual('.xlsx', result)
 
-# class TestChooseJsonOrXlsx(TestCase):
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_choose_json_or_xlsx_as_xlsx(self, mocked_input):
-#         mocked_input.side_effect = ["xlsx"]
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_choose_json_or_xlsx_invalid_then_xlsx(self, mocked_input):
+        mocked_input.side_effect = ['invalid', 'xlsx']
 
-#         result = qry.choose_json_or_xlsx()
-#         self.assertEqual(".xlsx", result)
+        result = qry.choose_json_or_xlsx()
+        self.assertEqual('.xlsx', result)
 
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_choose_json_or_xlsx_invalid_then_xlsx(self, mocked_input):
-#         mocked_input.side_effect = ["invalid", "xlsx"]
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_choose_json_or_xlsx_as_json(self, mocked_input):
+        mocked_input.side_effect = ['json']
 
-#         result = qry.choose_json_or_xlsx()
-#         self.assertEqual(".xlsx", result)
+        result = qry.choose_json_or_xlsx()
+        self.assertEqual('.json', result)
 
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_choose_json_or_xlsx_as_json(self, mocked_input):
-#         mocked_input.side_effect = ["json"]
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_choose_json_or_xlsx_invalid_then_json(self, mocked_input):
+        mocked_input.side_effect = ['invalid', 'json']
 
-#         result = qry.choose_json_or_xlsx()
-#         self.assertEqual(".json", result)
+        result = qry.choose_json_or_xlsx()
+        self.assertEqual('.json', result)
 
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_choose_json_or_xlsx_invalid_then_json(self, mocked_input):
-#         mocked_input.side_effect = ["invalid", "json"]
 
-#         result = qry.choose_json_or_xlsx()
-#         self.assertEqual(".json", result)
+class TestGetValidFileName(TestCase):
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_get_valid_file_name_valid_input(self, mocked_input):
+        mocked_input.side_effect = ['im-a_File09']
 
+        result = qry.get_valid_file_name()
+        self.assertEqual(result, 'im-a_File09')
 
-# class TestGetValidFileName(TestCase):
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_get_valid_file_name_valid_input(self, mocked_input):
-#         mocked_input.side_effect = ["im-a_File09"]
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_get_valid_file_name_invalid_then_valid_input(self, mocked_input):
+        mocked_input.side_effect = ['$', 'im-a_File09']
 
-#         result = qry.get_valid_file_name()
-#         self.assertEqual(result, "im-a_File09")
+        result = qry.get_valid_file_name()
+        self.assertEqual(result, 'im-a_File09')
 
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_get_valid_file_name_invalid_then_valid_input(self, mocked_input):
-#         mocked_input.side_effect = ["$", "im-a_File09"]
 
-#         result = qry.get_valid_file_name()
-#         self.assertEqual(result, "im-a_File09")
+class TestGetUserFolderPath(TestCase):
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_get_user_folder_path_valid_path(self, mocked_input):
+        mocked_input.side_effect = [os.getcwd()]
 
+        output = qry.get_user_folder_path()
+        self.assertEqual(output, os.getcwd() + '/')
 
-# class TestCanSaveToLocation(TestCase):
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_can_save_to_location_when_doesnt_exist(self, mocked_input):
-#         mocked_input.side_effect = ["im-a_File09"]
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_get_user_folder_path_invalid_then_valid_path(self, mocked_input):
+        mocked_input.side_effect = ['393wjsdfsd', os.getcwd()]
 
-#         result = qry.can_save_to_location("im-aFile089")
-#         self.assertTrue(result)
+        output = qry.get_user_folder_path()
+        self.assertEqual(output, os.getcwd() + '/')
 
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_can_save_to_location_when_does_exist(self, mocked_input):
-#         mocked_input.side_effect = ["y"]
 
-#         result = qry.can_save_to_location(
-#             "Backend/ReportGenerator/Toplevel/UserReports/test/test.json")
-#         self.assertTrue(result)
+class TestSaveSingleReport(TestCase):
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_save_single_report_success(self, mocked_input):
+        mocked_input.side_effect = [
+            os.path.dirname(os.path.realpath(__file__)),
+            'test-save-single-report',
+            'json'
+        ]
 
+        report_dict = {
+            'test': 'test-save-single-report-success'
+        }
+        qry.save_single_report(report_dict)
 
-# class TestSaveUserReport(TestCase):
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_save_json_report(self, mocked_input):
-#         mocked_input.side_effect = ['Username/', "test", "json"]
+        file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                 'test-save-single-report.json')
 
-#         report = ActiveReport.from_year("0000010329", "2020", "10-K")
+        self.assertTrue(os.path.isfile(file_path))
+        os.remove(file_path)
 
-#         file_loc = qry.save_report_locally(report.json)
 
-#         self.assertTrue(exists(file_loc))
-#         os.remove(file_loc)
+class TestMultipleReports(TestCase):
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_save_multi_report_success(self, mocked_input):
+        mocked_input.side_effect = [
+            os.path.dirname(os.path.realpath(__file__)),
+            'test-save-multi-report-1',
+            'json',
+            os.path.dirname(os.path.realpath(__file__)),
+            'test-save-multi-report-2',
+            'json'
+        ]
 
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_save_xlsx_report(self, mocked_input):
-#         mocked_input.side_effect = ['Username/', "test", "xlsx"]
+        reports = {
+            '2015': {
+                'report_dict1': 'val1'
+            },
+            '2016': {
+                'report_dict2': 'val2'
+            }
+        }
+        qry.save_multiple_reports_locally(reports)
 
-#         report = ActiveReport.from_year("0000010329", "2020", "10-K")
+        file_path_1 = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            'test-save-multi-report-1.json')
+        self.assertTrue(os.path.isfile(file_path_1))
+        os.remove(file_path_1)
 
-#         file_loc = qry.save_report_locally(report.json)
+        file_path_2 = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            'test-save-multi-report-2.json')
+        self.assertTrue(os.path.isfile(file_path_2))
+        os.remove(file_path_2)
 
-#         self.assertTrue(exists(file_loc))
-#         os.remove(file_loc)
 
+class TestIsErrorResponse(TestCase):
+    class Response():
+        def __init__(self, status_code: int):
+            self.status_code = status_code
 
-# class TestStartReportRetrieval(TestCase):
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_input_done(self, mocked_input):
-#         mocked_input.side_effect = ["done"]
-#         qry.start_report_retrieval()
+    def test_is_error_response_false(self):
+        self.assertFalse(qry.is_error_response(self.Response(200)))
 
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_input_invalid_then_done(self, mocked_input):
-#         mocked_input.side_effect = ["invalid", "done"]
-#         qry.start_report_retrieval()
+    def test_is_error_response_true(self):
+        self.assertTrue(qry.is_error_response(self.Response(400)))
 
-#     @mock.patch(qry.__name__ + '.input', create=True)
-#     def test_input_valid(self, mocked_input):
-#         mocked_input.side_effect = ["1"]
 
-#         try:
-#             qry.start_report_retrieval()
-#         except Exception:
-#             print("")
+class TestBasicRequest(TestCase):
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_basic_returns_dict_of_user_input(self, mocked_input):
+        mocked_input.side_effect = ['myCompany', '123456789', '2016, 2017']
+
+        valid_request = {
+            'company': 'myCompany',
+            'cik': '123456789',
+            'years': ['2016', '2017']
+        }
+
+        value = qry.basic_request()
+
+        self.assertEqual(valid_request, value)
+
+
+class TestQueryRawReportApi(TestCase):
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_query_raw_report_api_returns_reports(self, mocked_input):
+        mocked_input.side_effect = ['Basset', '0000010329', '2016, 2017']
+
+        result = qry.query_raw_report_api()
+
+        self.assertEqual(result['company'], 'Basset')
+        self.assertEqual(result['cik'], '0000010329')
+        self.assertEqual(
+            sorted(list(result['reports'].keys())), ['2016', '2017']
+        )
+
+
+class TestChooseRowsInSheet(TestCase):
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_choose_rows_in_sheet_success(self, mocked_input):
+        mocked_input.side_effect = ['1, 2, 3']
+
+        to_keep = qry.choose_rows_in_sheet(
+            'test-sheet', {'index': {1: 1, 2: 2, 3: 3, 4: 4}})
+        self.assertEqual(to_keep, [1, 2, 3])
+
+
+class TestChooseSheetNames(TestCase):
+    @mock.patch(qry.__name__ + '.input', create=True)
+    def test_choose_sheet_names_success(self, mocked_input):
+        mocked_input.side_effect = ['1, 2, 3']
