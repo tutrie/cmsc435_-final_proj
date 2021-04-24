@@ -104,7 +104,6 @@ def raw_report():
                 if match:
                     excel_url = report['excel_url']
                     break
-        print(excel_url)
         return render_template('raw_report.html', title='Raw Report',
                                username=session.get('username'), excel_url=excel_url)
 
