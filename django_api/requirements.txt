@@ -1,10 +1,6 @@
-virtualenv
 Django
 djangorestframework
 psycopg2-binary
-flake8
-coverage
-pytest
 lxml==4.6.1
 pandas
 openpyxl
