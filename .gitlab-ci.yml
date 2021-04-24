@@ -90,4 +90,4 @@ deploy-prod:
     - cd docs
     - make html
     - cd ..
-    - cp build/html/_static/index.html api_comms/flask_app/templates/docs.html
+    - cp build api_comms/flask_app/templates/documentation
