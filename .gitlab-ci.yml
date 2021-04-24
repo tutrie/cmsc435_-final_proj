@@ -13,7 +13,6 @@ cache:
     - venv/
 
 stages:
-  - prep
   - build
   - test
   - Static Analysis
@@ -25,18 +24,6 @@ before_script:
   - virtualenv venv
   - source venv/bin/activate
 
-prep:
-  stage: prep
-  script:
-    - pip install -r requirements.txt
-  artifacts:
-   paths:
-   - python_packages
-  cache:
-   paths:
-   - python_packages
-
-
 # Change pip's cache directory to be inside the project directory since we can
 # only cache local items.
 build-start:
@@ -44,9 +31,6 @@ build-start:
   script:
     - echo "Hello, $GITLAB_USER_LOGIN!"
     - pip install -r requirements.txt
-  artifacts:
-    paths:
-      - public
 
 test-django-backend:
   stage: test
@@ -54,18 +38,12 @@ test-django-backend:
     - cd django_api
     - python manage.py migrate
     - python manage.py test
-  artifacts:
-    paths:
-      - public
 
 
 flake8:
   stage: Static Analysis
   script:
     - flake8 --ignore=W293,W391 --exclude 'django_api/venv/*' --max-line-length=120 .
-  artifacts:
-    paths:
-      - public
 
 coverage:
   stage: Static Analysis
@@ -75,14 +53,8 @@ coverage:
     - coverage run --omit 'venv/*' --source='.' manage.py test
     - coverage report
     - coverage erase
-  artifacts:
-    paths:
-      - public
 
 deploy-prod:
   stage: deploy
   script:
     - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
-  artifacts:
-    paths:
-      - public
