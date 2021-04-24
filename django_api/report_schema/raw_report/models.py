@@ -80,8 +80,6 @@ class RawReportViewSet(viewsets.ModelViewSet):
 
         response, status_code = Proxy().retrieve_raw_reports(real_request)
         if status_code == 400:
-            return Response(
-                response, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(response, status=status.HTTP_200_OK)

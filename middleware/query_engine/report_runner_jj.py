@@ -307,6 +307,7 @@ def query_raw_report_api() -> None:
     while True:
         request = basic_request()
         response = requests.get(raw_report_url, params=request)
+        print(response.request)
         response_json = json.loads(response.json())
         print(f'Response: {response}\n')
         print(f'Json: {response_json.keys()}')
@@ -321,7 +322,7 @@ def query_raw_report_api() -> None:
 
 def retrieve_raw_reports() -> None:
     """
-    Get the json object of the response, and if the request was successfull,
+    Get the json object of the response, and if the request was successful,
     save the reports to the local machine.
     """
     response_json = query_raw_report_api()
@@ -329,7 +330,7 @@ def retrieve_raw_reports() -> None:
         save_multiple_reports_locally(response_json['reports'])
 
 
-def choose_rows_in_sheet(sheet_name, sheet_values: dict) -> list:
+def choose_rows_in_sheet(sheet_name: str, sheet_values: dict) -> list:
     """
     Prompts user to choose specific rows in Excel sheets.
 
