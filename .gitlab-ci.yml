@@ -15,8 +15,8 @@ cache:
 stages:
   - build
  # - test
-  - Static Analysis
-  - deploy
+#  - Static Analysis
+#  - deploy
 
 before_script:
   - python -V               # Print out python version for debugging
@@ -59,21 +59,22 @@ build-start:
 #      - runner_system_failure
 #      - stuck_or_timeout_failure
 
-flake8:
-  stage: Static Analysis
-  script:
-    - flake8 --ignore=W293,W391 --exclude 'venv/*' --max-line-length=120 .
-  retry:
-    max: 2
-    when:
-      - runner_system_failure
-      - stuck_or_timeout_failure
+#flake8:
+#  stage: Static Analysis
+#  script:
+#    - flake8 --ignore=W293,W391 --exclude 'venv/*' --max-line-length=120 .
+#  retry:
+#    max: 2
+#    when:
+#      - runner_system_failure
+#      - stuck_or_timeout_failure
 
 coverage:
   stage: Static Analysis
   script:
     #ToDo add all of the other tests once the file structures are final
-    - coverage run -m --omit 'venv/*' --source='.' django_api/manage.py test api_comms/flask_app/test_flask_app.py
+    - coverage run --omit 'venv/*' django_api/manage.py test
+    - coverage run -m api_comms/flask_app/test_flask_app.py
     - coverage report
     - coverage erase
   retry:
@@ -82,7 +83,7 @@ coverage:
       - runner_system_failure
       - stuck_or_timeout_failure
 
-deploy-prod:
-  stage: deploy
-  script:
-    - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
+#deploy-prod:
+#  stage: deploy
+#  script:
+#    - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
