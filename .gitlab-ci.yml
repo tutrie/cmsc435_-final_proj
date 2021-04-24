@@ -86,7 +86,7 @@ before_script:
 deploy-prod:
   stage: deploy
   script:
-    - pip install sphinx
+    - pip install sphinx sphinx-rtd-theme
     - cd docs
     - make html
     - cd ..
