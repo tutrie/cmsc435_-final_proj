@@ -12,7 +12,7 @@ Fields:
     app: The Flask app instance
     UI_PORT: The port that this Flask app will be ran on.
 """
-app = Flask(__name__, static_folder='_static')
+app = Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = '\xe0\x8d?8z\xdd\x87i}\xfc\xaa\x91\x8f\n1\x1a\xe4\xb3\xa7\xbd5\xf8\x96\xdd'
 
 UI_PORT = os.getenv('UI_PORT')
