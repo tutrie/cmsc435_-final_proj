@@ -132,7 +132,7 @@ def save_json(report_dict: dict, output_file: str) -> None:
 
         output_file: A full file path to where the report should be saved to.
     """
-    json_dict_to_json_file(report_dict, output_file)
+    json_dict_to_json_file(json.loads(report_dict), output_file)
 
 
 def save_xlsx(report_dict: dict, output_file: str):
@@ -144,7 +144,7 @@ def save_xlsx(report_dict: dict, output_file: str):
 
         output_file: A full file path to where the report should be saved to.
     """
-    dataframes_dict = json_dict_to_dataframes_dict(report_dict)
+    dataframes_dict = json_dict_to_dataframes_dict(json.loads(report_dict))
     dataframes_dict_to_workbook(dataframes_dict, output_file)
 
 
