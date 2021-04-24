@@ -2,6 +2,7 @@ import pandas as pd
 import json
 import openpyxl as pyxl
 
+
 def workbook_to_dataframes_dict(excel_report: pyxl.Workbook) -> dict:
     """
     Args:
