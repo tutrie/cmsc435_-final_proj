@@ -69,15 +69,15 @@ test-middleware:
       - runner_system_failure
       - stuck_or_timeout_failure
 
-#flake8:
-#  stage: Static Analysis
-#  script:
-#    - flake8 --ignore=W293,W391 --exclude 'venv/*' --max-line-length=120 .
-#  retry:
-#    max: 2
-#    when:
-#      - runner_system_failure
-#      - stuck_or_timeout_failure
+flake8:
+  stage: Static Analysis
+  script:
+    - flake8 --ignore=W293,W391 --exclude 'venv/*' --max-line-length=120 .
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
 
 coverage:
   stage: Static Analysis
