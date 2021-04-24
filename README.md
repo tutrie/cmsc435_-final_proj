@@ -1,53 +1,60 @@
 # User Documentation
 
-### Setting up and Running the Django Docker Container
-####NOTE: You can skip this step if running the application in production mode
-Start Docker
+### Setting up the Docker Container
+* cd into the middleware directory.
 ```bash
-sudo service docker start
+cd middleware
 ```
-Build the Docker container for django
+* Build the Docker image.
 ```bash
-docker-compose up --build -d
+docker build -t report-runner .
 ```
-Run the Docker container
-```bash
-docker-compose up -d
-```
-Super user login for the admin panel is
 
-username: admin
+* Starting the Docker container.
+  
+  **Windows:**
+  ```bash
+  docker run -it -v %cd%:/code report-runner bash
+  ```
+  
+  **Linux:** 
+  
+  ```bash
+  docker run -it -v $(pwd):/code report-runner bash
+  ```
 
-password: admin
+* Once the container terminal starts, run the :
 
-If you are having trouble logging in with these credentials run
 ```bash
-docker-compose run web python3 manage.py createsuperuser
+python middleware/query_engine/report_runner.py
 ```
-## Running the Application
+
+### Start the Frontend UI
+* Create another terminal session, and cd into the api_comms directory.
+```bash
+
+```
 
 
 # Developer Documentation
-## Setting up Development Environment
-
-### Dependency Setup
+### Environment Setup
 ```bash
 pip install -r requirements.txt
 ```
 
 ### Django Backend Setup
-Create local database
-```bash
-python manage.py migrate
-```
-Create superuser for admin panel, follow the prompts to create an admin account.
-```bash
-python manage.py createsuperuser
-```
-Run the server locally on port 8000
-```bash
-python manage.py runserver
-```
+* Create local database
+    ```bash
+    python manage.py migrate
+    ```
+* Create superuser for admin panel, follow the prompts to create an admin account.
+    ```bash
+    python manage.py createsuperuser
+    ```
+* Run the server locally on port 8000
+    ```bash
+    python manage.py runserver
+    ```
 You can now browse the api and use the admin panel by going to the following links
 
 Admin panel: http://localhost:8000/admin/
@@ -55,39 +62,45 @@ Admin panel: http://localhost:8000/admin/
 API: http://localhost:8000/api/
 
 ### Frontend Setup
-Put what we have to do here for the UI/services
+* cd into flask_app folder.
+    ```bash
+    cd api_comms/flask_app
+    ```
+
+* Start the flask server
+    ```bash 
+    python3 -m flask run
+    ```
+* Visit http://127.0.0.1:5000/ to access the frontend UI.
 
 ### Accessing Cloud Instance
-Download the scraper.pem security key
+* Download the scraper.pem security key
 
-SSH into the instance
-```bash
-ssh -i "scraper.pem" ec2-user@ec2-13-58-133-36.us-east-2.compute.amazonaws.com
-```
+* SSH into the instance
+    ```bash
+    ssh -i "scraper.pem" ec2-user@ec2-13-58-133-36.us-east-2.compute.amazonaws.com
+    ```
 
 ## Running Tests
-### Django tests
-### Query Engine tests
-
+### Django Tests
+* Add steps
+### Query Engine Tests
+* Add steps
+### Frontend Flask Tests
+* Run the following command in the terminal to run the tests.
+    ```bash
+    python api_comms/flask_app/test_flask_app.py
+    ```
 
 ## System Architecture
 ### Flask Frontend
-#### Server:
-To run the server:
-1. cd into ```team-project-xrbl-scraper\api_comms\flask_app```
-2. run ```python3 -m flask run```
-3. visit http://127.0.0.1:5000/
 
 
-#### Testing:
-To run the tests:
-1. Do the above to make sure the server is running or else the tests will not work as they are supposed to.
+* Routes 
 
 
+```'/'```
 
-#### Functions 
-
-```def main_page()```
 
 Located at http://127.0.0.1:5000/, this method renders the welcome page for the website.  It has links to navigate to the Login and Register pages.
 
@@ -116,14 +129,13 @@ Note:  Timeout errors will be the result of network and internet speeds dropping
 ### Django Backend API
 
 
-## Run using Docker
+* Run using Docker.<br>
+  First, get the containers up and running in the background
+    ```bash
+    docker-compose up -d
+    ```
 
-First, get the containers up and running in the background
-```bash
-docker-compose up -d
-```
-
-# If the images need to be built, run this instead
+#### If the images need to be built, run this instead
 ```bash
 docker-compose up --build -d
 ```
