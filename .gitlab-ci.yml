@@ -94,6 +94,15 @@ coverage:
       - runner_system_failure
       - stuck_or_timeout_failure
 
+pages:
+  stage: deploy
+  script:
+    - pip install sphinx sphinx-rtd-theme
+    - sphinx-build -b html . public
+  artifacts:
+    paths:
+      - public
+
 deploy-prod:
   stage: deploy
   script:
