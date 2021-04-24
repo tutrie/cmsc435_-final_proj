@@ -74,7 +74,7 @@ coverage:
   script:
     #ToDo add all of the other tests once the file structures are final
     #- coverage run --omit 'venv/*','*/migrations/*' --source=django_api/company_schema/,django_api/report_schema django_api/manage.py test
-    - coverage run --source=api_comms/flask_app/app.py -m pytest api_comms/flask_app/test_flask_app.py
+    - coverage run --omit api_comms/flask_app/test_flask_app.py -m pytest api_comms/flask_app/test_flask_app.py
     - coverage report
     - coverage erase
   retry:
