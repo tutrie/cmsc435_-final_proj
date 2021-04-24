@@ -276,6 +276,7 @@ class EdgarScraper:
                     
                     file_name = f'10K_{year}_report_{company_name}.xlsx'
                     full_file = dir_name / file_name
+                    print(full_file)
                     file = open(full_file, 'wb')
                     file.write(req.content)
                     file.close()
