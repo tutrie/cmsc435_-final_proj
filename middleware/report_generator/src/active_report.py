@@ -106,6 +106,10 @@ class ActiveReport:
 
     @classmethod
     def from_workbooks_by_years_dicts(cls, wbks_by_year: dict) -> object:
+
+        for years in wbks_by_year.keys():
+            
+
         dataframes_dict = join_pandas_dataframes(wbks_by_year)
         json_dict = dataframes_dict_to_json_dict(dataframes_dict)
 

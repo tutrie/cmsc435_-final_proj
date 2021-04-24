@@ -381,6 +381,8 @@ def create_generated_report(username: str = None, password: str = None) -> None:
     if not response_json:
         return
 
+    #print(response_json)
+
     merged_report = ActiveReport.from_workbooks_by_years_dicts(
         response_json['reports'])
 
