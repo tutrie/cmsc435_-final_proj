@@ -46,20 +46,6 @@ services:
         restart: always
         networks:
             - main
-    report-runner:
-        container_name: report-runner
-        build: ./middleware
-        image: report-runner:latest
-        volumes:
-            - report-data:/code
-        ports:
-            - "5050:5050"
-        depends_on:
-            - postgres-db
-            - django-server
-            - flask-server
-        networks:
-            - main
 
 volumes:
     pgdata:
