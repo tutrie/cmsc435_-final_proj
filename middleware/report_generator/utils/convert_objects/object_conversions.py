@@ -93,23 +93,23 @@ def dataframes_dict_to_workbook(dataframes_dict: dict, file_path: str):
         writer.save()
 
 
-# def json_dict_to_json_file(json_dict: dict, file_path: str):
-#     """
-#     Args:
-#         json_dict: Dictionary of dictionaries where key is the sheet name of
-#             the dataframe while the value is the dictionary representation of
-#             the dataframe.
-#
-#         file_path: File path to save the JSON file to.
-#             Ex: '<directory>/<inner_directory>/<file_name_without_extension>'
-#
-#     Returns:
-#         None
-#     """
-#     # Dict into JSON file
-#     with open(f'{file_path}', 'w') as jsonFile:
-#         json.dump(json_dict, jsonFile)
-#
+def json_dict_to_json_file(json_dict: dict, file_path: str):
+    """
+    Args:
+        json_dict: Dictionary of dictionaries where key is the sheet name of
+            the dataframe while the value is the dictionary representation of
+            the dataframe.
+
+        file_path: File path to save the JSON file to.
+            Ex: '<directory>/<inner_directory>/<file_name_without_extension>'
+
+    Returns:
+        None
+    """
+    # Dict into JSON file
+    with open(f'{file_path}', 'w') as jsonFile:
+        json.dump(json_dict, jsonFile)
+
 
 def dataframe_to_dict(dataframe: object) -> dict:
     """

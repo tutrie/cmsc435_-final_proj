@@ -8,7 +8,8 @@ from os.path import exists, isdir
 from middleware.report_generator.src.active_report import ActiveReport
 from middleware.report_generator.utils.convert_objects.object_conversions import (
     json_dict_to_dataframes_dict,
-    dataframes_dict_to_workbook
+    dataframes_dict_to_workbook,
+    json_dict_to_json_file
 )
 
 
@@ -384,6 +385,7 @@ def create_generated_report(username: str = None, password: str = None) -> None:
 
     print('Preparing to save generated report locally:\n')
     save_single_report(generated_report_json)
+
 
     # response = requests.post(generate_report_url, auth=(username, password),
     #                          data=generated_report_json, timeout=15)
