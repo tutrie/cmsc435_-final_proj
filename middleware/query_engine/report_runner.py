@@ -386,14 +386,21 @@ def create_generated_report(username: str = None, password: str = None) -> None:
     print('Preparing to save generated report locally:\n')
     save_single_report(generated_report_json)
 
+    report_name = get_user_input("Please enter a name for your report:")
+    username = get_user_input("Please enter the username you wish to save this report under:")
+    password = get_user_input("Please enter the password for this user:")
 
-    # response = requests.post(generate_report_url, auth=(username, password),
-    #                          data=generated_report_json, timeout=15)
-    # if response.status_code == 201:
-    #     print('Generated report successfully saved to database.')
-    # else:
-    #     print(f'Response returned with error code {response.status_code}')
-    #     print(f'Full response: {response}')
+    payload = {
+        'name': report_name,
+        'json_schema': generated_report_json
+    }
+    response = requests.post(generate_report_url, auth=(username, password),
+                             data=payload, timeout=15)
+    if response.status_code == 201:
+        print('Generated report successfully saved to database.')
+    else:
+        print(f'Response returned with error code {response.status_code}')
+        print(f'Full response: {response}')
 
 
 def start_report_retrieval() -> None:
