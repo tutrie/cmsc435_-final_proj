@@ -12,7 +12,7 @@ Fields:
     app: The Flask app instance
     UI_PORT: The port that this Flask app will be ran on.
 """
-app = Flask(__name__)
+app = Flask(__name__, static_folder='_static')
 app.config['SECRET_KEY'] = '\xe0\x8d?8z\xdd\x87i}\xfc\xaa\x91\x8f\n1\x1a\xe4\xb3\xa7\xbd5\xf8\x96\xdd'
 
 UI_PORT = os.getenv('UI_PORT')
@@ -27,6 +27,17 @@ def main_page():
         Renders mainpage.html template which shows the homepage of the app.
     """
     return render_template('mainpage.html', title='Main Page')
+
+
+@app.route('/docs')
+def documentation():
+    """
+    A function called when there's a GET request to index route received.
+
+    Returns:
+        Renders mainpage.html template which shows the homepage of the app.
+    """
+    return render_template('docs/html/index.html', title='Documentation')
 
 
 @app.route('/register', methods=['GET', 'POST'])
