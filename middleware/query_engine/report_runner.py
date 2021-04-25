@@ -398,11 +398,10 @@ def create_generated_report(username: str = None, password: str = None) -> None:
         'name': report_name,
         'json_schema': json.dumps(generated_report_json)
     }
-    print(generated_report_json)
+
     response = requests.post(generate_report_url, auth=(username, password), data=payload, timeout=15)
 
-    # response = requests.post('http://18.217.8.244:8000/api/generated-reports/', auth=(username, password),
-    #                         data=payload, timeout=15)
+    # response = requests.post('http://18.217.8.244:8000/api/generated-reports/', auth=(username, password), data=payload, timeout=15)
 
     if response.status_code == 201:
         print('Generated report successfully saved to database.')
