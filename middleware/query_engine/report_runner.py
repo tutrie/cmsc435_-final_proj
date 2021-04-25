@@ -25,7 +25,7 @@ from middleware.report_generator.utils.convert_objects.object_conversions import
 # For developement:
 base_url = 'http://localhost:8000/api/'
 raw_report_url = base_url + 'raw-reports/get-raw-reports'
-generate_report_url = base_url + 'generated-reports'
+generate_report_url = base_url + 'generated-reports/'
 
 
 def get_user_input(prompt: str) -> str:
