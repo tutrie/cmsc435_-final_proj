@@ -47,6 +47,7 @@ class RawReportSerializer(serializers.ModelSerializer):
         fields = (
             'company',
             'report_date',
+            'parsed_json',
             'excel_url'
         )
 
