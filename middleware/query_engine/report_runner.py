@@ -1,4 +1,11 @@
 import sys
+
+plt = sys.platform
+if plt.startswith('linux') or plt.startswith('darwin'):
+    sys.path.insert(0, sys.path[0].replace('/middleware/query_engine', ''))
+elif plt.startswith('win32') or plt.startswith('cygwin'):
+    sys.path.insert(0, sys.path[0].replace(r'\middleware\query_engine', ''))
+
 import json
 import requests
 from re import match
@@ -11,11 +18,6 @@ from middleware.report_generator.utils.convert_objects.object_conversions import
 )
 
 
-plt = sys.platform
-if plt.startswith('linux') or plt.startswith('darwin'):
-    sys.path.insert(0, sys.path[0].replace('/middleware/query_engine', ''))
-elif plt.startswith('win32') or plt.startswith('cygwin'):
-    sys.path.insert(0, sys.path[0].replace(r'\\middleware\\query_engine', ''))
 
 # # For production:
 # base_url = 'http://18.217.8.244:8000/api/'
@@ -397,8 +399,7 @@ def create_generated_report(username: str = None, password: str = None) -> None:
         'json_schema': json.dumps(generated_report_json)
     }
     print(generated_report_json)
-    response = requests.post(generate_report_url, auth=(username, password),
-                            data=payload, timeout=15)
+    response = requests.post(generate_report_url, auth=(username, password), data=payload, timeout=15)
 
     # response = requests.post('http://18.217.8.244:8000/api/generated-reports/', auth=(username, password),
     #                         data=payload, timeout=15)
