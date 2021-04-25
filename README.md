@@ -1,216 +1,155 @@
 # User Documentation
 
-### Setting up and Running the Django Docker Container
-####NOTE: You can skip this step if running the application in production mode
-Start Docker
+### Accessing Sphinx Documentation
+* the following commands will create an index.html file in docs/build/html/index.html
 ```bash
-sudo service docker start
-```
-Build the Docker container for django
-```bash
-docker-compose up --build -d
-```
-Run the Docker container
-```bash
-docker-compose up -d
-```
-Super user login for the admin panel is
-
-username: admin
-
-password: admin
-
-If you are having trouble logging in with these credentials run
-```bash
-docker-compose run web python3 manage.py createsuperuser
-```
-## Running the Application
-
-
-# Developer Documentation
-## Setting up Development Environment
-
-### Dependency Setup
-```bash
-pip install -r requirements.txt
+  cd docs
+  make.bat html
 ```
 
-### Django Backend Setup
-Create local database
-```bash
-python manage.py migrate
-```
-Create superuser for admin panel, follow the prompts to create an admin account.
-```bash
-python manage.py createsuperuser
-```
-Run the server locally on port 8000
-```bash
-python manage.py runserver
-```
-You can now browse the api and use the admin panel by going to the following links
+### Setting up the Docker Container
+* cd into the middleware directory.
+  ```bash
+  cd middleware
+  ```
+* Build the Docker image.
+  ```bash
+  docker build -t report-runner .
+  ```
 
-Admin panel: http://localhost:8000/admin/
+* Starting the Docker container.
+  
+  **Windows:**
+  ```bash
+  docker run -it -v %cd%:/code report-runner bash
+  ```
+  
+  **Linux:** 
+  
+  ```bash
+  docker run -it -v $(pwd):/code report-runner bash
+  ```
 
-API: http://localhost:8000/api/
+* Once the container terminal starts, run the following command:
 
-### Frontend Setup
-Put what we have to do here for the UI/services
+  ```bash
+  python middleware/query_engine/report_runner.py
+  ```
+
+* Once the program starts, you will be prompted to choose an option.
+ * Enter - 1 to Retrieve a Raw Report
+ * Enter - 2 to Generate a new Report
+ * Enter "done" to stop the program
+
+To pull other reports go to https://www.sec.gov/edgar/searchedgar/companysearch.html and enter the correct CIK number.
+It will always be 10 digits long.
+
+For retrieving a Raw Report, enter the following when prompted
+* COMPANY: Bassett
+* CIK: 0000010329
+* YEARS: 2020 (or any year from 2016-2021)
+
+
+Once you are prompted to save the file, enter to save as json (will be prompted multiple times for multiple years):
+* C:\Users\<user>\Downloads
+* test
+* json
+
+to save as xlsx workbook enter (will be prompted multiple times for multiple years): 
+* C:\Users\<user>\Downloads
+* test
+* xlsx
+
+Generating a New Report:
+* COMPANY: Bassett
+* CIK: 0000010329
+* YEARS: 2020 (or any year from 2016-2021)
+* SHEETS: Document And Entity Information (as an integer, can choose other sheets as well)
+* ROWS: 1 (can choose multiple rows from each sheet)
+
+Once you are prompted to save the file, enter to save as json:
+* C:\Users\<user>\Downloads
+* test
+* json
+
+to save as xlsx workbook enter: 
+* C:\Users\<user>\Downloads
+* test
+* xlsx
+
+to save to Amazon Webserver workbook enter: 
+* test
+* Username: admin (or the account you created on the frontend UI)
+* Password: admin (or the account you created on the frontend UI)
+
+### Usage of the Frontend UI
+* Visit http://18.217.8.244:5000/ to access the frontend UI.
+* There are five tabs at the top of the page:
+  
+  ```Home```, ```Raw Reports```, ```Generated Reports```, ```Login```, ```Register```
+* To create an account, go to ```Register``` tab to register an account in our system.
+* To log into your account, go to ```Login``` tab to log into your registered account.
+* To get a raw report of a company's 10K documentation, go to ```Raw Reports```, fill in the information and submit request.
+* To get the existing generated report in the current account, go to ```Generated Reports```.
+
 
 ### Accessing Cloud Instance
-Download the scraper.pem security key
+* Download the scraper.pem security key
 
-SSH into the instance
-```bash
-ssh -i "scraper.pem" ec2-user@ec2-13-58-133-36.us-east-2.compute.amazonaws.com
-```
+* SSH into the instance
+    ```bash
+    ssh -i "scraper.pem" ec2-user@ec2-13-58-133-36.us-east-2.compute.amazonaws.com
+    ```
 
 ## Running Tests
-### Django tests
-### Query Engine tests
+### Django Tests
+* Run the following command in the terminal to run the tests.
+```bash
+  cd django_api
+  python manage.py migrate
+  python manage.py test
+```
+### Query Engine Tests
+* Run the following command in the terminal to run the tests.
+  ```bash
+  python middleware/query_engine/tests_query_engine/test_report_runner.py
+  ```
 
+### Frontend Flask Tests
+* Run the following command in the terminal to run the tests.
+    ```bash
+    python api_comms/flask_app/test_flask_app.py
+    ```
 
 ## System Architecture
-### Flask Frontend
-#### Server:
-To run the server:
-1. cd into ```team-project-xrbl-scraper\api_comms\flask_app```
-2. run ```python3 -m flask run```
-3. visit http://127.0.0.1:5000/
+### Flask Frontend Routes
 
+* ```/```
+  
+  The index route, which is the welcome page for the website. It has links to navigate to the Login and Register pages.
 
-#### Testing:
-To run the tests:
-1. Do the above to make sure the server is running or else the tests will not work as they are supposed to.
+* ```/register```
+  
+  The register route, which takes in a username, password, and email address from the user's input and sends a POST request to http://18.217.8.244:8000/api/users/create_user/.  Assuming a successful response is received(ie no duplicate users or network connectivity issues), there will be a user created with the given credentials and email ready for a login.
 
+* ```/login```
 
+  The login route, which takes in a username and password from the user's input and renders the login template, setting the username and password to their respective variables in the session object.
 
-#### Functions 
+* ```/logout```
 
-```def main_page()```
+  The logout route which logout the current user from the session and displays a logout message when the user has logged out of their account.
 
-Located at http://127.0.0.1:5000/, this method renders the welcome page for the website.  It has links to navigate to the Login and Register pages.
+* ```/raw_report```
 
-```def register()```
-Located at http://127.0.0.1:5000/register, this method takes in a username, password, and email address from the user's input and sends a POST request to http://18.217.8.244:8000/api/users/create_user/.  Assuming a successful response is received(ie no duplicate users or network connectivity issues), there will be a user created with the given credentials and email ready for a login.
+  The raw report route which displays the form of raw reports request and allow logged-in user to retrieve new raw reports. 
 
-```def login()```
+* ```/generated_report```
 
-Located at http://127.0.0.1:5000/login, this method takes in a username and password from the user's input and renders the login template, setting the username and password to their respective variables in the session object. user will be taken to their account page where they can navigate to tabs to view/create reports.
-
-```def logout()```
-
-Located at http://127.0.0.1:5000/logout, this method displays a logout message when the user has logged out of their account.
-
-```def raw_report()```
-
-Located at http://127.0.0.1:5000/raw_report, this method will issue a GET request and display the raw reports for the logged-in user and allow them to create new raw reports. 
-
-```def generated_report()```
-
-Located at http://127.0.0.1:5000/generated_report, this method will issue a GET request and display the generated reports for the logged-in user and allow them to create new generated reports.  
+  The generated report route which displays the generated reports for the logged-in user.  
 
 Note:  Timeout errors will be the result of network and internet speeds dropping.
 
-
-### Django Backend API
-
-
-## Run using Docker
-
-First, get the containers up and running in the background
-```bash
-docker-compose up -d
-```
-
-# If the images need to be built, run this instead
-```bash
-docker-compose up --build -d
-```
-
-Now run the following commands to migrate the database
-```bash
-docker-compose run web python3 manage.py makemigrations
-docker-compose run web python3 manage.py migrate
-```
-
-If you are unable to login to admin using the credentials below, run the following command. This will prompt you to set up a new admin superuser for testing. If you have any trouble, start a bash shell and run the command.
-
-```bash
-docker-compose run web python3 manage.py createsuperuser
-```
-
-# Run a bash interactive shell instead
-```bash
-docker exec -it django-server bash
-
-python3 manage.py migrate
-python3 manage.py makemigrations
-
-python3 manage.py createsuperuser --email admin@admin.com
-username: admin
-password: admin
-```
-
-# Running the data API and report runner
-```bash
-cd middleware/flask_api
-pip install -r requirements.txt
-python app.py
-
-OR from main folder
-PYTHONPATH=./ python middleware/flask_api/app.py
-```
-(wait a few seconds to get it started)
-
-Using the Report Runner:
-```bash
-cd middleware/query_engine
-python report_runner.py
-```
-
-If you run into any issues with the previous command, run the following instead from main folder
-```bash
-PYTHONPATH=./ python middleware/query_engine/report_runner.py
-```
-
-Once the program starts, you will be prompted to choose an option.
- Enter - 1 to Retrieve a Raw Report
- Enter - 2 to Generate a new Report
- Enter "done" to stop the program
-
-Retieving a Raw Report:
-For this Enter the follwing when prompted
-CIK: 0000010329
-YEARS: 2020
-REPORT TYPE: 10-K
-
-Once you are prompted to save the file, enter to save as json:
-Username/
-test
-json
-
-to save as xlsx workbook enter: 
-Username/
-test
-xlsx
-
-Generating a New Report:
-CIK: 0000010329
-YEARS: 2020
-REPORT TYPE: 10-K
-SHEETS: Document And Entity Information
-ROWS: 1
-
-Once you are prompted to save the file, enter to save as json:
-Username/
-test
-json
-
-to save as xlsx workbook enter: 
-Username/
-test
-xlsx
 
 # Contributions, Sprint 1
 - Brady Snelson - 15% - Added authentication to generated-reports endpoint. Updated GET/POST/PUT routes to only allow requests from the owner of each report. Created EC2 cloud instance and set up dockerized django container to run on it.
@@ -225,9 +164,9 @@ xlsx
 
 # Contributions, Sprint 2
 - Brady Snelson - 15% -  Added authentication to generated-reports endpoint. Updated GET/POST/PUT routes to only allow requests from the owner of each report. Created EC2 cloud instance and set up dockerized django container to run on it.
-- Jason Hipkins - 15% - 
+- Jason Hipkins - 15% - got generated report working and saving locally, fixed bugs in josh's code, merged and fixed bugs, got filtering working and merging reports fully functional, almost did code coverage for all of report_runner but it works on console.
 - Preston Thomson - 15% - 
 - Josh Helperin - 15% - 
 - Gilbert Garczynski - 15% - Created frontend server for the User Interface.  Implemented login, registration, logout, and viewing of reports along with HTML for each.
-- Siyao Li - 15% - 
-- Patrick Donnelly - 15% -
+- Siyao Li - 15% - Worked on designing frontend UI pages and navigation. Wrote tests for frontend flask app.py. Implemented the feature of storing user's login state. Formatted the README.md file.
+- Patrick Donnelly - 15% - Reviewed/approved merge requests. Improved CI/CD pipeline build times by using caching. Updated CI/CD to get all of the tests and coverage. Created Sphinx documentation. Created Dockerfiles for flask_ui and added a service to the docker-compose file. Also created a dockerfile for the report_runner.py so the can be ran from any os. Coded the proxy and helped debug errors.

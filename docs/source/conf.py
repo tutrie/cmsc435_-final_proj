@@ -10,22 +10,33 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+import django
+from django.conf import settings
+
+sys.path.insert(0, os.path.abspath('../'))
+sys.path.insert(0, os.path.abspath('../django_api'))
+sys.path.insert(0, os.path.abspath('../django_api/report_schema'))
+sys.path.insert(0, os.path.abspath('../django_api/company_schema'))
+cwd = os.getcwd()
+parent = os.path.dirname(cwd)
+sys.path.append(parent)
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_api.main_app.settings")
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'XRBL Scraper'
-copyright = '2021, Patrick Donnelly, Brady Snelson, Gilbert Garczynski, Jason Hipkins, Joshua Helperin, ' \
+copyright = '2021, Patrick Donnelly, Brady Snelson, Gilbert Garczynski, ' \
+            'Jason Hipkins, Joshua Helperin, ' \
             'Preston Thomson, Siyao Li '
-author = 'Patrick Donnelly, Brady Snelson, Gilbert Garczynski, Jason Hipkins, Joshua Helperin, Preston Thomson, ' \
+author = 'Patrick Donnelly, Brady Snelson, Gilbert Garczynski, Jason Hipkins, ' \
+         'Joshua Helperin, Preston Thomson, ' \
          'Siyao Li '
 
 # The full version, including alpha/beta/rc tags
 release = 'V1.0.0'
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -34,7 +45,8 @@ release = 'V1.0.0'
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx_rtd_theme"
+    "sphinx_rtd_theme",
+    "sphinxcontrib_django",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -44,7 +56,6 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
-
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -58,3 +69,8 @@ html_theme = "sphinx_rtd_theme"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+intersphinx_mapping = {
+    'http://docs.python.org/': None,
+    'https://docs.djangoproject.com/en/stable': 'https://docs.djangoproject.com/en/stable/_objects',
+}
