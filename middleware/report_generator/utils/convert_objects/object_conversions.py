@@ -41,6 +41,7 @@ def json_dict_to_dataframes_dict(json_dict: dict) -> dict:
         dataframe while the value is the dataframe itself.
     """
     dataframes = {}
+    json_dict = json.loads(json_dict)
     for sheet_name, json_df_dict in json_dict.items():
         dataframes[sheet_name] = dict_to_dataframe(json_df_dict)
 
@@ -107,6 +108,7 @@ def json_dict_to_json_file(json_dict: dict, file_path: str):
         None
     """
     # Dict into JSON file
+    json_dict = json.loads(json_dict)
     with open(f'{file_path}', 'w') as jsonFile:
         json.dump(json_dict, jsonFile)
 

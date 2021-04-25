@@ -70,7 +70,7 @@ class TestIsError(TestCase):
     def test_is_error_false_when_no_error(self, mocked_input: patch):
         mocked_input.side_effect = ["Bassett", "0000010329", "2016"]
         value = qry.query_raw_report_api()
-        good_response = {'company_name': None, 'company_cik': None, 'reports': None}
+        good_response = {'company': None, 'cik': None, 'reports': None}
 
         self.assertEqual(good_response.keys(), value.keys())
 

@@ -274,7 +274,6 @@ def save_multiple_reports_locally(report: dict) -> None:
         report_dict: A dictionary represntation of a report.
     """
     for year, report_dict in report.items():
-        print(f'\nFor the report created in the year {year}:\n')
         save_single_report(report_dict)
 
 
