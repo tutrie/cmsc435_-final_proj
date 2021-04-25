@@ -19,13 +19,11 @@ stages:
   - deploy
 
 before_script:
-  - python -V               # Print out python version for debugging
+  - python -V
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
 
-# Change pip's cache directory to be inside the project directory since we can
-# only cache local items.
 build-start:
   stage: build
   script:
@@ -49,6 +47,26 @@ test-django-backend:
       - runner_system_failure
       - stuck_or_timeout_failure
 
+test-flask-ui:
+  stage: test
+  script:
+    - pytest api_comms/flask_app/test_flask_app.py
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
+test-middleware:
+  stage: test
+  script:
+    - pytest middleware/
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+
 flake8:
   stage: Static Analysis
   script:
@@ -62,10 +80,9 @@ flake8:
 coverage:
   stage: Static Analysis
   script:
-    - pip install coverage
-    #ToDo add all of the other tests once the file structures are final
-    - cd django_api
-    - coverage run --omit 'venv/*' --source='.' manage.py test
+    - coverage run --omit venv/*,*/migrations*,*test* --source django_api/company_schema/,django_api/report_schema django_api/manage.py test
+    - coverage run --omit venv/*,*test* -m pytest api_comms/flask_app/test_flask_app.py
+    - coverage run --omit venv/*,*test* -m pytest middleware/
     - coverage report
     - coverage erase
   retry:
@@ -76,5 +93,21 @@ coverage:
 
 deploy-prod:
   stage: deploy
-  script:
-    - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
+  script: echo 'ToDo deploy'
+  only:
+    - master
+
+#deploy-prod:
+#  stage: deploy
+#  script:
+#    - pip install sphinx sphinx-rtd-theme
+#    - cd docs
+#    - make html
+#    - cd ..
+#    - cp -R docs/build/html/_static api_comms/flask_app/_static
+#    - rm -d -r docs/build/html/_static
+#    - rm -d -r docs/build/html/_sources
+#    - mkdir -p api_comms/flask_app/templates/docs
+#    - mkdir -p api_comms/flask_app/templates/docs/html
+#    - cp -R docs/build/html api_comms/flask_app/templates/docs/html
+#    - rm -d -r docs/build
