@@ -1,11 +1,5 @@
 import sys
 
-plt = sys.platform
-if plt.startswith('linux') or plt.startswith('darwin'):
-    sys.path.insert(0, sys.path[0].replace('/middleware/query_engine', ''))
-elif plt.startswith('win32') or plt.startswith('cygwin'):
-    sys.path.insert(0, sys.path[0].replace(r'\middleware\query_engine', ''))
-
 import json
 import requests
 from re import match
@@ -17,11 +11,19 @@ from middleware.report_generator.utils.convert_objects.object_conversions import
     dataframes_dict_to_workbook
 )
 
+
+plt = sys.platform
+if plt.startswith('linux') or plt.startswith('darwin'):
+    sys.path.insert(0, sys.path[0].replace('/middleware/query_engine', ''))
+elif plt.startswith('win32') or plt.startswith('cygwin'):
+    sys.path.insert(0, sys.path[0].replace(r'\middleware\query_engine', ''))
+
+
 # # For production:
-# base_url = 'http://18.217.8.244:8000/api/'
+base_url = 'http://18.217.8.244:8000/api/'
 
 # For developement:
-base_url = 'http://localhost:8000/api/'
+# base_url = 'http://localhost:8000/api/'
 raw_report_url = base_url + 'raw-reports/get-raw-reports'
 generate_report_url = base_url + 'generated-reports/'
 
