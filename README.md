@@ -29,108 +29,7 @@
   python middleware/query_engine/report_runner.py
   ```
 
-### Usage of the Frontend UI
-* Visit http://18.217.8.244:5000/ to access the frontend UI.
-* There are five tabs at the top of the page:
-  
-  ```Home```, ```Raw Reports```, ```Generated Reports```, ```Login```, ```Register```
-* To create an account, go to ```Register``` tab to register an account in our system.
-* To log into your account, go to ```Login``` tab to log into your registered account.
-* To get a raw report of a company's 10K documentation, go to ```Raw Reports```, fill in the information and submit request.
-* To get the existing generated report in the current account, go to ```Generated Reports```.
-
-
-# Developer Documentation
-### Environment Setup
-```bash
-pip install -r requirements.txt
-```
-
-### Django Backend API
-
-* First, get the containers up and running in the background.
-    ```bash
-    docker-compose up -d
-    ```
-
-* If the images need to be built, run this instead
-  ```bash
-  docker-compose up --build -d
-  ```
-
-* Now run the following commands to migrate the database
-  ```bash
-  docker-compose run web python3 manage.py makemigrations
-  docker-compose run web python3 manage.py migrate
-  ```
-
-* If you are unable to login to admin using the credentials below, run the following command. This will prompt you to set up a new admin superuser for testing. 
-  ```bash
-  docker-compose run web python3 manage.py createsuperuser
-  ```
-
-* If you have any trouble, start a bash shell and run the command.
-  ```bash
-  docker exec -it django-server bash
-  
-  python3 manage.py migrate
-  python3 manage.py makemigrations
-  
-  python3 manage.py createsuperuser --email admin@admin.com
-  username: admin
-  password: admin
-  ```
-  
-### Frontend Setup
-* cd into flask_app folder.
-    ```bash
-    cd api_comms/flask_app
-    ```
-
-* Start the flask server
-    ```bash 
-    python3 -m flask run
-    ```
-* Visit http://127.0.0.1:5000/ to access the frontend UI.
-
-### Accessing Cloud Instance
-* Download the scraper.pem security key
-
-* SSH into the instance
-    ```bash
-    ssh -i "scraper.pem" ec2-user@ec2-13-58-133-36.us-east-2.compute.amazonaws.com
-    ```
-
-### Running the data API and report runner
-* cd into the middleware directory.
-  ```bash
-  cd middleware
-  ```
-* Build the Docker image.
-  ```bash
-  docker build -t report-runner .
-  ```
-
-* Starting the Docker container.
-  
-  **Windows:**
-  ```bash
-  docker run -it -v %cd%:/code report-runner bash
-  ```
-  
-  **Linux:** 
-  
-  ```bash
-  docker run -it -v $(pwd):/code report-runner bash
-  ```
-
-* Once the container terminal starts, run the :
-
-  ```bash
-  python middleware/query_engine/report_runner.py
-  ```
-
-Once the program starts, you will be prompted to choose an option.
+* Once the program starts, you will be prompted to choose an option.
  * Enter - 1 to Retrieve a Raw Report
  * Enter - 2 to Generate a new Report
  * Enter "done" to stop the program
@@ -167,12 +66,39 @@ to save as xlsx workbook enter:
 * test
 * xlsx
 
+### Usage of the Frontend UI
+* Visit http://18.217.8.244:5000/ to access the frontend UI.
+* There are five tabs at the top of the page:
+  
+  ```Home```, ```Raw Reports```, ```Generated Reports```, ```Login```, ```Register```
+* To create an account, go to ```Register``` tab to register an account in our system.
+* To log into your account, go to ```Login``` tab to log into your registered account.
+* To get a raw report of a company's 10K documentation, go to ```Raw Reports```, fill in the information and submit request.
+* To get the existing generated report in the current account, go to ```Generated Reports```.
+
+
+### Accessing Cloud Instance
+* Download the scraper.pem security key
+
+* SSH into the instance
+    ```bash
+    ssh -i "scraper.pem" ec2-user@ec2-13-58-133-36.us-east-2.compute.amazonaws.com
+    ```
 
 ## Running Tests
 ### Django Tests
-* Add steps
+* Run the following command in the terminal to run the tests.
+```bash
+  cd django_api
+  python manage.py migrate
+  python manage.py test
+```
 ### Query Engine Tests
-* Add steps
+* Run the following command in the terminal to run the tests.
+  ```bash
+  python middleware/query_engine/tests_query_engine/test_report_runner.py
+  ```
+
 ### Frontend Flask Tests
 * Run the following command in the terminal to run the tests.
     ```bash
@@ -227,4 +153,4 @@ Note:  Timeout errors will be the result of network and internet speeds dropping
 - Josh Helperin - 15% - 
 - Gilbert Garczynski - 15% - Created frontend server for the User Interface.  Implemented login, registration, logout, and viewing of reports along with HTML for each.
 - Siyao Li - 15% - Worked on designing frontend UI pages and navigation. Wrote tests for frontend flask app.py. Implemented the feature of storing user's login state. Formatted the README.md file.
-- Patrick Donnelly - 15% -
+- Patrick Donnelly - 15% - Reviewed/approved merge requests. Improved CI/CD pipeline build times by using caching. Updated CI/CD to get all of the tests and coverage. Created Sphinx documentation. Created Dockerfiles for flask_ui and added a service to the docker-compose file. Also created a dockerfile for the report_runner.py so the can be ran from any os. Coded the proxy and helped debug errors.
