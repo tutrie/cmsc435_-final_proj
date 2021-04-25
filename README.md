@@ -2,13 +2,13 @@
 
 ### Setting up the Docker Container
 * cd into the middleware directory.
-```bash
-cd middleware
-```
+  ```bash
+  cd middleware
+  ```
 * Build the Docker image.
-```bash
-docker build -t report-runner .
-```
+  ```bash
+  docker build -t report-runner .
+  ```
 
 * Starting the Docker container.
   
@@ -25,15 +25,21 @@ docker build -t report-runner .
 
 * Once the container terminal starts, run the :
 
-```bash
-python middleware/query_engine/report_runner.py
-```
+  ```bash
+  python middleware/query_engine/report_runner.py
+  ```
 
 ### Start the Frontend UI
-* Create another terminal session, and cd into the api_comms directory.
-```bash
+* Create another terminal session, and cd into the flask_app directory.
+    ```bash
+    cd api_comms/flask_app
+    ```
 
-```
+* Start the flask server
+    ```bash 
+    python3 -m flask run
+    ```
+* Visit http://127.0.0.1:5000/ to access the frontend UI.
 
 
 # Developer Documentation
@@ -61,6 +67,41 @@ Admin panel: http://localhost:8000/admin/
 
 API: http://localhost:8000/api/
 
+### Django Backend API
+
+* First, get the containers up and running in the background.
+    ```bash
+    docker-compose up -d
+    ```
+
+* If the images need to be built, run this instead
+  ```bash
+  docker-compose up --build -d
+  ```
+
+* Now run the following commands to migrate the database
+  ```bash
+  docker-compose run web python3 manage.py makemigrations
+  docker-compose run web python3 manage.py migrate
+  ```
+
+* If you are unable to login to admin using the credentials below, run the following command. This will prompt you to set up a new admin superuser for testing. 
+  ```bash
+  docker-compose run web python3 manage.py createsuperuser
+  ```
+
+* If you have any trouble, start a bash shell and run the command.
+  ```bash
+  docker exec -it django-server bash
+  
+  python3 manage.py migrate
+  python3 manage.py makemigrations
+  
+  python3 manage.py createsuperuser --email admin@admin.com
+  username: admin
+  password: admin
+  ```
+  
 ### Frontend Setup
 * cd into flask_app folder.
     ```bash
@@ -80,6 +121,73 @@ API: http://localhost:8000/api/
     ```bash
     ssh -i "scraper.pem" ec2-user@ec2-13-58-133-36.us-east-2.compute.amazonaws.com
     ```
+
+### Running the data API and report runner
+* cd into the middleware directory.
+  ```bash
+  cd middleware
+  ```
+* Build the Docker image.
+  ```bash
+  docker build -t report-runner .
+  ```
+
+* Starting the Docker container.
+  
+  **Windows:**
+  ```bash
+  docker run -it -v %cd%:/code report-runner bash
+  ```
+  
+  **Linux:** 
+  
+  ```bash
+  docker run -it -v $(pwd):/code report-runner bash
+  ```
+
+* Once the container terminal starts, run the :
+
+  ```bash
+  python middleware/query_engine/report_runner.py
+  ```
+
+Once the program starts, you will be prompted to choose an option.
+ * Enter - 1 to Retrieve a Raw Report
+ * Enter - 2 to Generate a new Report
+ * Enter "done" to stop the program
+
+For retieving a Raw Report, enter the follwing when prompted
+* CIK: 0000010329
+* YEARS: 2020
+* REPORT TYPE: 10-K
+
+Once you are prompted to save the file, enter to save as json:
+* Username
+* test
+* json
+
+to save as xlsx workbook enter: 
+* Username/
+* test
+* xlsx
+
+Generating a New Report:
+* CIK: 0000010329
+* YEARS: 2020
+* REPORT TYPE: 10-K
+* SHEETS: Document And Entity Information
+* ROWS: 1
+
+Once you are prompted to save the file, enter to save as json:
+* Username/
+* test
+* json
+
+to save as xlsx workbook enter: 
+* Username/
+* test
+* xlsx
+
 
 ## Running Tests
 ### Django Tests
@@ -122,104 +230,6 @@ API: http://localhost:8000/api/
 Note:  Timeout errors will be the result of network and internet speeds dropping.
 
 
-### Django Backend API
-
-
-* Run using Docker.<br>
-  First, get the containers up and running in the background
-    ```bash
-    docker-compose up -d
-    ```
-
-#### If the images need to be built, run this instead
-```bash
-docker-compose up --build -d
-```
-
-Now run the following commands to migrate the database
-```bash
-docker-compose run web python3 manage.py makemigrations
-docker-compose run web python3 manage.py migrate
-```
-
-If you are unable to login to admin using the credentials below, run the following command. This will prompt you to set up a new admin superuser for testing. If you have any trouble, start a bash shell and run the command.
-
-```bash
-docker-compose run web python3 manage.py createsuperuser
-```
-
-# Run a bash interactive shell instead
-```bash
-docker exec -it django-server bash
-
-python3 manage.py migrate
-python3 manage.py makemigrations
-
-python3 manage.py createsuperuser --email admin@admin.com
-username: admin
-password: admin
-```
-
-# Running the data API and report runner
-```bash
-cd middleware/flask_api
-pip install -r requirements.txt
-python app.py
-
-OR from main folder
-PYTHONPATH=./ python middleware/flask_api/app.py
-```
-(wait a few seconds to get it started)
-
-Using the Report Runner:
-```bash
-cd middleware/query_engine
-python report_runner.py
-```
-
-If you run into any issues with the previous command, run the following instead from main folder
-```bash
-PYTHONPATH=./ python middleware/query_engine/report_runner.py
-```
-
-Once the program starts, you will be prompted to choose an option.
- Enter - 1 to Retrieve a Raw Report
- Enter - 2 to Generate a new Report
- Enter "done" to stop the program
-
-Retieving a Raw Report:
-For this Enter the follwing when prompted
-CIK: 0000010329
-YEARS: 2020
-REPORT TYPE: 10-K
-
-Once you are prompted to save the file, enter to save as json:
-Username/
-test
-json
-
-to save as xlsx workbook enter: 
-Username/
-test
-xlsx
-
-Generating a New Report:
-CIK: 0000010329
-YEARS: 2020
-REPORT TYPE: 10-K
-SHEETS: Document And Entity Information
-ROWS: 1
-
-Once you are prompted to save the file, enter to save as json:
-Username/
-test
-json
-
-to save as xlsx workbook enter: 
-Username/
-test
-xlsx
-
 # Contributions, Sprint 1
 - Brady Snelson - 15% - Added authentication to generated-reports endpoint. Updated GET/POST/PUT routes to only allow requests from the owner of each report. Created EC2 cloud instance and set up dockerized django container to run on it.
 - Jason Hipkins - 15% - Worked on filtering and cleaning excel raw reports. worked on merging reports together, lot of research on accounting methods and line item names.
@@ -237,5 +247,5 @@ xlsx
 - Preston Thomson - 15% - 
 - Josh Helperin - 15% - 
 - Gilbert Garczynski - 15% - Created frontend server for the User Interface.  Implemented login, registration, logout, and viewing of reports along with HTML for each.
-- Siyao Li - 15% - 
+- Siyao Li - 15% - Worked on designing frontend UI pages and navigation. Wrote tests for frontend flask app.py. Implemented the feature of storing user's login state. Formatted the README.md file.
 - Patrick Donnelly - 15% -
