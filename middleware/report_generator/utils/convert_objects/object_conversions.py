@@ -2,34 +2,34 @@ import pandas as pd
 import json
 import openpyxl as pyxl
 
+# def workbook_to_dataframes_dict(excel_report: pyxl.Workbook) -> dict:
+#     """
+#     Args:
+#         excel_report: openpyxl Workbook object
+#
+#     Returns:
+#         Dictionary of dataframes for each sheet in excel workbook.
+#     """
+#     dataframes_dict = {}
+#     for sheet in excel_report.worksheets:
+#         data = sheet.values
+#         cols = next(data)  # Headers (First Row)
+#         data = list(data)  # Second until Last rows
+#         dataframes_dict[sheet.title] = (pd.DataFrame(data, columns=cols))
+#     return dataframes_dict
+#
 
-def workbook_to_dataframes_dict(excel_report: pyxl.Workbook) -> dict:
-    """
-    Args:
-        excel_report: openpyxl Workbook object
-
-    Returns:
-        Dictionary of dataframes for each sheet in excel workbook.
-    """
-    dataframes_dict = {}
-    for sheet in excel_report.worksheets:
-        data = sheet.values
-        cols = next(data)  # Headers (First Row)
-        data = list(data)  # Second until Last rows
-        dataframes_dict[sheet.title] = (pd.DataFrame(data, columns=cols))
-    return dataframes_dict
-
-
-def json_file_to_json_dict(json_file_path: str) -> dict:
-    """
-    Args:
-        json_file_path: File path to the JSON file
-
-    Returns:
-        Dictionary of dictionaries that represents the JSON.
-    """
-    with open(json_file_path, 'r') as json_file:
-        return json.load(json_file)
+# def json_file_to_json_dict(json_file_path: str) -> dict:
+#     """
+#     Args:
+#         json_file_path: File path to the JSON file
+#
+#     Returns:
+#         Dictionary of dictionaries that represents the JSON.
+#     """
+#     with open(json_file_path, 'r') as json_file:
+#         return json.load(json_file)
+#
 
 
 def json_dict_to_dataframes_dict(json_dict: dict) -> dict:
@@ -42,6 +42,8 @@ def json_dict_to_dataframes_dict(json_dict: dict) -> dict:
         dataframe while the value is the dataframe itself.
     """
     dataframes = {}
+    if not isinstance(json_dict, dict):
+        json_dict = json.loads(json_dict)
     for sheet_name, json_df_dict in json_dict.items():
         dataframes[sheet_name] = dict_to_dataframe(json_df_dict)
 
@@ -108,6 +110,9 @@ def json_dict_to_json_file(json_dict: dict, file_path: str):
         None
     """
     # Dict into JSON file
+    print('from json_dict_to_json_file', type(json_dict))
+    if not isinstance(json_dict, dict):
+        json_dict = json.loads(json_dict)
     with open(f'{file_path}', 'w') as jsonFile:
         json.dump(json_dict, jsonFile)
 
@@ -120,6 +125,12 @@ def dataframe_to_dict(dataframe: object) -> dict:
     Returns:
         Dictionary representation of pandas dataframe
     """
+    dup_count = 1
+    while True in dataframe.columns.duplicated():
+        dataframe.columns = dataframe.columns.where(
+            ~dataframe.columns.duplicated(), dataframe.columns + ' dp_' + str(dup_count))
+        dup_count += 1
+
     return json.loads(dataframe.to_json(force_ascii=False))
 
 

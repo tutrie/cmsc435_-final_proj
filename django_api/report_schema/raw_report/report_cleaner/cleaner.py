@@ -3,14 +3,11 @@ import openpyxl as pyxl
 import numpy as np
 
 
-def ten_k_workbook_to_dataframes_dict(excel_report: pyxl.Workbook,
-                                      notes: dict) -> dict:
+def ten_k_workbook_to_dataframes_dict(excel_report: pyxl.Workbook, notes: dict) -> dict:
     """
-    Args:
-        excel_report: openpyxl Workbook object
-
-    Returns:
-        Dictionary of dataframes for each sheet in excel workbook.
+    :param excel_report: openpyxl Workbook object
+    :param notes: Information on how to normalize that sheet
+    :return: Dictionary of dataframes for each sheet in excel workbook.
     """
     dataframes_dict = {}
     for sheet in excel_report.worksheets:
@@ -45,6 +42,11 @@ def ten_k_workbook_to_dataframes_dict(excel_report: pyxl.Workbook,
 
 
 def normalize_data(dataframes_dict: dict, notes: dict) -> dict:
+    """
+    :param dataframes_dict: cleaned from excel_sheets in dict form, keys are sheets
+    :param notes: the notes I need to normalize each sheet
+    :return: normalized sheets. all values in USD
+    """
     for index, (sheet_name, frame) in enumerate(dataframes_dict.items()):
         if get_multiplier(notes[sheet_name]) > 1:
             multiplier = get_multiplier(notes[sheet_name])
@@ -63,6 +65,10 @@ def normalize_data(dataframes_dict: dict, notes: dict) -> dict:
 
 
 def get_multiplier(note: str) -> int:
+    """
+    :param note: string of the note from a sheet
+    :return: int value in that note
+    """
     if 'Thousands' in note:
         return 1000
     if 'Millions' in note:
@@ -72,7 +78,12 @@ def get_multiplier(note: str) -> int:
     return 1
 
 
-def ten_k_excel_cleaning(excel_report: pyxl.Workbook) -> pyxl.Workbook:
+def ten_k_excel_cleaning(excel_report: pyxl.Workbook) -> tuple:
+    """
+    :param excel_report: a pyxl.Workbook object that is an excel spreadsheet
+    :return: A cleaned excel spreadsheet. no merged columns, etc also gets the notes from each sheet
+    and renames them to be the non abreviated version
+    """
     sheets_name_series = pd.Series(excel_report.sheetnames)
     notes = {}
     pattern = '^Condensed|^Consolidated|^CONSOLIDATED|^CONDENSED|^condensed|^consolidated'

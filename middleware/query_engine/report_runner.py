@@ -1,4 +1,5 @@
 import sys
+
 import json
 import requests
 from re import match
@@ -15,17 +16,16 @@ plt = sys.platform
 if plt.startswith('linux') or plt.startswith('darwin'):
     sys.path.insert(0, sys.path[0].replace('/middleware/query_engine', ''))
 elif plt.startswith('win32') or plt.startswith('cygwin'):
-    sys.path.insert(0, sys.path[0].replace(r'\\middleware\\query_engine', ''))
+    sys.path.insert(0, sys.path[0].replace(r'\middleware\query_engine', ''))
 
 
 # # For production:
-# base_url = 'http://18.217.8.244:8000/api/'
+base_url = 'http://18.217.8.244:8000/api/'
 
 # For developement:
-base_url = 'http://127.0.0.1:8000/api/'
+# base_url = 'http://localhost:8000/api/'
 raw_report_url = base_url + 'raw-reports/get-raw-reports'
-generate_report_url = base_url + 'generate-report'
-user_report_url = base_url + 'user-report'
+generate_report_url = base_url + 'generated-reports/'
 
 
 def get_user_input(prompt: str) -> str:
@@ -102,7 +102,7 @@ def get_user_int_list(target_list: list) -> list:
                 should_break = False
                 break
 
-            elif int(num) < 0 or int(num) > len(target_list):
+            elif int(num) < 0 or int(num) >= len(target_list):
                 print(f'''You entered a numeric value (\'{num}\') that is out
                         of range. Please only enter numbers between
                         0-{len(target_list)-1}'''
@@ -132,7 +132,7 @@ def save_json(report_dict: dict, output_file: str) -> None:
 
         output_file: A full file path to where the report should be saved to.
     """
-    json_dict_to_json_file(json.loads(report_dict), output_file)
+    json_dict_to_json_file(report_dict, output_file)
 
 
 def save_xlsx(report_dict: dict, output_file: str):
@@ -144,7 +144,7 @@ def save_xlsx(report_dict: dict, output_file: str):
 
         output_file: A full file path to where the report should be saved to.
     """
-    dataframes_dict = json_dict_to_dataframes_dict(json.loads(report_dict))
+    dataframes_dict = json_dict_to_dataframes_dict(report_dict)
     dataframes_dict_to_workbook(dataframes_dict, output_file)
 
 
@@ -177,7 +177,6 @@ def choose_json_or_xlsx() -> str:
     format.
 
     Args:
-        None
 
     Returns:
         'json' or 'xlsx', whatever the user chooses.
@@ -199,7 +198,7 @@ def get_valid_file_name() -> str:
     Prompts the user for a valid file name.
 
     Args:
-        None
+
 
     Returns:
         A valid file name.
@@ -271,12 +270,11 @@ def save_single_report(report_dict: dict) -> None:
 def save_multiple_reports_locally(report: dict) -> None:
     """
     Saves report to a local folder and returns the file location
-    
+
     Args:
-        report_dict: A dictionary represntation of a report.
+        report: A dictionary represntation of a report.
     """
     for year, report_dict in report.items():
-        print(f'\nFor the report created in the year {year}:\n')
         save_single_report(report_dict)
 
 
@@ -313,6 +311,8 @@ def query_raw_report_api() -> None:
         request = basic_request()
         response = requests.get(raw_report_url, params=request)
         response_json = json.loads(response.json())
+        print(f'Response: {response}\n')
+        print(f'Json: {response_json.keys()}')
 
         if is_error_response(response):
             print(f'Response returned with error code {response.status_code}')
@@ -324,7 +324,7 @@ def query_raw_report_api() -> None:
 
 def retrieve_raw_reports() -> None:
     """
-    Get the json object of the response, and if the request was successfull,
+    Get the json object of the response, and if the request was successful,
     save the reports to the local machine.
     """
     response_json = query_raw_report_api()
@@ -332,7 +332,7 @@ def retrieve_raw_reports() -> None:
         save_multiple_reports_locally(response_json['reports'])
 
 
-def choose_rows_in_sheet(sheet_name, sheet_values: dict) -> list:
+def choose_rows_in_sheet(sheet_name: str, sheet_values: dict) -> list:
     """
     Prompts user to choose specific rows in Excel sheets.
 
@@ -340,7 +340,7 @@ def choose_rows_in_sheet(sheet_name, sheet_values: dict) -> list:
         A list of indices corresponding to the selected rows.
     """
     print(f'Preparing to choose rows for sheet {sheet_name}')
-    rows_idxs_to_keep = get_user_int_list(sheet_values['index'])
+    rows_idxs_to_keep = get_user_int_list(sheet_values.index)
     return rows_idxs_to_keep
 
 
@@ -370,35 +370,44 @@ def generate_instructions(merged_report: ActiveReport) -> dict:
     sheets_to_keep = choose_sheet_names(merged_report)
 
     for sheet in sheets_to_keep:
-        instructions[sheet] = choose_rows_in_sheet(sheet, merged_report[sheet])
+        instructions[sheet] = choose_rows_in_sheet(sheet, merged_report.dataframes[sheet])
 
     return instructions
 
 
-def create_generated_report(username: str = None, password: str = None) -> None:
+def create_generated_report() -> None:
     """
     Creates a generated report for the user, per user input.
     """
     response_json = query_raw_report_api()
-
     if not response_json:
         return
-
-    merged_report = ActiveReport.from_workbooks_by_years_dicts(
-        response_json['reports'])
-
+    merged_report = ActiveReport.from_workbooks_by_years_dicts(response_json['reports'])
     instructions = generate_instructions(merged_report)
     generated_report_json = merged_report.filter_report(instructions)
 
     print('Preparing to save generated report locally:\n')
     save_single_report(generated_report_json)
-    # response = requests.post(generate_report_url, auth=(username, password),
-    #                          data=generated_report_json, timeout=15)
-    # if response.status_code == 201:
-    #     print('Generated report successfully saved to database.')
-    # else:
-    #     print(f'Response returned with error code {response.status_code}')
-    #     print(f'Full response: {response}')
+
+    report_name = get_user_input("Please enter a name for your report:")
+    username = get_user_input("Please enter the username you wish to save this report under:")
+    password = get_user_input("Please enter the password for this user:")
+
+    payload = {
+        'name': report_name,
+        'json_schema': json.dumps(generated_report_json)
+    }
+
+    response = requests.post(generate_report_url, auth=(username, password), data=payload, timeout=15)
+
+    # response = requests.post('http://18.217.8.244:8000/api/generated-reports/',
+    # auth=(username, password), data=payload, timeout=15)
+
+    if response.status_code == 201:
+        print('Generated report successfully saved to database.')
+    else:
+        print(f'Response returned with error code {response.status_code}')
+        print(f'Full response: {response.json()}')
 
 
 def start_report_retrieval() -> None:

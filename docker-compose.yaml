@@ -51,6 +51,7 @@ volumes:
     pgdata:
     django-data:
     flask-data:
+    report-data:
     
 
 networks:

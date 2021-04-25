@@ -85,8 +85,8 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         user = request.user
         request.data._mutable = True
         request.data['created_by'] = user.id
-        request.data._mutable = True
-        
+        request.data._mutable = False
+
         report_serializer = GeneratedReportSerializer(data=request.data)
         if report_serializer.is_valid():
             report_serializer.save()
