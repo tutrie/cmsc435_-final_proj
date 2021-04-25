@@ -41,37 +41,46 @@
  * Enter - 2 to Generate a new Report
  * Enter "done" to stop the program
 
-For retieving a Raw Report, enter the follwing when prompted
-* CIK: 0000010329
-* YEARS: 2020
-* REPORT TYPE: 10-K
+To pull other reports go to https://www.sec.gov/edgar/searchedgar/companysearch.html and enter the correct CIK number.
+It will always be 10 digits long.
 
-Once you are prompted to save the file, enter to save as json:
-* Username
+For retrieving a Raw Report, enter the following when prompted
+* COMPANY: Bassett
+* CIK: 0000010329
+* YEARS: 2020 (or any year from 2016-2021)
+
+
+Once you are prompted to save the file, enter to save as json (will be prompted multiple times for multiple years):
+* C:\Users\<user>\Downloads
 * test
 * json
 
-to save as xlsx workbook enter: 
-* Username/
+to save as xlsx workbook enter (will be prompted multiple times for multiple years): 
+* C:\Users\<user>\Downloads
 * test
 * xlsx
 
 Generating a New Report:
+* COMPANY: Bassett
 * CIK: 0000010329
-* YEARS: 2020
-* REPORT TYPE: 10-K
-* SHEETS: Document And Entity Information
-* ROWS: 1
+* YEARS: 2020 (or any year from 2016-2021)
+* SHEETS: Document And Entity Information (as an integer, can choose other sheets as well)
+* ROWS: 1 (can choose multiple rows from each sheet)
 
 Once you are prompted to save the file, enter to save as json:
-* Username/
+* C:\Users\<user>\Downloads
 * test
 * json
 
 to save as xlsx workbook enter: 
-* Username/
+* C:\Users\<user>\Downloads
 * test
 * xlsx
+
+to save to Amazon Webserver workbook enter: 
+* test
+* Username: admin (or the account you created on the frontend UI)
+* Password: admin (or the account you created on the frontend UI)
 
 ### Usage of the Frontend UI
 * Visit http://18.217.8.244:5000/ to access the frontend UI.
