@@ -7,56 +7,11 @@ Welcome to XRBL Scraper's documentation!
 ========================================
 
 .. toctree::
+   flask_ui
+   django_api
+   middleware
    :maxdepth: 2
    :caption: Contents:
-
-
-Django API
-==========
-.. automodule:: django_api
-   :members:
-
-
-Middleware Query Engine
-=======================
-.. automodule:: middleware.query_engine.query_engine
-   :members:
-
-
-Middleware Query Engine Proxy
-=============================
-.. automodule:: middleware.query_engine.proxy
-   :members:
-
-
-Middleware Query Engine Report Runner
-=====================================
-.. automodule:: middleware.query_engine.report_runner
-   :members:
-
-
-Middleware Flask API
-====================
-.. automodule:: middleware.flask_api.app
-   :members:
-
-
-Report Generator Active Report
-==============================
-.. automodule:: report_generator.src.active_report
-   :members:
-
-
-Report Generator Utils Object Conversions
-=========================================
-.. automodule:: report_generator.utils.object_conversions
-   :members:
-
-
-Edgar Scraper
-=============
-.. automodule:: py_edgar_lite.edgar.company
-   :members:
 
 
 Indices and tables

@@ -10,22 +10,26 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+import django
+sys.path.insert(0, os.path.abspath('..'))
+os.environ['DJANGO_SETTINGS_MODULE'] = 'django_api.main_app.settings'
+django.setup()
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'XRBL Scraper'
-copyright = '2021, Patrick Donnelly, Brady Snelson, Gilbert Garczynski, Jason Hipkins, Joshua Helperin, ' \
+copyright = '2021, Patrick Donnelly, Brady Snelson, Gilbert Garczynski, ' \
+            'Jason Hipkins, Joshua Helperin, ' \
             'Preston Thomson, Siyao Li '
-author = 'Patrick Donnelly, Brady Snelson, Gilbert Garczynski, Jason Hipkins, Joshua Helperin, Preston Thomson, ' \
+author = 'Patrick Donnelly, Brady Snelson, Gilbert Garczynski, Jason Hipkins, ' \
+         'Joshua Helperin, Preston Thomson, ' \
          'Siyao Li '
 
 # The full version, including alpha/beta/rc tags
 release = 'V1.0.0'
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -44,7 +48,6 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
-
 
 # -- Options for HTML output -------------------------------------------------
 
