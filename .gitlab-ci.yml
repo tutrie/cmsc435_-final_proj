@@ -60,7 +60,7 @@ test-flask-ui:
 test-middleware:
   stage: test
   script:
-    - pytest middleware/
+    - pytest middleware/query_engine/tests_query_engine/test_report_runner.py
   retry:
     max: 2
     when:
