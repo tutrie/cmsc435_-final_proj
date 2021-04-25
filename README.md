@@ -1,5 +1,12 @@
 # User Documentation
 
+### Accessing Sphinx Documentation
+* the following commands will create an index.html file in docs/build/html/index.html
+```bash
+  cd docs
+  make.bat html
+```
+
 ### Setting up the Docker Container
 * cd into the middleware directory.
   ```bash
