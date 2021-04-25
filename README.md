@@ -23,23 +23,21 @@
   docker run -it -v $(pwd):/code report-runner bash
   ```
 
-* Once the container terminal starts, run the :
+* Once the container terminal starts, run the following command:
 
   ```bash
   python middleware/query_engine/report_runner.py
   ```
 
-### Start the Frontend UI
-* Create another terminal session, and cd into the flask_app directory.
-    ```bash
-    cd api_comms/flask_app
-    ```
-
-* Start the flask server
-    ```bash 
-    python3 -m flask run
-    ```
-* Visit http://127.0.0.1:5000/ to access the frontend UI.
+### Usage of the Frontend UI
+* Visit http://18.217.8.244:5000/ to access the frontend UI.
+* There are five tabs at the top of the page:
+  
+  ```Home```, ```Raw Reports```, ```Generated Reports```, ```Login```, ```Register```
+* To create an account, go to ```Register``` tab to register an account in our system.
+* To log into your account, go to ```Login``` tab to log into your registered account.
+* To get a raw report of a company's 10K documentation, go to ```Raw Reports```, fill in the information and submit request.
+* To get the existing generated report in the current account, go to ```Generated Reports```.
 
 
 # Developer Documentation
@@ -47,25 +45,6 @@
 ```bash
 pip install -r requirements.txt
 ```
-
-### Django Backend Setup
-* Create local database
-    ```bash
-    python manage.py migrate
-    ```
-* Create superuser for admin panel, follow the prompts to create an admin account.
-    ```bash
-    python manage.py createsuperuser
-    ```
-* Run the server locally on port 8000
-    ```bash
-    python manage.py runserver
-    ```
-You can now browse the api and use the admin panel by going to the following links
-
-Admin panel: http://localhost:8000/admin/
-
-API: http://localhost:8000/api/
 
 ### Django Backend API
 
