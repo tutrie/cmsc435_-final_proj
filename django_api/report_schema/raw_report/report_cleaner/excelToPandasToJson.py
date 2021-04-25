@@ -9,7 +9,14 @@ import openpyxl as pyxl
 
 
 class ConvertCleanSave:
+    """
+    This class is responsible for cleaning and converting a spreadsheet when it is pulled into the database for the
+    first time. Most of it's functions are in cleaner.py
+    """
     def __init__(self, file: str):
+        """
+        :param file: takes the file path of the xlsx downloaded from edgar
+        """
         # the original workbook in case needed in future
         self.excel_report = pyxl.load_workbook(file)
         self.cleaned_excel_report, self.notes = ten_k_excel_cleaning(
@@ -18,4 +25,7 @@ class ConvertCleanSave:
             self.cleaned_excel_report, self.notes)
 
     def convert_to_json(self):
+        """
+        :return: calls the object_conversion utility to make a json for storing in the database
+        """
         return dataframes_dict_to_json_dict(self.pandas_dict)

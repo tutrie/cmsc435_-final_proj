@@ -21,5 +21,3 @@ class TestGenerateReportAndActiveReportFeature(TestCase):
         instructions = qry.generate_instructions(merged_report)
         valid_output = {'Document And Entity Information': [0], 'Consolidated Balance Sheets': [0]}
         self.assertEqual(instructions, valid_output)
-
-

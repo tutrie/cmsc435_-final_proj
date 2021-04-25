@@ -17,8 +17,6 @@ from middleware.report_generator.utils.convert_objects.object_conversions import
     dataframes_dict_to_workbook
 )
 
-
-
 # # For production:
 # base_url = 'http://18.217.8.244:8000/api/'
 
@@ -177,7 +175,6 @@ def choose_json_or_xlsx() -> str:
     format.
 
     Args:
-        None
 
     Returns:
         'json' or 'xlsx', whatever the user chooses.
@@ -199,7 +196,7 @@ def get_valid_file_name() -> str:
     Prompts the user for a valid file name.
 
     Args:
-        None
+
 
     Returns:
         A valid file name.
@@ -273,7 +270,7 @@ def save_multiple_reports_locally(report: dict) -> None:
     Saves report to a local folder and returns the file location
 
     Args:
-        report_dict: A dictionary represntation of a report.
+        report: A dictionary represntation of a report.
     """
     for year, report_dict in report.items():
         save_single_report(report_dict)
@@ -376,7 +373,7 @@ def generate_instructions(merged_report: ActiveReport) -> dict:
     return instructions
 
 
-def create_generated_report(username: str = None, password: str = None) -> None:
+def create_generated_report() -> None:
     """
     Creates a generated report for the user, per user input.
     """
@@ -401,7 +398,8 @@ def create_generated_report(username: str = None, password: str = None) -> None:
 
     response = requests.post(generate_report_url, auth=(username, password), data=payload, timeout=15)
 
-    # response = requests.post('http://18.217.8.244:8000/api/generated-reports/', auth=(username, password), data=payload, timeout=15)
+    # response = requests.post('http://18.217.8.244:8000/api/generated-reports/',
+    # auth=(username, password), data=payload, timeout=15)
 
     if response.status_code == 201:
         print('Generated report successfully saved to database.')

@@ -6,6 +6,11 @@ import pandas as pd
 
 
 def join_pandas_dataframes(report_dict: dict) -> dict:
+    """
+    :param report_dict: a dictionary of dictionaries
+    :return: It breaks them all up sheet by sheet and merges the dataframes together, returns merged report
+    stored as dictionary of dataframes
+    """
     dataframes_dict = {}
     for json in report_dict:
         dataframes_dict[json] = json_dict_to_dataframes_dict(report_dict[json])
@@ -46,6 +51,10 @@ class ActiveReport:
     """
 
     def __init__(self, json_dict: dict, dataframes_dict: dict):
+        """
+        :param json_dict: These are set by the cls methods
+        :param dataframes_dict: These are set by the cls methods
+        """
         self.json = json_dict
         self.dataframes = dataframes_dict
 
@@ -104,6 +113,11 @@ class ActiveReport:
 
     @classmethod
     def from_workbooks_by_years_dicts(cls, wbks_by_year: dict) -> object:
+        """
+        :param wbks_by_year: The object returned from the database with multiple json format raw reports. Initiates
+        class variables
+        :return: Initiates the class variables
+        """
         dataframes_dict = join_pandas_dataframes(wbks_by_year)
         json_dict = dataframes_dict_to_json_dict(dataframes_dict)
         return cls(json_dict, dataframes_dict)

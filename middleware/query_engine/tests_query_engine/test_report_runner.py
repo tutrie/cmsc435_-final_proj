@@ -61,9 +61,9 @@ class TestIsError(TestCase):
         mocked_input.side_effect = ["Bassett", "00", "2010"]
         value = qry.query_raw_report_api()
 
-        #print('Captured', mock_stdout.getvalue())
+        # print('Captured', mock_stdout.getvalue())
 
-        #print(value.keys())
+        # print(value.keys())
 
         self.assertEqual(value, None)
 
@@ -114,7 +114,7 @@ class TestGetRowsForSheets(TestCase):
 
 #        value = qry.get_rows_for_sheets(sheets)
 
- #       self.assertEqual(valid, value)
+#        self.assertEqual(valid, value)
 
 
 @patch(qry.__name__ + '.input', create=True)
@@ -184,7 +184,6 @@ class TestGetValidFileName(TestCase):
         self.assertEqual(result, 'im-a_File09')
 
 
-
 @patch(qry.__name__ + '.input', create=True)
 class TestCanSaveToLocation(TestCase):
     def test_can_save_to_location_when_doesnt_exist(self, mocked_input):
@@ -237,6 +236,7 @@ class TestStartReportRetrieval(TestCase):
         except Exception:
             print("")
 
+
 class TestChooseSheetNames(TestCase):
     @patch(qry.__name__ + '.input', create=True)
     def test_choose_sheet_names_success(self, mocked_input):
@@ -267,5 +267,3 @@ class TestGenerateReportAndActiveReportFeature(TestCase):
         qry.start_report_retrieval()
         file_loc = 'test/test.json'
         remove(file_loc)
-
-
