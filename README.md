@@ -148,7 +148,7 @@ Note:  Timeout errors will be the result of network and internet speeds dropping
 
 # Contributions, Sprint 2
 - Brady Snelson - 15% -  Added authentication to generated-reports endpoint. Updated GET/POST/PUT routes to only allow requests from the owner of each report. Created EC2 cloud instance and set up dockerized django container to run on it.
-- Jason Hipkins - 15% - 
+- Jason Hipkins - 15% - got generated report working and saving locally, fixed bugs in josh's code, merged and fixed bugs, got filtering working and merging reports fully functional, almost did code coverage for all of report_runner but it works on console.
 - Preston Thomson - 15% - 
 - Josh Helperin - 15% - 
 - Gilbert Garczynski - 15% - Created frontend server for the User Interface.  Implemented login, registration, logout, and viewing of reports along with HTML for each.
