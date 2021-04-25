@@ -1,6 +1,6 @@
 virtualenv
 
-django
+Django
 djangorestframework
 psycopg2-binary
 flake8
