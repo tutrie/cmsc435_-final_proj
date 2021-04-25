@@ -1,10 +1,12 @@
 Middleware - Active Report
 ==========================
 .. automodule:: middleware.report_generator.src.active_report
-   :members:
+    :members:
+    :inherited-members:
 
 
 Middleware - Report Runner
 ==========================
 .. automodule:: middleware.query_engine.report_runner
-   :members:
+    :members:
+    :inherited-members:

@@ -11,7 +11,7 @@ Welcome to XRBL Scraper's documentation!
    django_api
    middleware
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Contents
 
 
 Indices and tables
