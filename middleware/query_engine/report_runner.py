@@ -20,10 +20,10 @@ elif plt.startswith('win32') or plt.startswith('cygwin'):
 
 
 # # For production:
-#base_url = 'http://18.217.8.244:8000/api/'
+base_url = 'http://18.217.8.244:8000/api/'
 
 # For developement:
-base_url = 'http://localhost:8000/api/'
+# base_url = 'http://localhost:8000/api/'
 raw_report_url = base_url + 'raw-reports/get-raw-reports'
 generate_report_url = base_url + 'generated-reports/'
 
@@ -312,7 +312,7 @@ def query_raw_report_api() -> None:
         response = requests.get(raw_report_url, params=request)
         response_json = json.loads(response.json())
         print(f'Response: {response}\n')
-        print(f'Json: {response_json.keys()}')
+        # print(f'Json: {response_json.keys()}')
 
         if is_error_response(response):
             print(f'Response returned with error code {response.status_code}')
@@ -383,13 +383,13 @@ def report_analysis(report: ActiveReport):
 
     if output in yes_input:
         print(f'\nDoing analysis please wait a moment\n')
-        generated_report_json = report.min_max_avg()
+        report.min_max_avg()
 
-        #return generated_report_json
+        # return generated_report_json
 
     elif output in no_input:
         print(f'\nOkay!\n')
-        #return report
+        # return report
 
     else:
         print(f'\nInvalid response ({output})! Please try again\n')

@@ -5,6 +5,7 @@ from middleware.report_generator.utils.convert_objects.object_conversions import
 import pandas as pd
 import numpy as np
 
+
 def join_pandas_dataframes(report_dict: dict) -> dict:
     """
     :param report_dict: a dictionary of dictionaries
@@ -152,9 +153,9 @@ class ActiveReport:
     def return_json_report(self) -> dict:
         return dataframes_dict_to_json_dict(self.generated_report)
 
-    def min_max_avg(self) -> pd.DataFrame:
+    def min_max_avg(self):
         for frame in self.generated_report:
-            analysis = self.generated_report[frame].select_dtypes(np.number).stack().groupby(level=0).agg(['min', 'max', 'mean'])
-            print(analysis)
-        #report_dict = dataframes_dict_to_json_dict(df_dict)
-        return analysis
+            analysis = self.generated_report[frame].select_dtypes(np.number).stack().groupby(level=0)\
+                .agg(['min', 'max', 'mean'])
+            # print(analysis)
+        # report_dict = dataframes_dict_to_json_dict(df_dict)
