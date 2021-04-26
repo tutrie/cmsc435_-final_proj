@@ -18,8 +18,7 @@ class GeneratedReport(models.Model):
     name = models.CharField(max_length=100)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE,
                                    related_name='created_by')
-    # TODO Need to create regular expression to use with match field and set the right path.
-    path = models.FilePathField(path='./', allow_folders=True)
+    json_schema = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f'Report created by {self.created_by}, named: {self.name}'
@@ -31,7 +30,7 @@ class GeneratedReportAdmin(admin.ModelAdmin):
 
     Inherits from the predefined model admin class.
     """
-    list_display = ('name', 'created_by', 'path')
+    list_display = ('name', 'created_by')
 
 
 class ReportSchemaConfig(AppConfig):
@@ -53,21 +52,22 @@ class GeneratedReportSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'created_by',
-            'path'
+            'json_schema'
         )
 
 
 class GeneratedReportViewSet(viewsets.ModelViewSet):
     """Defines the API Endpoint for the GeneratedReport model in the database.
     All API requests require basic authentication with an existing user in the database.
-    
+
     Inherits from the predefined model viewset.
     """
     queryset = GeneratedReport.objects.all()
     serializer_class = GeneratedReportSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwner]  # API user must authenticate with a registered user
+    # API user must authenticate with a registered user
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    
+
     # Overwrite the create method that is called for a POST request
     def create(self, request: Request, *args, **kwargs) -> Response:
         """Overwrites the default create method for the GeneratedReport viewset.
@@ -83,7 +83,9 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             Response: Returns a response object with a status code and a json body representing the created object.
         """
         user = request.user
+        request.data._mutable = True
         request.data['created_by'] = user.id
+        request.data._mutable = False
 
         report_serializer = GeneratedReportSerializer(data=request.data)
         if report_serializer.is_valid():
@@ -91,7 +93,7 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             return Response(report_serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(report_serializer._errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
     # Overwrite the list method that is called for a GET request
     def list(self, request: Request, *args, **kwargs) -> Response:
         """Overwrites the default list method for the GeneratedReport viewset.
@@ -114,10 +116,10 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             reports_for_user = GeneratedReport.objects.filter(created_by=user)
 
         filtered_queryset = self.filter_queryset(reports_for_user)
-        
+
         serializer = self.get_serializer(filtered_queryset, many=True)
         return Response(serializer.data)
-    
+
     # Overwrite the update method for what a PUT request is made
     def update(self, request, *args, **kwargs):
         """Overwrites the default update method for the GeneratedReport viewset.
@@ -138,8 +140,9 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         request.data['created_by'] = user.id
 
         report_to_update = self.get_object()
-        
-        report_serializer = GeneratedReportSerializer(report_to_update, data=request.data)
+
+        report_serializer = GeneratedReportSerializer(
+            report_to_update, data=request.data)
         if report_serializer.is_valid():
             report_serializer.save()
             return Response(report_serializer.data, status=status.HTTP_200_OK)
