@@ -20,10 +20,10 @@ elif plt.startswith('win32') or plt.startswith('cygwin'):
 
 
 # # For production:
-base_url = 'http://18.217.8.244:8000/api/'
+#base_url = 'http://18.217.8.244:8000/api/'
 
 # For developement:
-# base_url = 'http://localhost:8000/api/'
+base_url = 'http://localhost:8000/api/'
 raw_report_url = base_url + 'raw-reports/get-raw-reports'
 generate_report_url = base_url + 'generated-reports/'
 
@@ -351,7 +351,7 @@ def choose_sheet_names(merged_report: ActiveReport) -> list:
     Returns:
         A list of indices corresponding to the selected sheets.
     """
-    sheet_names = list(merged_report.json.keys())
+    sheet_names = list(merged_report.json_dict.keys())
     print('Preparing to choose sheets to pull from:\n')
     sheet_idxs_to_keep = get_user_int_list(sheet_names)
     return [sheet_names[idx] for idx in sheet_idxs_to_keep]
@@ -370,9 +370,30 @@ def generate_instructions(merged_report: ActiveReport) -> dict:
     sheets_to_keep = choose_sheet_names(merged_report)
 
     for sheet in sheets_to_keep:
-        instructions[sheet] = choose_rows_in_sheet(sheet, merged_report.dataframes[sheet])
+        instructions[sheet] = choose_rows_in_sheet(sheet, merged_report.dataframes_dict[sheet])
 
     return instructions
+
+
+def report_analysis(report: ActiveReport):
+    output = get_user_input("Do you want do min/max/avg analysis? y/n:")
+
+    yes_input = ['y']
+    no_input = ['n']
+
+    if output in yes_input:
+        print(f'\nDoing analysis please wait a moment\n')
+        generated_report_json = report.min_max_avg()
+
+        #return generated_report_json
+
+    elif output in no_input:
+        print(f'\nOkay!\n')
+        #return report
+
+    else:
+        print(f'\nInvalid response ({output})! Please try again\n')
+        report_analysis(report)
 
 
 def create_generated_report() -> None:
@@ -382,9 +403,11 @@ def create_generated_report() -> None:
     response_json = query_raw_report_api()
     if not response_json:
         return
-    merged_report = ActiveReport.from_workbooks_by_years_dicts(response_json['reports'])
+    merged_report = ActiveReport(response_json['reports'])
     instructions = generate_instructions(merged_report)
-    generated_report_json = merged_report.filter_report(instructions)
+    merged_report.filter_report(instructions)
+    report_analysis(merged_report)
+    generated_report_json = merged_report.return_json_report()
 
     print('Preparing to save generated report locally:\n')
     save_single_report(generated_report_json)
