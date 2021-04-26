@@ -3,6 +3,7 @@ from middleware.report_generator.utils.convert_objects.object_conversions import
     dataframes_dict_to_json_dict
 )
 import pandas as pd
+import numpy as np
 
 
 def join_pandas_dataframes(report_dict: dict) -> dict:
@@ -31,6 +32,15 @@ def join_pandas_dataframes(report_dict: dict) -> dict:
     return to_return
 
 
+def min_max_avg(report_dict: dict) -> dict:
+    df_dict = json_dict_to_dataframes_dict(report_dict)
+    for frame in df_dict:
+        analysis = df_dict[frame].select_dtypes(np.number).stack().groupby(level=0).agg(['min', 'max', 'mean'])
+        print(analysis)
+    report_dict = dataframes_dict_to_json_dict(df_dict)
+    return report_dict
+
+
 class ActiveReport:
     """
     A class representing the current report being requested the User.
@@ -50,13 +60,13 @@ class ActiveReport:
             based on the inputs of the User.
     """
 
-    def __init__(self, json_dict: dict, dataframes_dict: dict):
+    def __init__(self, wbks_by_year: dict):
         """
-        :param json_dict: These are set by the cls methods
-        :param dataframes_dict: These are set by the cls methods
+        :param wbks_by_year: Given to us by the report_runner
         """
-        self.json = json_dict
-        self.dataframes = dataframes_dict
+        self.dataframes_dict = join_pandas_dataframes(wbks_by_year)
+        self.json_dict = dataframes_dict_to_json_dict(self.dataframes_dict)
+        self.generated_report = None
 
     # @classmethod
     # def from_year(cls, cik: str, year: str, report_type: str):
@@ -111,18 +121,17 @@ class ActiveReport:
 
     #     return cls(json_dict, dataframes_dict)
 
-    @classmethod
-    def from_workbooks_by_years_dicts(cls, wbks_by_year: dict) -> object:
-        """
-        :param wbks_by_year: The object returned from the database with multiple json format raw reports. Initiates
-        class variables
-        :return: Initiates the class variables
-        """
-        dataframes_dict = join_pandas_dataframes(wbks_by_year)
-        json_dict = dataframes_dict_to_json_dict(dataframes_dict)
-        return cls(json_dict, dataframes_dict)
+    # def from_workbooks_by_years_dicts(self, wbks_by_year: dict) -> object:
+    #     """
+    #     :param wbks_by_year: The object returned from the database with multiple json format raw reports. Initiates
+    #     class variables
+    #     :return: Initiates the class variables
+    #     """
+    #     self.dataframes_dict = join_pandas_dataframes(wbks_by_year)
+    #     self.json_dict = dataframes_dict_to_json_dict(self.dataframes_dict)
+    #     #return cls(json_dict, dataframes_dict, None)
 
-    def filter_report(self, instructions: dict) -> dict:
+    def filter_report(self, instructions: dict):
         """
         Args:
             instructions: A dictionary of integer lists when the keys are the
@@ -139,6 +148,14 @@ class ActiveReport:
         for sheet, rows in instructions.items():
             int_rows = [int(val) for val in rows]
             # rows is list of ints
-            self.generated_report[sheet] = self.dataframes[sheet].iloc[int_rows]
+            self.generated_report[sheet] = self.dataframes_dict[sheet].iloc[int_rows]
 
+    def return_json_report(self) -> dict:
         return dataframes_dict_to_json_dict(self.generated_report)
+
+    def min_max_avg(self):
+        for frame in self.generated_report:
+            analysis = self.generated_report[frame].select_dtypes(np.number).stack().groupby(level=0)\
+                .agg(['min', 'max', 'mean'])
+            # print(analysis)
+        # report_dict = dataframes_dict_to_json_dict(df_dict)

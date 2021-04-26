@@ -16,3 +16,4 @@ essential_generators
 flask
 randomtimestamp
 sphinx
+numpy
