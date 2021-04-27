@@ -143,5 +143,15 @@ def generated_report():
                            generated_report=report, username=username)
 
 
+@app.route('/analysis')
+def analysis():
+    """
+    Returns:
+        Rendered analysis.html template
+    """
+
+    return render_template('analysis.html', title='Report Analysis')
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=UI_PORT)

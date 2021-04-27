@@ -62,12 +62,19 @@ class AppTests(unittest.TestCase):
             'username': 'admin'
         }
 
-        response = self.app.post('/raw_report', data=data, follow_redirects=True)
+        response = self.app.post('/raw_report', data=data,
+                                 follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
     def test_generated_report_page_get(self):
         data = {'username': 'admin'}
-        response = self.app.get('/generated_report', data=data, follow_redirects=True)
+        response = self.app.get('/generated_report', data=data,
+                                follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_report_analysis_page_get(self):
+        data = {}
+        response = self.app.get('/analysis', data=data, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
 
