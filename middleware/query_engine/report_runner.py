@@ -1,5 +1,4 @@
 import sys
-
 import json
 import requests
 from re import match
@@ -20,10 +19,10 @@ elif plt.startswith('win32') or plt.startswith('cygwin'):
 
 
 # # For production:
-# base_url = 'http://18.217.8.244:8000/api/'
+base_url = 'http://18.217.8.244:8000/api/'
 
 # For developement:
-base_url = 'http://localhost:8000/api/'
+# base_url = 'http://localhost:8000/api/'
 raw_report_url = base_url + 'raw-reports/get-raw-reports'
 generate_report_url = base_url + 'generated-reports/'
 

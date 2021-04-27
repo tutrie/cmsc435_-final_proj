@@ -100,4 +100,3 @@ class ActiveReport:
                 analysis = self.generated_report[frame].select_dtypes(np.number)\
                     .stack().groupby(level=0).agg(['min', 'max', 'mean'])
             self.generated_report[frame] = pd.concat([self.generated_report[frame], analysis], axis=1)
-
