@@ -110,7 +110,6 @@ def json_dict_to_json_file(json_dict: dict, file_path: str):
         None
     """
     # Dict into JSON file
-    print('from json_dict_to_json_file', type(json_dict))
     if not isinstance(json_dict, dict):
         json_dict = json.loads(json_dict)
     with open(f'{file_path}', 'w') as jsonFile:

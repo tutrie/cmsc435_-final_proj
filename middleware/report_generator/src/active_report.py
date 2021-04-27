@@ -26,19 +26,10 @@ def join_pandas_dataframes(report_dict: dict) -> dict:
 
     for keys in to_return:
         to_return[keys] = pd.concat(
-           to_return[keys], axis=1)
+           to_return[keys], axis=1).fillna(value=0.0)
         to_return[keys].columns = to_return[keys].columns.astype(str)
 
     return to_return
-
-
-def min_max_avg(report_dict: dict) -> dict:
-    df_dict = json_dict_to_dataframes_dict(report_dict)
-    for frame in df_dict:
-        analysis = df_dict[frame].select_dtypes(np.number).stack().groupby(level=0).agg(['min', 'max', 'mean'])
-        print(analysis)
-    report_dict = dataframes_dict_to_json_dict(df_dict)
-    return report_dict
 
 
 class ActiveReport:
@@ -68,69 +59,6 @@ class ActiveReport:
         self.json_dict = dataframes_dict_to_json_dict(self.dataframes_dict)
         self.generated_report = None
 
-    # @classmethod
-    # def from_year(cls, cik: str, year: str, report_type: str):
-    #     """
-    #     Args:
-    #         cik: CIK number of target company.
-
-    #         year: Year to pull financial files from.
-
-    #         report_type: Report type to pull information from (10-K or 10-Q).
-
-    #     Returns:
-    #         An ActiveReport object
-    #     """
-    #     # TODO: this file path thing may need updating. Quick solution
-    #     dir_path = dirname(realpath(__file__)).replace("src", "mocks")
-    #     file_name = f'{report_type}-{year[-2:]}.json'
-    #     json_file_path = join(dir_path, 'mock_database', cik,
-    #                           year, report_type, file_name)
-
-    #     json_dict = json_file_to_json_dict(json_file_path)
-    #     dataframes_dict = json_dict_to_dataframes_dict(json_dict)
-
-    #     return cls(json_dict, dataframes_dict)
-
-    # @classmethod
-    # def from_year_list(cls, cik: str, years: list, report_type: str):
-    #     """
-    #     Args:
-    #         cik: CIK number of target company.
-
-    #         years: List of years (of type string) to pull financial files from.
-
-    #         report_type: Report type to pull information from (10-K or 10-Q).
-
-    #     Returns:
-    #         An ActiveReport object of the collated/merged reports across years.
-    #     """
-    #     dir_path = dirname(realpath(__file__)).replace("src", "mocks")
-
-    #     report_dicts = {}
-    #     for year in years:
-    #         file_name = f'{report_type}-{year[-2:]}.json'
-    #         json_file_path = join(dir_path, 'mock_database', cik,
-    #                               year, report_type, file_name)
-
-    #         report_dicts[file_name] = json_file_to_json_dict(json_file_path)
-
-    #     # DUMMY FUNCTION HERE!!! Don't forget to import the function first!
-    #     dataframes_dict = join_pandas_dataframes(report_dicts)
-    #     json_dict = dataframes_dict_to_json_dict(dataframes_dict)
-
-    #     return cls(json_dict, dataframes_dict)
-
-    # def from_workbooks_by_years_dicts(self, wbks_by_year: dict) -> object:
-    #     """
-    #     :param wbks_by_year: The object returned from the database with multiple json format raw reports. Initiates
-    #     class variables
-    #     :return: Initiates the class variables
-    #     """
-    #     self.dataframes_dict = join_pandas_dataframes(wbks_by_year)
-    #     self.json_dict = dataframes_dict_to_json_dict(self.dataframes_dict)
-    #     #return cls(json_dict, dataframes_dict, None)
-
     def filter_report(self, instructions: dict):
         """
         Args:
@@ -151,11 +79,24 @@ class ActiveReport:
             self.generated_report[sheet] = self.dataframes_dict[sheet].iloc[int_rows]
 
     def return_json_report(self) -> dict:
+        """
+        :return: retruns the json dict object of the generated_report
+        """
         return dataframes_dict_to_json_dict(self.generated_report)
 
     def min_max_avg(self):
+        """
+        :return: does min/max/avg analysis on self.generate_report object. Adds the columns to each sheet
+        """
+        skip_first = 0
         for frame in self.generated_report:
-            analysis = self.generated_report[frame].select_dtypes(np.number).stack().groupby(level=0)\
-                .agg(['min', 'max', 'mean'])
-            # print(analysis)
-        # report_dict = dataframes_dict_to_json_dict(df_dict)
+            if skip_first == 1:
+                self.generated_report[frame] = self.generated_report[frame].applymap(
+                    lambda x: x.strip() if isinstance(x, str) else x).replace(to_replace='', value=0.0)
+                analysis = self.generated_report[frame].astype(np.float64).select_dtypes(np.number)\
+                    .stack().groupby(level=0).agg(['min', 'max', 'mean'])
+            else:
+                skip_first = 1
+                analysis = self.generated_report[frame].select_dtypes(np.number)\
+                    .stack().groupby(level=0).agg(['min', 'max', 'mean'])
+            self.generated_report[frame] = pd.concat([self.generated_report[frame], analysis], axis=1)

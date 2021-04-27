@@ -262,7 +262,21 @@ class TestGenerateReportAndActiveReportFeature(TestCase):
 
     def test_active_report_and_create_generated_report(self, mocked_input):
         mocked_input.side_effect = ['2', 'Bassett', '0000010329', '2016,2017', '0,1', '0', '0', 'n', 'test', 'test',
+                                    'xlsx', 'test', 'admin', 'admin', 'done']
+        qry.start_report_retrieval()
+        file_loc = 'test/test.xlsx'
+        remove(file_loc)
+
+    def test_active_report_and_create_generated_report_with_anall(self, mocked_input):
+        mocked_input.side_effect = ['2', 'Bassett', '0000010329', '2016,2017', '0,1', '0', '0', 'y', 'test', 'test',
                                     'json', 'test', 'admin', 'admin', 'done']
+        qry.start_report_retrieval()
+        file_loc = 'test/test.json'
+        remove(file_loc)
+
+    def test_above_with_bad_input(self, mocked_input):
+        mocked_input.side_effect = ['2', 'Bassett', '0000010329', '2016,2017', '0,1,100', '0,1', '0,a', '0', '0', 'x',
+                                    'n', 'test', 'test', 'json', 'test', 'admin', 'admin', 'done']
         qry.start_report_retrieval()
         file_loc = 'test/test.json'
         remove(file_loc)

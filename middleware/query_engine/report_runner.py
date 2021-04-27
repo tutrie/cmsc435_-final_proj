@@ -1,5 +1,4 @@
 import sys
-
 import json
 import requests
 from re import match
@@ -376,6 +375,9 @@ def generate_instructions(merged_report: ActiveReport) -> dict:
 
 
 def report_analysis(report: ActiveReport):
+    """
+    :param report: Will be used to call analysis function on the activereport object if requested
+    """
     output = get_user_input("Do you want do min/max/avg analysis? y/n:")
 
     yes_input = ['y']
@@ -389,7 +391,6 @@ def report_analysis(report: ActiveReport):
 
     elif output in no_input:
         print(f'\nOkay!\n')
-        # return report
 
     else:
         print(f'\nInvalid response ({output})! Please try again\n')
@@ -422,9 +423,6 @@ def create_generated_report() -> None:
     }
 
     response = requests.post(generate_report_url, auth=(username, password), data=payload, timeout=15)
-
-    # response = requests.post('http://18.217.8.244:8000/api/generated-reports/',
-    # auth=(username, password), data=payload, timeout=15)
 
     if response.status_code == 201:
         print('Generated report successfully saved to database.')
