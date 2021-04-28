@@ -163,7 +163,7 @@ def analysis(report_id: str):
 
     if username:
         response = requests.post(
-            f'http://django-server:8000/api/generated-reports/analysis/',
+            f'http://18.217.8.244:8000/api/generated-reports/analysis/',
             auth=(session.get('username'), session.get('password')),
             data={"report_id": report_id},
             timeout=15)
@@ -172,6 +172,7 @@ def analysis(report_id: str):
             return render_template('analysis.html', title='Report Analysis',
                                    report=response.json(),
                                    username=username), 200
+
         if response.status_code == 404:
             return render_template('not_found.html', title='Report Not '
                                                            'Found'), 404
