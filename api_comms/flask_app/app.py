@@ -162,9 +162,11 @@ def analysis(report_id: str):
     username = session.get('username')
 
     if username:
-        response = requests.get(
-            f'http://django-server:8000/api/generated-reports/analysis/{report_id}',
-            auth=(session.get('username'), session.get('password')), timeout=15)
+        response = requests.post(
+            f'http://django-server:8000/api/generated-reports/analysis/',
+            auth=(session.get('username'), session.get('password')),
+            data={"report_id": report_id},
+            timeout=15)
 
         if response.status_code == 200:
             return render_template('analysis.html', title='Report Analysis',
