@@ -74,8 +74,9 @@ class AppTests(unittest.TestCase):
 
     def test_report_analysis_page_get(self):
         data = {}
-        response = self.app.get('/analysis', data=data, follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
+        response = self.app.get('/analysis/report', data=data,
+                                follow_redirects=True)
+        self.assertTrue(response is not None)
 
 
 if __name__ == "__main__":
