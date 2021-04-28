@@ -172,7 +172,7 @@ def analysis(report_id: str):
             return render_template('analysis.html', title='Report Analysis',
                                    report=response.json(),
                                    username=username), 200
-        
+
         if response.status_code == 404:
             return render_template('not_found.html', title='Report Not '
                                                            'Found'), 404
@@ -180,7 +180,8 @@ def analysis(report_id: str):
         if response.status_code == 403:
             return render_template('forbidden.html', title='Forbidden'), 403
 
-        return render_template('server_error.html', title='Server Error'), 500
+        return render_template('server_error.html', title='Server Error'), \
+               response.status_code
 
     # user not logged in
     return render_template('login.html', title='Login',
