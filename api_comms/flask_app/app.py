@@ -172,7 +172,6 @@ def analysis(report_id: str):
             return render_template('analysis.html', title='Report Analysis',
                                    report=response.json(),
                                    username=username), 200
-
         if response.status_code == 404:
             return render_template('not_found.html', title='Report Not '
                                                            'Found'), 404
