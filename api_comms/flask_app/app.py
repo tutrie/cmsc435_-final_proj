@@ -111,7 +111,7 @@ def raw_report():
             for report in reports:
                 company = report['company']
                 match = company['name'] == data['name'] and company['cik'] == data['cik'] and \
-                    report['report_date'] == data['report_date']
+                        report['report_date'] == data['report_date']
                 if match:
                     excel_url = report['excel_url']
                     break
@@ -141,6 +141,11 @@ def generated_report():
             report = response_generated.json()
     return render_template('generated_report.html', title='Generated Report',
                            generated_report=report, username=username)
+
+
+@app.route('/zoom_link')
+def zoom_link():
+    return render_template('zoom_link.html')
 
 
 if __name__ == '__main__':
