@@ -4,6 +4,7 @@ from django.apps import AppConfig
 from django.contrib import admin
 from rest_framework import viewsets, serializers, permissions, status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.request import Request
 
@@ -148,3 +149,13 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             return Response(report_serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(report_serializer._errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['POST'], detail=False, url_path='analysis',
+            url_name='report_analysis')
+    def analysis(self, request, report_id=None):
+
+        print(report_id)
+        print(request.data)
+
+        response = {}
+        return Response(response, status=status.HTTP_200_OK)
