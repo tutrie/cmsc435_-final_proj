@@ -1,3 +1,5 @@
+import json
+
 from django.db import models
 from django.conf import settings
 from django.apps import AppConfig
@@ -8,6 +10,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.request import Request
 
+from report_schema.generated_report.utils import min_max_avg
 from report_schema.generated_report.permissions import IsOwner
 
 
@@ -154,17 +157,27 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             url_name='report_analysis')
     def analysis(self, request):
 
-        # move to proxy
+        # proxy
         if not request.user or not request.data or 'report_id' not in \
                                                        request.data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        # probably should be in proxy
+        # proxy
         try:
             report = GeneratedReport.objects.get(id=request.data['report_id'])
         except GeneratedReport.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        print(report)
+        report_data = json.loads(report.json_schema)
 
-        return Response(report.json_schema, status=status.HTTP_200_OK)
+        # using jason's code
+        # active_report = ActiveReport({})
+        # active_report.generated_report = report_data
+        # active_report.min_max_avg()
+
+        # using util version
+        analysis = min_max_avg(report_data)
+
+        # ToDo save analysis as a new generated report
+
+        return Response(analysis, status=status.HTTP_200_OK)
