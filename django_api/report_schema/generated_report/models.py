@@ -20,7 +20,6 @@ class GeneratedReport(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.deletion.CASCADE,
                                    related_name='created_by')
     json_schema = models.TextField(blank=True, null=True)
-    temp = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f'Report created by {self.created_by}, named: {self.name}'
@@ -153,10 +152,19 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
 
     @action(methods=['POST'], detail=False, url_path='analysis',
             url_name='report_analysis')
-    def analysis(self, request, report_id=None):
+    def analysis(self, request):
 
-        print(report_id)
-        print(request.data)
+        # move to proxy
+        if not request.user or not request.data or 'report_id' not in \
+                                                       request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        response = {}
-        return Response(response, status=status.HTTP_200_OK)
+        # probably should be in proxy
+        try:
+            report = GeneratedReport.objects.get(id=request.data['report_id'])
+        except GeneratedReport.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        print(report)
+
+        return Response(report.json_schema, status=status.HTTP_200_OK)
