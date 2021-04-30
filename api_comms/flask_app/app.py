@@ -152,6 +152,32 @@ def generated_report():
                            generated_report=report, username=username)
 
 
+@app.route('/create_generated_report', methods=['GET', 'POST'])
+def raw_report():
+    """
+    A function called when there's either a GET or POST request to create_generated_report route received.
+    
+
+    Returns:
+        Renders create_generated_report.html template which shows the create_generated_report page of the app 
+        with information for requesting a generated report.
+    """
+    if request.method == 'POST':
+        data = request.form
+        response_raw = requests.get('http://18.217.8.244:8000/api/generated-reports/create-report/',
+                                    auth=(session.get('username'), session.get('password')), timeout=15)
+
+        report_id = '-1'
+        if response_raw.status_code == 200:
+            reports = response_raw.json()
+            
+        return render_template('create_generated_report.html', title='Raw Report',
+                               username=session.get('username'),
+                               report_id=report_id)
+
+    return render_template('raw_report.html', title='Raw Report',
+                           username=session.get('username'))
+
 @app.route('/generated_report/analysis/<report_id>')
 def analysis(report_id: str):
     """

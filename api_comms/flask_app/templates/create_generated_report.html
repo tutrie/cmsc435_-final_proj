@@ -1,0 +1,51 @@
+<html>
+<head>
+    <title>EDGAR Scraper</title>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='create_generated_report.css') }}">
+</head>
+<body>
+    {% include 'header.html' %}
+    <div class="container">
+        
+        <div class="content">
+            {% if username %}
+            <h1>10-K Excel Raw Report Retrieval</h1>
+            <form action="" method="post">
+                <div class="form-group">
+                    <label>Report Name: </label>
+                    <input type="text" placeholder="Report Name" name="report_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Company Name: </label>
+                    <input type="text" placeholder="Walmart" name="name" class="form-control" required>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label>CIK Number: </label>
+                    <input type="text" placeholder="12345678" name="cik" class="form-control" required>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label>Report Date: </label>
+                    <input type="text" placeholder="2020, 2019, 2018" name="years" class="form-control" required>
+                </div>
+                <br>
+                <button class="submit" type="submit">Submit Request</button>
+            </form>
+                {% if excel_url %}
+                    <div id="response"></div>
+                        <p>Report ID: 
+                            <a href="{{excel_url}}" target="_blank">{{report_id}}</a>
+                        </p>
+                        <p>Click 
+                            <a href="generated_report">HERE</a>
+                            to view the generated report.
+                        </p>
+                {% endif %}
+            {% else %}
+            <h1>You have not logged in yet</h1>
+        </div>
+        
+    </div>
+</body>
+</html>
