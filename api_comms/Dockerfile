@@ -4,9 +4,6 @@ FROM python:3
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
-ADD wait-for-it.sh /usr/bin/
-RUN chmod u+x /usr/bin/wait-for-it.sh
-
 RUN mkdir /code
 WORKDIR /code
 
@@ -16,5 +13,8 @@ COPY ./requirements.txt /code/requirements.txt
 RUN pip install --upgrade -r requirements.txt
 
 COPY . /code/
+
+COPY wait-for-it.sh /usr/bin/
+RUN chmod u+x /usr/bin/wait-for-it.sh
 
 WORKDIR /code/flask_app
