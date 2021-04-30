@@ -169,7 +169,7 @@ def raw_report():
 
         report_id = '-1'
         if response_raw.status_code == 200:
-            reports = response_raw.json()
+            report_id = response_raw.json()
             
         return render_template('create_generated_report.html', title='Raw Report',
                                username=session.get('username'),

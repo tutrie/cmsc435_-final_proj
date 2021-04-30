@@ -34,13 +34,8 @@
             </form>
                 {% if excel_url %}
                     <div id="response"></div>
-                        <p>Report ID: 
-                            <a href="{{excel_url}}" target="_blank">{{report_id}}</a>
-                        </p>
-                        <p>Click 
-                            <a href="generated_report">HERE</a>
-                            to view the generated report.
-                        </p>
+                        <p>Report ID: <a href="{{excel_url}}" target="_blank">{{report_id}}</a> </p>
+                        <p>Click <a href="generated_report">HERE</a> to view the generated report.</p>
                 {% endif %}
             {% else %}
             <h1>You have not logged in yet</h1>
