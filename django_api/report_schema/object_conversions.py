@@ -52,6 +52,9 @@ def json_dict_to_dataframes_dict(json_dict: dict) -> dict:
 
 def dataframes_dict_to_json_dict(dataframes_dict: dict) -> dict:
     """
+    Turns a dictionary of dataframes into a dictionary of dictionary
+    represntations of those dataframes.
+
     Args:
         dataframes_dict: Dictionary of Pandas dataframes where key is the sheet
             name of the dataframe while the value is the inner dictionary
@@ -63,8 +66,6 @@ def dataframes_dict_to_json_dict(dataframes_dict: dict) -> dict:
     """
     json_dict = {}
     for sheet_name, df in dataframes_dict.items():
-        # df.to_json() turns df into a string.
-        # json.loads turns the string into a dict object
         json_dict[sheet_name] = dataframe_to_dict(df)
 
     return json_dict
@@ -118,18 +119,14 @@ def json_dict_to_json_file(json_dict: dict, file_path: str):
 
 def dataframe_to_dict(dataframe: object) -> dict:
     """
+    Turns a dataframe into its dictionary representation.
+
     Args:
         dataframe: A pandas dataframe
 
     Returns:
         Dictionary representation of pandas dataframe
     """
-    dup_count = 1
-    while True in dataframe.columns.duplicated():
-        dataframe.columns = dataframe.columns.where(
-            ~dataframe.columns.duplicated(), dataframe.columns + ' dp_' + str(dup_count))
-        dup_count += 1
-
     return json.loads(dataframe.to_json(force_ascii=False))
 
 

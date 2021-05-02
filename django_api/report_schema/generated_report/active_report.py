@@ -1,7 +1,4 @@
-from middleware.report_generator.utils.convert_objects.object_conversions import (
-    json_dict_to_dataframes_dict,
-    dataframes_dict_to_json_dict
-)
+from report_schema import object_conversions
 import pandas as pd
 import numpy as np
 
@@ -14,7 +11,7 @@ def join_pandas_dataframes(report_dict: dict) -> dict:
     """
     dataframes_dict = {}
     for json in report_dict:
-        dataframes_dict[json] = json_dict_to_dataframes_dict(report_dict[json])
+        dataframes_dict[json] = object_conversions.json_dict_to_dataframes_dict(report_dict[json])
     list_of_views = []
     for df_dict in dataframes_dict.values():
         list_of_views.append(list(df_dict.items()))
@@ -56,7 +53,7 @@ class ActiveReport:
         :param wbks_by_year: Given to us by the report_runner
         """
         self.dataframes_dict = join_pandas_dataframes(wbks_by_year)
-        self.json_dict = dataframes_dict_to_json_dict(self.dataframes_dict)
+        self.json_dict = object_conversions.dataframes_dict_to_json_dict(self.dataframes_dict)
         self.generated_report = None
 
     def filter_report(self, instructions: dict):
@@ -82,7 +79,7 @@ class ActiveReport:
         """
         :return: retruns the json dict object of the generated_report
         """
-        return dataframes_dict_to_json_dict(self.generated_report)
+        return object_conversions.dataframes_dict_to_json_dict(self.generated_report)
 
     def min_max_avg(self):
         """

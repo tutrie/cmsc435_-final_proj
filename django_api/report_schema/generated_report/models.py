@@ -10,7 +10,6 @@ from rest_framework.request import Request
 
 from report_schema.generated_report.permissions import IsOwner
 
-
 class GeneratedReport(models.Model):
     """Defines the GeneratedReport model in our database
 
@@ -159,3 +158,73 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
 
         response = {}
         return Response(response, status=status.HTTP_200_OK)
+
+
+    @action(methods=['POST'], detail=False, url_path='get-sheets-and-rows', url_name='get-sheets-and-rows')
+    def get_sheets_and_rows(self, request):
+        from report_schema.generated_report.utils import get_sheets_and_rows
+        
+        data = request.data
+
+        valid_request, msg = self.validate_request(data)
+        if not valid_request:
+            return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
+
+        gen_report = get_sheets_and_rows(
+            data['report_name'],
+            data['company'],
+            data['cik'],
+            data['years']
+        )
+        
+        if gen_report:
+            return Response(status.HTTP_200_OK)
+        else:
+            return Response(status.HTTP_400_INVALID)
+        
+    def validate_request(self, data):
+        keys_in_request = 'report_name' in data \
+                        and 'company' in data \
+                        and 'cik' in data \
+                        and 'years' in data
+        
+        if not keys_in_request:
+            return False, 'Correct keys not in request body.'
+
+        correct_types = isinstance(data['report_name'], str) and \
+                        isinstance(data['company'], str) and \
+                        isinstance(data['cik'], str) and \
+                        isinstance(data['years'], str)
+        
+        if not correct_types:
+            return False, 'Key values not the right type in the request body.'
+
+        acceptable_years = {'2016', '2017', '2018', '2019', '2020', '2021'}
+        for year in data['years'].split(','):
+            print(year)
+            if not (year in acceptable_years):
+                return False, 'Year selected is not a valid year.'
+        
+        return True, 'Valid.'
+
+
+    @action(methods=['POST'], detail=False, url_path='create-report', url_name='create-report')
+    def create_report(self, request):
+        from report_schema.generated_report.utils import create_generated_report
+
+        data = request.data
+
+        valid_request, msg = self.validate_request(data)
+        if not valid_request:
+            return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
+        
+        # Expecting
+        gen_report_id = create_generated_report(
+            request.user,
+            data['report_name'], # String
+            data['sheets'], # int list
+            data['rows'], # int list
+            data['type'] # string
+        )
+
+        return Response({'id': gen_report_id}, status.HTTP_200_OK)
