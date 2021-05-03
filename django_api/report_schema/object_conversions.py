@@ -116,8 +116,24 @@ def json_dict_to_json_file(json_dict: dict, file_path: str):
     with open(f'{file_path}', 'w') as jsonFile:
         json.dump(json_dict, jsonFile)
 
-
 def dataframe_to_dict(dataframe: object) -> dict:
+    """
+    Args:
+        dataframe: A pandas dataframe
+
+    Returns:
+        Dictionary representation of pandas dataframe
+    """
+    dup_count = 1
+    while True in dataframe.columns.duplicated():
+        dataframe.columns = dataframe.columns.where(
+            ~dataframe.columns.duplicated(), dataframe.columns + ' dp_' + str(dup_count))
+        dup_count += 1
+
+    return json.loads(dataframe.to_json(force_ascii=False))
+
+
+def dataframe_to_dict_simple(dataframe: object) -> dict:
     """
     Turns a dataframe into its dictionary representation.
 
