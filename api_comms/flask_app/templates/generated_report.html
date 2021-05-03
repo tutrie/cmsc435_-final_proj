@@ -2,6 +2,9 @@
 <head>
     <title>EDGAR Scraper</title>
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='generated_report.css') }}">
+    <script   src="https://code.jquery.com/jquery-3.6.0.min.js"   integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="   crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
     {% include 'header.html' %}
@@ -9,8 +12,28 @@
         <div class="content">
             {% if username %}
             <h1>Generated Report Information</h1>
-                {% if generated_report %}
-                    <p id="response">{{generated_report}}</p>
+                {% if generated_reports %}
+                <table id="dataTable" class="display">
+                    <thead>
+                        <tr style="background-color: #ffffff">
+                            <th style="color: red">ID</th>
+                            <th style="color: red">Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in generated_reports %}
+                        <tr>
+                            <td>{{ report.id }}</td>
+                            <td>{{ report.name }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <script>
+                    $(document).ready( function () {
+                        $('#dataTable').DataTable();
+                    } );
+                </script>
                 {% else %}
                     <p id="response">No generated report yet.</p>
                 {% endif %}

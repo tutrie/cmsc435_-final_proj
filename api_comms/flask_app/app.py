@@ -141,15 +141,16 @@ def generated_report():
         with information of the current user's generated reports and the username.
     """
     username = session.get('username')
-    report = None
+    reports = None
     if username:
         response_generated = requests.get(
             'http://18.217.8.244:8000/api/generated-reports/',
             auth=(session.get('username'), session.get('password')), timeout=15)
         if response_generated.status_code == 200:
-            report = response_generated.json()
+            reports = response_generated.json()
+            print(reports)
     return render_template('generated_report.html', title='Generated Report',
-                           generated_report=report, username=username)
+                           generated_reports=reports, username=username)
 
 
 @app.route('/generated_report/analysis/<report_id>')
