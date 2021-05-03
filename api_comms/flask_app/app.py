@@ -165,7 +165,9 @@ def raw_report():
     if request.method == 'POST':
         data = request.form
         response_raw = requests.get('http://18.217.8.244:8000/api/generated-reports/create-report/',
-                                    auth=(session.get('username'), session.get('password')), timeout=15)
+                                    auth=(session.get('username'), session.get('password')), 
+                                    data=data,
+                                    timeout=15)
 
         report_id = '-1'
         if response_raw.status_code == 200:
