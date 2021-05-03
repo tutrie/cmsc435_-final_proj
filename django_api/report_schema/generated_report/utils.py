@@ -9,7 +9,7 @@ import json
 # for c in dataframe.columns
 #   dataframe[c].index.to_list
 
-def get_sheets_and_rows(report_name: str, company_name: str, cik: str, years: str) -> bool:
+def get_sheets_and_rows(user: str, report_name: str, company_name: str, cik: str, years: str) -> dict:
     # Get raw reports for the company based on cik and years (call raw report endpoint)
     year_list = years.split(',')
 
@@ -19,38 +19,55 @@ def get_sheets_and_rows(report_name: str, company_name: str, cik: str, years: st
         'years': year_list
     }
     response = raw_rep_utils.retrieve_raw_reports_response(args)
-
-    print(response.json())
-
-    return True
-
-
-def create_generated_report(self, user: str, report_name: str, sheets: list, rows: list, output_type: str) -> int:
-   # Arguments are gauranteed to be validated already
-   
-    # Get the raw report jsons (we know theyre in the database)
-    report_json = {}
     
-    # Generate the report
-    merged_report = ActiveReport(report_json) # Active report good
-    saved_report = merged_report.return_json_report()
-    new_merged_report = ActiveReport(saved_report)
+    merged_report = ActiveReport(response['reports'])
 
-
-    instructions = generate_instructions(merged_report, sheets, rows)
-    
-    
-    merged_report.filter_report(instructions) # Active report good
-    generated_report_json = merged_report.return_json_report()  # Active report good
-    save_single_report(generated_report_json, output_type)
-
-
-
-    # Create generated report in the database
+    # Save the merged report to the database
+    json_report = merged_report.return_json_report()
     GeneratedReport.objects.create(
         name=report_name,
-        json_schema=generated_report_json
+        created_by=user,
+        json_schema=json_report
     )
+
+    # Create instructions
+    form_data = {}
+
+    sheets = merged_report.json_dict.keys()
+    for sheet in sheets:
+        form_data[sheet] = merged_report.dataframes_dict[sheet]
+
+
+    # Send the intructions back
+    return form_data
+
+
+def create_generated_report(self, user: str, report_name: str, instructions: dict, output_type: str) -> int:
+    # Sheet looks like
+    # Sheets = {
+    #   sheetname: [rows]
+    # }
+   # Arguments are gauranteed to be validated already
+
+
+    # Get the report json using the report_name
+    report_obj = GeneratedReport.objects.get(name=report_name)
+    
+    active_report_obj = ActiveReport(report_obj.json_schema)
+
+    active_report_obj.filter_report(instructions) # Active report good
+
+    generated_report_json = active_report_obj.return_json_report()  # Active report good
+
+    save_single_report(generated_report_json, output_type)
+
+    report_obj.json_schema = generated_report_json
+    report_obj.save()
+    return report_obj.pk
+
+
+def get_rows(report):
+    return 
 
 def generate_instructions(merged_report: ActiveReport, sheets, rows) -> dict:
     """

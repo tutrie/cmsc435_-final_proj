@@ -160,8 +160,8 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         return Response(response, status=status.HTTP_200_OK)
 
 
-    @action(methods=['POST'], detail=False, url_path='get-sheets-and-rows', url_name='get-sheets-and-rows')
-    def get_sheets_and_rows(self, request):
+    @action(methods=['GET'], detail=False, url_path='get_form_data', url_name='get_form_data')
+    def get_form_data(self, request):
         from report_schema.generated_report.utils import get_sheets_and_rows
         
         data = request.data
@@ -170,15 +170,16 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         if not valid_request:
             return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
 
-        gen_report = get_sheets_and_rows(
+        form_data = get_sheets_and_rows(
+            request.user,
             data['report_name'],
             data['company'],
             data['cik'],
             data['years']
         )
         
-        if gen_report:
-            return Response(status.HTTP_200_OK)
+        if form_data:
+            return Response({'form_data': gen_report}, status.HTTP_200_OK)
         else:
             return Response(status.HTTP_400_INVALID)
         
