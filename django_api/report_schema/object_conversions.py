@@ -132,20 +132,6 @@ def dataframe_to_dict(dataframe: object) -> dict:
 
     return json.loads(dataframe.to_json(force_ascii=False))
 
-
-def dataframe_to_dict_simple(dataframe: object) -> dict:
-    """
-    Turns a dataframe into its dictionary representation.
-
-    Args:
-        dataframe: A pandas dataframe
-
-    Returns:
-        Dictionary representation of pandas dataframe
-    """
-    return json.loads(dataframe.to_json(force_ascii=False))
-
-
 def dict_to_dataframe(json_dict: dict) -> object:
     """
     Args:
