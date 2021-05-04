@@ -132,7 +132,7 @@ def raw_report():
 @app.route('/generated_report')
 def generated_report():
     """
-    A function called when there's either a GET request to raw_report route received.
+    A function called when there's either a GET request to generated_report route received.
     It sends a request to the API to retrieve the generated report information, and add the json response
     to the parameter of the rendered template.
 
@@ -153,7 +153,7 @@ def generated_report():
 
 
 @app.route('/create_generated_report', methods=['GET', 'POST'])
-def raw_report():
+def create_generated_report():
     """
     A function called when there's either a GET or POST request to create_generated_report route received.
     
@@ -173,12 +173,15 @@ def raw_report():
         if response_raw.status_code == 200:
             report_id = response_raw.json()
             
-        return render_template('create_generated_report.html', title='Raw Report',
+        return render_template('report_generation.html', title='Create Genrated Report',
                                username=session.get('username'),
                                report_id=report_id)
 
-    return render_template('raw_report.html', title='Raw Report',
-                           username=session.get('username'))
+    return render_template('report_generation.html', title='Create Genrated Report2',
+                               username=session.get('username'))
+                            #    report_id=report_id)
+    # return render_template('raw_report.html', title='Raw Report',
+    #                        username=session.get('username'))
 
 @app.route('/generated_report/analysis/<report_id>')
 def analysis(report_id: str):

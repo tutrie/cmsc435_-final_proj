@@ -1,7 +1,7 @@
 <html>
 <head>
     <title>EDGAR Scraper</title>
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='create_generated_report.css') }}">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='report_generation.css') }}">
 </head>
 <body>
     {% include 'header.html' %}
@@ -17,7 +17,7 @@
                 </div>
                 <div class="form-group">
                     <label>Company Name: </label>
-                    <input type="text" placeholder="Walmart" name="company_name" class="form-control" required>
+                    <input type="text" placeholder="Walmart" name="company" class="form-control" required>
                 </div>
                 <br>
                 <div class="form-group">
@@ -27,7 +27,15 @@
                 <br>
                 <div class="form-group">
                     <label>Report Date: </label>
-                    <input type="text" placeholder="2020, 2019, 2018" name="years" class="form-control" required>
+                    <div id="checkboxes">
+                        <label for="2021"><input type="checkbox" id="2021" />2021</label><br>
+                        <label for="2020"><input type="checkbox" id="2020" />2020 </label><br>
+                        <label for="2019"><input type="checkbox" id="2019" />2019 </label><br>
+                        <label for="2018"><input type="checkbox" id="2018" />2018 </label><br>
+                        <label for="2017"><input type="checkbox" id="2017" />2017 </label><br>
+                        <label for="2016"><input type="checkbox" id="2016" />2016 </label><br>
+                        <label for="2015"><input type="checkbox" id="2015" />2015 </label><br>
+                    </div>
                 </div>
                 <br>
                 <button class="submit" type="submit">Submit Request</button>
@@ -39,6 +47,7 @@
                 {% endif %}
             {% else %}
             <h1>You have not logged in yet</h1>
+            {% endif %}
         </div>
         
     </div>
