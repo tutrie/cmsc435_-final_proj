@@ -10,7 +10,6 @@ import json
 #   dataframe[c].index.to_list
 
 def get_sheets_and_rows(user: str, report_name: str, company_name: str, cik: str, years: str) -> dict:
-    # Get raw reports for the company based on cik and years (call raw report endpoint)
     year_list = years.split(',')
 
     args = {
@@ -43,12 +42,6 @@ def get_sheets_and_rows(user: str, report_name: str, company_name: str, cik: str
 
 
 def create_generated_report(user: str, report_name: str, form_data: str, output_type: str) -> int:
-    # Sheet looks like
-    # Sheets = {
-    #   sheetname: [rows]
-    # }
-   # Arguments are gauranteed to be validated already
-
     form_data = object_conversions.json_dict_to_dataframes_dict(json.loads(form_data))
 
     # Get the report json using the report_name
@@ -66,30 +59,7 @@ def create_generated_report(user: str, report_name: str, form_data: str, output_
     report_obj.json_schema = json.dumps(generated_report_json)
     report_obj.save()
 
-    print(report_obj)
-    print(report_obj.pk)
     return report_obj.pk
-
-
-def get_rows(report):
-    return 
-
-def generate_instructions(merged_report: ActiveReport, sheets, rows) -> dict:
-    """
-    Generate instructions to filter report.
-
-    Returns:
-        Instructions dictionary with key being a sheet name and the values
-        being rows for that sheet to keep.
-    """
-    instructions = {}
-
-    sheets_to_keep = choose_sheet_names(merged_report)
-
-    for sheet in sheets_to_keep:
-        instructions[sheet] = choose_rows_in_sheet(sheet, merged_report.dataframes_dict[sheet])
-
-    return instructions
 
 def save_single_report(report_dict: dict, report_name: str, user: str, output_type: str) -> None:
     """

@@ -182,7 +182,53 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             return Response({'form_data': json.dumps(form_data)}, status.HTTP_200_OK)
         else:
             return Response(status.HTTP_400_INVALID)
+
+    @action(methods=['POST'], detail=False, url_path='create-report', url_name='create-report')
+    def create_report(self, request):
+        from report_schema.generated_report.utils import create_generated_report
+
+        valid_request, msg = self.validate_request_create_report(request)
         
+        if not valid_request:
+            return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
+        
+        # Expecting
+        data = request.data
+        gen_report_id = create_generated_report(
+            request.user,
+            data['report_name'], # String
+            data['form_data'], # int list
+            data['type'] # string
+        )
+
+        return Response({'id': gen_report_id}, status.HTTP_200_OK)
+
+    def validate_request_create_report(self, request):
+        data = request.data
+        keys_in_request = 'report_name' in data \
+                        and 'form_data' in data \
+                        and 'type' in data
+        
+        if not keys_in_request:
+            return False, 'Correct keys not in request body.'
+
+        correct_types = isinstance(data['report_name'], str) and \
+                        isinstance(data['form_data'], str) and \
+                        isinstance(data['type'], str)
+
+        if not correct_types:
+            return False, 'Key values not the right type in the request body.'
+
+        acceptable_types = {'json', 'xlsx'}
+        if data['type'] not in acceptable_types:
+            return False, 'File type is invalid.'
+        
+        report_exists = GeneratedReport.objects.filter(created_by=request.user, name=data['report_name'])
+        if not report_exists:
+            return False, 'That report does not exist yet.'
+
+        return (True, 'Valid.')
+
     def validate_request_get_form(self, request):
         data = request.data
         keys_in_request = 'report_name' in data \
@@ -212,26 +258,3 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
 
         return True, 'Valid.'
 
-
-    @action(methods=['POST'], detail=False, url_path='create-report', url_name='create-report')
-    def create_report(self, request):
-        from report_schema.generated_report.utils import create_generated_report
-
-        valid_request, msg = self.validate_request_create_report(request)
-        
-        if not valid_request:
-            return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
-        
-        # Expecting
-        data = request.data
-        gen_report_id = create_generated_report(
-            request.user,
-            data['report_name'], # String
-            data['form_data'], # int list
-            data['type'] # string
-        )
-
-        return Response({'id': gen_report_id}, status.HTTP_200_OK)
-
-    def validate_request_create_report(self, data):
-        return (True, 'success')
