@@ -7,6 +7,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.request import Request
+import json
 
 from report_schema.generated_report.permissions import IsOwner
 
@@ -160,13 +161,13 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         return Response(response, status=status.HTTP_200_OK)
 
 
-    @action(methods=['GET'], detail=False, url_path='get-form-data', url_name='get-form-data')
+    @action(methods=['POST'], detail=False, url_path='get-form-data', url_name='get-form-data')
     def get_form_data(self, request):
         from report_schema.generated_report.utils import get_sheets_and_rows
         
         data = request.data
 
-        valid_request, msg = self.validate_request(data)
+        valid_request, msg = self.validate_request_get_form(data)
         if not valid_request:
             return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
 
@@ -179,11 +180,11 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         )
         
         if form_data:
-            return Response({'form_data': form_data}, status.HTTP_200_OK)
+            return Response({'form_data': json.dumps(form_data)}, status.HTTP_200_OK)
         else:
             return Response(status.HTTP_400_INVALID)
         
-    def validate_request(self, data):
+    def validate_request_get_form(self, data):
         keys_in_request = 'report_name' in data \
                         and 'company' in data \
                         and 'cik' in data \
@@ -202,7 +203,6 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
 
         acceptable_years = {'2016', '2017', '2018', '2019', '2020', '2021'}
         for year in data['years'].split(','):
-            print(year)
             if not (year in acceptable_years):
                 return False, 'Year selected is not a valid year.'
         
@@ -215,7 +215,7 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
 
         data = request.data
 
-        valid_request, msg = self.validate_request(data)
+        valid_request, msg = self.validate_request_create_report(data)
         if not valid_request:
             return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
         
@@ -228,3 +228,6 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         )
 
         return Response({'id': gen_report_id}, status.HTTP_200_OK)
+
+    def validate_request_create_report(self, data):
+        return (True, 'success')

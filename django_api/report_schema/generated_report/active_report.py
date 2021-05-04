@@ -48,13 +48,14 @@ class ActiveReport:
             based on the inputs of the User.
     """
 
-    def __init__(self, wbks_by_year: dict):
+    def __init__(self, wbks_by_year: dict = None):
         """
         :param wbks_by_year: Given to us by the report_runner
         """
-        self.dataframes_dict = join_pandas_dataframes(wbks_by_year)
-        self.json_dict = object_conversions.dataframes_dict_to_json_dict(self.dataframes_dict)
-        self.generated_report = self.dataframes_dict
+        if wbks_by_year:
+            self.dataframes_dict = join_pandas_dataframes(wbks_by_year)
+            self.json_dict = object_conversions.dataframes_dict_to_json_dict(self.dataframes_dict)
+            self.generated_report = self.dataframes_dict
 
     def filter_report(self, instructions: dict):
         """
@@ -97,3 +98,8 @@ class ActiveReport:
                 analysis = self.generated_report[frame].select_dtypes(np.number)\
                     .stack().groupby(level=0).agg(['min', 'max', 'mean'])
             self.generated_report[frame] = pd.concat([self.generated_report[frame], analysis], axis=1)
+    
+    def load_generated_report(self, gen_report):
+        self.dataframes_dict = object_conversions.json_dict_to_dataframes_dict(gen_report)
+        self.json_dict = object_conversions.dataframes_dict_to_json_dict(self.dataframes_dict)
+        self.generated_report = self.dataframes_dict

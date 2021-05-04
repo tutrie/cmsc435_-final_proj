@@ -2,8 +2,8 @@ from report_schema.generated_report.models import GeneratedReport
 from report_schema.generated_report.active_report import ActiveReport
 from report_schema import object_conversions
 from report_schema.raw_report import utils as raw_rep_utils
+from report_schema import object_conversions
 
-from datetime import datetime
 import json
 
 # for c in dataframe.columns
@@ -27,7 +27,7 @@ def get_sheets_and_rows(user: str, report_name: str, company_name: str, cik: str
     GeneratedReport.objects.create(
         name=report_name,
         created_by=user,
-        json_schema=json_report
+        json_schema=json.dumps(json_report)
     )
 
     # Create instructions
@@ -39,30 +39,35 @@ def get_sheets_and_rows(user: str, report_name: str, company_name: str, cik: str
 
 
     # Send the intructions back
-    return form_data
+    return object_conversions.dataframes_dict_to_json_dict(form_data)
 
 
-def create_generated_report(self, user: str, report_name: str, instructions: dict, output_type: str) -> int:
+def create_generated_report(user: str, report_name: str, form_data: str, output_type: str) -> int:
     # Sheet looks like
     # Sheets = {
     #   sheetname: [rows]
     # }
    # Arguments are gauranteed to be validated already
 
+    form_data = object_conversions.json_dict_to_dataframes_dict(json.loads(form_data))
 
     # Get the report json using the report_name
-    report_obj = GeneratedReport.objects.get(name=report_name)
+    report_obj = GeneratedReport.objects.get(name=report_name, created_by=user)
     
-    active_report_obj = ActiveReport(report_obj.json_schema)
+    active_report_obj = ActiveReport()
+    active_report_obj.load_generated_report(json.loads(report_obj.json_schema))
 
-    active_report_obj.filter_report(instructions) # Active report good
+    active_report_obj.filter_report(form_data) # Active report good
 
     generated_report_json = active_report_obj.return_json_report()  # Active report good
 
-    save_single_report(generated_report_json, output_type)
+    save_single_report(generated_report_json, report_name, user, output_type)
 
-    report_obj.json_schema = generated_report_json
+    report_obj.json_schema = json.dumps(generated_report_json)
     report_obj.save()
+
+    print(report_obj)
+    print(report_obj.pk)
     return report_obj.pk
 
 
@@ -86,20 +91,17 @@ def generate_instructions(merged_report: ActiveReport, sheets, rows) -> dict:
 
     return instructions
 
-def save_single_report(report_dict: dict, output_type) -> None:
+def save_single_report(report_dict: dict, report_name: str, user: str, output_type: str) -> None:
     """
     Call functions to save a single report.
 
     Args:
         report_dict: A dictionary represntation of a report.
     """
-
-    current_date_and_time = str(datetime.now())
-
-    filename = 'generated-report' + current_date_and_time + f'.{output}'
+    filename = f'C:\\Users\\bs404\\Downloads\\{report_name}-{user}.{output_type}'
 
     save_function = {'json': save_json, 'xlsx': save_xlsx}
-    save_function[output](report_dict, filename)
+    save_function[output_type](report_dict, filename)
 
 def save_json(report_dict: dict, output_file: str) -> None:
     """
