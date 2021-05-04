@@ -1,10 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
+    <head>
+        <title>EDGAR Scraper</title>
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='generated_report.css') }}">
+        <script   src="https://code.jquery.com/jquery-3.6.0.min.js"   integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="   crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="{{ url_for('static',filename='js/generated_report.js') }}"></script>
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='dataTables_scheme.css') }}">
+    </head>
+    <body>
+        {% include 'header.html' %}
+        <div class="container">
+            <div class="content">
+                <h1>Generated Report: {{ report_name }}-{{ report_id }}</h1>
+                    {% if sheets %}
+                        {% for sheet in sheets %}
+                            <h3>Viewing {{ sheet.name }}</h3>
+                            <table id="dataTable-{{ sheet.name}}" class="display">
+                                <thead>
+                                    <tr style="background-color: #ffffff">
+                                        {% for header in sheet.headers %}
+                                            <th style="color: red">{{ header }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row_name, row_data in sheet.rows.items() %}
+                                    <tr>
+                                        <td>{{ row_name }}</td>
+                                    {% for row_item in row_data %}
+                                        <td>{{ row_item }}</td>
+                                    {% endfor %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endfor %}
+                        <script>
+                            $(document).ready(function() {
+                                $('table.display').DataTable();
+                            } );
+                        </script>
+                    {% else %}
+                    <h1>You have no sheets!</h1>
+                    {% endif %}
+            </div>
+            
+        </div>
+    </body>
 </html>

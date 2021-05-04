@@ -24,16 +24,13 @@
                         {% for report in generated_reports %}
                         <tr>
                             <td>{{ report.id }}</td>
-                            <td>{{ report.name }}</td>
+                            <td>
+                                <a href="{{ url_for('reorganize_report', report=report) }}">{{ report.name }}</a>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                <script>
-                    $(document).ready( function () {
-                        $('#dataTable').DataTable();
-                    } );
-                </script>
                 {% else %}
                     <p id="response">No generated report yet.</p>
                 {% endif %}
@@ -45,4 +42,6 @@
         
     </div>
 </body>
+<script type="text/javascript" charset="utf8" src="{{ url_for('static',filename='js/generated_report.js') }}"></script>
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='dataTables_scheme.css') }}">
 </html>
