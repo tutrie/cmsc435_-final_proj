@@ -54,7 +54,7 @@ class ActiveReport:
         """
         self.dataframes_dict = join_pandas_dataframes(wbks_by_year)
         self.json_dict = object_conversions.dataframes_dict_to_json_dict(self.dataframes_dict)
-        self.generated_report = None
+        self.generated_report = self.dataframes_dict
 
     def filter_report(self, instructions: dict):
         """

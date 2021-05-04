@@ -160,7 +160,7 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         return Response(response, status=status.HTTP_200_OK)
 
 
-    @action(methods=['GET'], detail=False, url_path='get_form_data', url_name='get_form_data')
+    @action(methods=['GET'], detail=False, url_path='get-form-data', url_name='get-form-data')
     def get_form_data(self, request):
         from report_schema.generated_report.utils import get_sheets_and_rows
         
@@ -179,7 +179,7 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         )
         
         if form_data:
-            return Response({'form_data': gen_report}, status.HTTP_200_OK)
+            return Response({'form_data': form_data}, status.HTTP_200_OK)
         else:
             return Response(status.HTTP_400_INVALID)
         
@@ -223,8 +223,7 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         gen_report_id = create_generated_report(
             request.user,
             data['report_name'], # String
-            data['sheets'], # int list
-            data['rows'], # int list
+            data['form_data'], # int list
             data['type'] # string
         )
 
