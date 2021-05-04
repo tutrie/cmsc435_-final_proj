@@ -164,13 +164,12 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
     @action(methods=['POST'], detail=False, url_path='get-form-data', url_name='get-form-data')
     def get_form_data(self, request):
         from report_schema.generated_report.utils import get_sheets_and_rows
-        
-        data = request.data
-
-        valid_request, msg = self.validate_request_get_form(data)
+    
+        valid_request, msg = self.validate_request_get_form(request)
         if not valid_request:
             return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
 
+        data = request.data
         form_data = get_sheets_and_rows(
             request.user,
             data['report_name'],
@@ -184,7 +183,8 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         else:
             return Response(status.HTTP_400_INVALID)
         
-    def validate_request_get_form(self, data):
+    def validate_request_get_form(self, request):
+        data = request.data
         keys_in_request = 'report_name' in data \
                         and 'company' in data \
                         and 'cik' in data \
@@ -205,7 +205,11 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         for year in data['years'].split(','):
             if not (year in acceptable_years):
                 return False, 'Year selected is not a valid year.'
-        
+
+        name_exists = GeneratedReport.objects.filter(created_by=request.user, name=data['report_name'])
+        if name_exists:
+            return False, 'That user has already created a report with that name.'
+
         return True, 'Valid.'
 
 
@@ -213,13 +217,13 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
     def create_report(self, request):
         from report_schema.generated_report.utils import create_generated_report
 
-        data = request.data
-
-        valid_request, msg = self.validate_request_create_report(data)
+        valid_request, msg = self.validate_request_create_report(request)
+        
         if not valid_request:
             return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
         
         # Expecting
+        data = request.data
         gen_report_id = create_generated_report(
             request.user,
             data['report_name'], # String
