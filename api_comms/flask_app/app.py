@@ -207,7 +207,6 @@ def view_generated_report(report_name: str, report_id: int):
     Returns:
         Rendered HTML page that shows the generated report.
     """
-
     return render_template(
         'analysis.html',
         report_name=report_name,
@@ -221,6 +220,7 @@ def analysis(report_id: str):
     Returns:
         Rendered analysis.html template
     """
+    
     username = session.get('username')
 
     if username:
@@ -231,9 +231,9 @@ def analysis(report_id: str):
             timeout=15)
 
         if response.status_code == 200:
-            return render_template('analysis.html', title='Report Analysis',
-                                   report=response.json(),
-                                   username=username), 200
+            return redirect(
+                url_for('reorganize_report', report=response.json())
+            ), 200
 
         if response.status_code == 404:
             return render_template('not_found.html', title='Report Not '
