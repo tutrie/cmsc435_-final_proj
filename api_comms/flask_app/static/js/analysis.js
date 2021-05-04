@@ -1,7 +1,5 @@
-
-
-$('.btn').click( function() {
-    $('.btn').removeClass('active');
+$('.sheet-changer-btn').click( function() {
+    $('.sheet-changer-btn').removeClass('active');
     $(this).addClass('active');
     $('.sheet_table').css('display', 'None');
     const id = $(this).find("input").attr('value');
@@ -10,5 +8,5 @@ $('.btn').click( function() {
 
 $(document).ready( function () {
     $('table.dataTable').DataTable();
-    $('#btn-1').click()
+    $('#sheet-changer-1').click()
 } );

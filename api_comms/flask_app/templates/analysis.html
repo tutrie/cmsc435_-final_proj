@@ -3,19 +3,28 @@
     <head>
         <title>EDGAR Scraper</title>
 
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
         <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='generated_report.css') }}">
+
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='analysis.css') }}">
 
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
 
+        <!-- Keep this after jquery.dataTables.css to overwrite styles -->
         <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='dataTables_scheme.css') }}">
-        
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     </head>
     <body>
         {% include 'header.html' %}
         <div class="container">
             <div class="content">
                 <h1>Generated Report: {{ report_name }}-{{ report_id }}</h1>
+                <label class="btn btn-light">
+                    <a href="{{ url_for('analysis', report_id=report_id )}}">Preform Analysis</a>
+                </label>
+                <label class="btn btn-light">
+                    <a href="#">Download Report</a>
+                </label>
                 {% if sheets %}
                     {% for sheet in sheets %}
                     <div id="sheet_table-{{ loop.index }}" class="sheet_table">
@@ -43,8 +52,8 @@
                     {% endfor %}
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
                         {% for sheet in sheets %}
-                        <label class="btn btn-secondary">
-                            <input type="radio" name="options" id="btn-{{ loop.index }}" value="{{ loop.index }}" autocomplete="off"> {{ sheet.name }}
+                        <label class="btn btn-secondary sheet-changer-btn">
+                            <input type="radio" name="options" id="sheet-changer-{{ loop.index }}" value="{{ loop.index }}" autocomplete="off"> {{ sheet.name }}
                         </label>
                         {% endfor %}
                     </div>
@@ -61,6 +70,6 @@
 
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 
-    <script type="text/javascript" charset="utf8" src="{{ url_for('static',filename='js/generated_report.js') }}"></script>
+    <script type="text/javascript" charset="utf8" src="{{ url_for('static',filename='js/analysis.js') }}"></script>
     </body>
 </html>

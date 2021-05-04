@@ -2,9 +2,11 @@
 <head>
     <title>EDGAR Scraper</title>
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='generated_report.css') }}">
-    <script   src="https://code.jquery.com/jquery-3.6.0.min.js"   integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="   crossorigin="anonymous"></script>
+
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+    <!-- Keep this after jquery.dataTables.css to overwrite styles -->
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='dataTables_scheme.css') }}">
 </head>
 <body>
     {% include 'header.html' %}
@@ -13,7 +15,7 @@
             {% if username %}
             <h1>Generated Report Information</h1>
                 {% if generated_reports %}
-                <table id="dataTable" class="dataTable hover cell-border row-border">
+                <table id="dataTable" class="dataTable compact hover cell-border row-border">
                     <thead>
                         <tr style="background-color: #ffffff">
                             <th>ID</th>
@@ -42,6 +44,15 @@
         
     </div>
 </body>
-<script type="text/javascript" charset="utf8" src="{{ url_for('static',filename='js/generated_report.js') }}"></script>
-<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='dataTables_scheme.css') }}">
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+<script>
+    $(document).ready( function () {
+    $('table.dataTable').DataTable();
+} );
+</script>
+
 </html>

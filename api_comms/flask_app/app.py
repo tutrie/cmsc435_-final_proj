@@ -213,7 +213,7 @@ def view_generated_report(report_name: str, report_id: int):
         report_name=report_name,
         report_id=report_id,
         sheets=literal_eval(request.args.get('sheets'))
-    )
+    ), 200
 
 @app.route('/generated_report/analysis/<report_id>')
 def analysis(report_id: str):
@@ -221,7 +221,6 @@ def analysis(report_id: str):
     Returns:
         Rendered analysis.html template
     """
-
     username = session.get('username')
 
     if username:
