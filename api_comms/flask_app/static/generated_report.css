@@ -8,7 +8,7 @@
     height: 70%;
     top: 23%;
     left: 80px;
-    position: absolute;
+    position: initial;
     color: #fff;
     margin-left: 40px;
 }

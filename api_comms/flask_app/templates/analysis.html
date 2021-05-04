@@ -2,51 +2,65 @@
 <html lang="en">
     <head>
         <title>EDGAR Scraper</title>
+
         <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='generated_report.css') }}">
-        <script   src="https://code.jquery.com/jquery-3.6.0.min.js"   integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="   crossorigin="anonymous"></script>
+
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
-        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-        <script type="text/javascript" charset="utf8" src="{{ url_for('static',filename='js/generated_report.js') }}"></script>
+
         <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='dataTables_scheme.css') }}">
+        
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     </head>
     <body>
         {% include 'header.html' %}
         <div class="container">
             <div class="content">
                 <h1>Generated Report: {{ report_name }}-{{ report_id }}</h1>
-                    {% if sheets %}
+                {% if sheets %}
+                    {% for sheet in sheets %}
+                    <div id="sheet_table-{{ loop.index }}" class="sheet_table">
+                        <h3 class="sheet_name">Viewing sheet: {{ sheet.name }}</h3>
+                        <table class="dataTable compact hover cell-border row-border">
+                            <thead>
+                                <tr>
+                                    {% for header in sheet.headers %}
+                                        <th>{{ header }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row_name, row_data in sheet.rows.items() %}
+                                <tr>
+                                    <td>{{ row_name }}</td>
+                                {% for row_item in row_data %}
+                                    <td>{{ row_item }}</td>
+                                {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
                         {% for sheet in sheets %}
-                            <h3>Viewing {{ sheet.name }}</h3>
-                            <table id="dataTable-{{ sheet.name}}" class="display">
-                                <thead>
-                                    <tr style="background-color: #ffffff">
-                                        {% for header in sheet.headers %}
-                                            <th style="color: red">{{ header }}</th>
-                                        {% endfor %}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for row_name, row_data in sheet.rows.items() %}
-                                    <tr>
-                                        <td>{{ row_name }}</td>
-                                    {% for row_item in row_data %}
-                                        <td>{{ row_item }}</td>
-                                    {% endfor %}
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        <label class="btn btn-secondary">
+                            <input type="radio" name="options" id="btn-{{ loop.index }}" value="{{ loop.index }}" autocomplete="off"> {{ sheet.name }}
+                        </label>
                         {% endfor %}
-                        <script>
-                            $(document).ready(function() {
-                                $('table.display').DataTable();
-                            } );
-                        </script>
-                    {% else %}
-                    <h1>You have no sheets!</h1>
-                    {% endif %}
+                    </div>
+                {% else %}
+                    <h1>You have no generated reports!</h1>
+                {% endif %}
             </div>
-            
         </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="   crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+    <script type="text/javascript" charset="utf8" src="{{ url_for('static',filename='js/generated_report.js') }}"></script>
     </body>
 </html>
