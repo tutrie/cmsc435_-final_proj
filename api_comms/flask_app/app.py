@@ -102,6 +102,9 @@ def raw_report():
         reports and the current username.
     """
     if request.method == 'POST':
+        # if request.form['submit'] == 'Download Report':
+        #     return redirect(url_for('login'))
+
         data = request.form
         response_raw = requests.get('http://18.217.8.244:8000/api/raw-reports/', timeout=15)
 
