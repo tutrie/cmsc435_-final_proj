@@ -4,11 +4,12 @@ from django.apps import AppConfig
 from django.contrib import admin
 from rest_framework import viewsets, serializers, permissions, status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.request import Request
+import json
 
 from report_schema.generated_report.permissions import IsOwner
-
 
 class GeneratedReport(models.Model):
     """Defines the GeneratedReport model in our database
@@ -83,11 +84,10 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             Response: Returns a response object with a status code and a json body representing the created object.
         """
         user = request.user
-        request.data._mutable = True
-        request.data['created_by'] = user.id
-        request.data._mutable = False
+        data = request.data.copy()
+        data['created_by'] = user.id
 
-        report_serializer = GeneratedReportSerializer(data=request.data)
+        report_serializer = GeneratedReportSerializer(data=data)
         if report_serializer.is_valid():
             report_serializer.save()
             return Response(report_serializer.data, status=status.HTTP_201_CREATED)
@@ -148,3 +148,55 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             return Response(report_serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(report_serializer._errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['POST'], detail=False, url_path='analysis',
+            url_name='report_analysis')
+    def analysis(self, request, report_id=None):
+
+        print(report_id)
+        print(request.data)
+
+        response = {}
+        return Response(response, status=status.HTTP_200_OK)
+
+
+    @action(methods=['POST'], detail=False, url_path='get-form-data', url_name='get-form-data')
+    def get_form_data(self, request):
+        from report_schema.generated_report.utils import get_sheets_and_rows, validate_get_form_data_request
+    
+        valid_request, msg = validate_get_form_data_request(request)
+        if not valid_request:
+            return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
+
+        data = request.data
+        form_data = utils.get_sheets_and_rows(
+            request.user,
+            data['report_name'],
+            data['company'],
+            data['cik'],
+            data['years']
+        )
+        
+        if form_data:
+            return Response({'form_data': json.dumps(form_data)}, status.HTTP_200_OK)
+        else:
+            return Response(status.HTTP_400_INVALID)
+
+    @action(methods=['POST'], detail=False, url_path='create-report', url_name='create-report')
+    def create_report(self, request):
+        from report_schema.generated_report.utils import create_generated_report, validate_create_report_request
+
+        valid_request, msg = validate_create_report_request(request)
+        if not valid_request:
+            return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
+        
+        # Expecting
+        data = request.data
+        gen_report_id = create_generated_report(
+            request.user,
+            data['report_name'], # String
+            data['form_data'], # int list
+            data['type'] # string
+        )
+
+        return Response({'id': gen_report_id}, status.HTTP_200_OK)

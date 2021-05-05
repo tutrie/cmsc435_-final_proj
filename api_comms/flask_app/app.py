@@ -1,5 +1,7 @@
 import os
+import json
 import requests
+from ast import literal_eval
 from flask import Flask, session, redirect, url_for, request, render_template
 
 """
@@ -13,7 +15,8 @@ Fields:
     UI_PORT: The port that this Flask app will be ran on.
 """
 app = Flask(__name__, static_folder='static')
-app.config['SECRET_KEY'] = '\xe0\x8d?8z\xdd\x87i}\xfc\xaa\x91\x8f\n1\x1a\xe4\xb3\xa7\xbd5\xf8\x96\xdd'
+app.config[
+    'SECRET_KEY'] = '\xe0\x8d?8z\xdd\x87i}\xfc\xaa\x91\x8f\n1\x1a\xe4\xb3\xa7\xbd5\xf8\x96\xdd'
 
 UI_PORT = os.getenv('UI_PORT')
 
@@ -53,12 +56,14 @@ def register():
     if request.method == 'POST':
         data = request.data
 
-        response = requests.post('http://18.217.8.244:8000/api/users/create_user/',
-                                 data=data, timeout=15)
+        response = requests.post(
+            'http://18.217.8.244:8000/api/users/create_user/',
+            data=data, timeout=15)
         if response.status_code == 201 or response.status_code == 200:
             return redirect(url_for('login'))
 
-    return render_template('register.html', title='Register', username=session.get('username'))
+    return render_template('register.html', title='Register',
+                           username=session.get('username'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -74,7 +79,8 @@ def login():
         session['username'] = request.form['username']
         session['password'] = request.form['password']
 
-    return render_template('login.html', title='Login', username=session.get('username'))
+    return render_template('login.html', title='Login',
+                           username=session.get('username'))
 
 
 @app.route('/logout')
@@ -106,22 +112,26 @@ def raw_report():
         #     return redirect(url_for('login'))
 
         data = request.form
-        response_raw = requests.get('http://18.217.8.244:8000/api/raw-reports/', timeout=15)
+        response_raw = requests.get('http://18.217.8.244:8000/api/raw-reports/',
+                                    timeout=15)
 
         excel_url = 'Not Found'
         if response_raw.status_code == 200:
             reports = response_raw.json()
             for report in reports:
                 company = report['company']
-                match = company['name'] == data['name'] and company['cik'] == data['cik'] and \
+                match = company['name'] == data['name'] and company['cik'] == \
+                        data['cik'] and \
                         report['report_date'] == data['report_date']
                 if match:
                     excel_url = report['excel_url']
                     break
         return render_template('raw_report.html', title='Raw Report',
-                               username=session.get('username'), excel_url=excel_url)
+                               username=session.get('username'),
+                               excel_url=excel_url)
 
-    return render_template('raw_report.html', title='Raw Report', username=session.get('username'))
+    return render_template('raw_report.html', title='Raw Report',
+                           username=session.get('username'))
 
 
 @app.route('/generated_report')
@@ -136,14 +146,76 @@ def generated_report():
         with information of the current user's generated reports and the username.
     """
     username = session.get('username')
-    report = None
+    reports = None
     if username:
-        response_generated = requests.get('http://18.217.8.244:8000/api/generated-reports/',
-                                          auth=(session.get('username'), session.get('password')), timeout=15)
+        response_generated = requests.get(
+            'http://18.217.8.244:8000/api/generated-reports/',
+            auth=(session.get('username'), session.get('password')), timeout=15)
         if response_generated.status_code == 200:
-            report = response_generated.json()
+            reports = response_generated.json()
     return render_template('generated_report.html', title='Generated Report',
-                           generated_report=report, username=username)
+                           generated_reports=reports, username=username)
+
+
+@app.route('/reorganize_report')
+def reorganize_report():
+    """
+    Returns:
+        Rendered HTML page that shows the generated report.
+    """
+    report = literal_eval(request.args.get("report"))
+
+    report_name = report['name']
+    report_id = report['id']
+
+    sheets = []
+
+    report_json = json.loads(report['json_schema'])
+
+    for sheet_name, sheet in report_json.items():
+        new_sheet = {
+            'name': sheet_name,
+            'headers': ['Index'],
+            'rows': {}
+        }
+        for header, records in sheet.items():
+            new_sheet['headers'].append(header)
+            for row_name, value in records.items():
+                if not new_sheet['rows'].get(row_name):
+                    new_sheet['rows'][row_name] = [value]
+                else:
+                    new_sheet['rows'][row_name].append(value)
+        sheets.append(new_sheet)
+
+    return redirect(
+        url_for(
+            'view_generated_report',
+            report_name=report_name,
+            report_id=report_id,
+            sheets=json.dumps(sheets)
+        )
+    )
+
+
+@app.route('/generated_report/<report_name>-<report_id>')
+def view_generated_report(report_name: str, report_id: int):
+    """
+    Args:
+        report_name: A string representing the name of the report that should
+            be viewed.
+
+        report_id: A integer string representing the id of the report that
+            should be viewed.
+
+    Returns:
+        Rendered HTML page that shows the generated report.
+    """
+    return render_template(
+        'analysis.html',
+        report_name=report_name,
+        report_id=report_id,
+        sheets=literal_eval(request.args.get('sheets'))
+    ), 200
 
 
 @app.route('/zoom_link')
@@ -164,6 +236,42 @@ def zoom_link_company():
 def zoom_personal():
     #     return redirect for zoom login page
     return redirect('https://zoom.us/signin')
+
+
+@app.route('/generated_report/analysis/<report_id>')
+def analysis(report_id: str):
+    """
+    Returns:
+        Rendered analysis.html template
+    """
+    
+    username = session.get('username')
+
+    if username:
+        response = requests.post(
+            f'http://18.217.8.244:8000/api/generated-reports/analysis/',
+            auth=(session.get('username'), session.get('password')),
+            data={"report_id": report_id},
+            timeout=15)
+
+        if response.status_code == 200:
+            return redirect(
+                url_for('reorganize_report', report=response.json())
+            ), 200
+
+        if response.status_code == 404:
+            return render_template('not_found.html', title='Report Not '
+                                                           'Found'), 404
+
+        if response.status_code == 403:
+            return render_template('forbidden.html', title='Forbidden'), 403
+
+        return render_template('server_error.html', title='Server Error'), \
+               response.status_code
+
+    # user not logged in
+    return render_template('login.html', title='Login',
+                           username=session.get('username')), 403
 
 
 if __name__ == '__main__':

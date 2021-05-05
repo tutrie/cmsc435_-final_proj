@@ -1,6 +1,4 @@
-from report_schema.raw_report.report_cleaner.object_conversions import (
-    dataframes_dict_to_json_dict
-)
+from report_schema import object_conversions
 from report_schema.raw_report.report_cleaner.cleaner import (
     ten_k_workbook_to_dataframes_dict,
     ten_k_excel_cleaning
@@ -28,4 +26,4 @@ class ConvertCleanSave:
         """
         :return: calls the object_conversion utility to make a json for storing in the database
         """
-        return dataframes_dict_to_json_dict(self.pandas_dict)
+        return object_conversions.dataframes_dict_to_json_dict(self.pandas_dict)
