@@ -21,45 +21,42 @@ def get_sheets_and_rows(user: str, report_name: str, company_name: str, cik: str
     
     merged_report = ActiveReport(response['reports'])
 
-    # Save the merged report to the database
-    json_report = merged_report.return_json_report()
     GeneratedReport.objects.create(
         name=report_name,
         created_by=user,
-        json_schema=json.dumps(json_report)
+        json_schema=json.dumps(merged_report.return_json_report())
     )
 
-    # Create instructions
+    form_data = create_form_data(merged_report)
+
+    return form_data
+
+
+def create_form_data(report: dict):
     form_data = {}
-
-    sheets = merged_report.json_dict.keys()
-    for sheet in sheets:
-        form_data[sheet] = merged_report.dataframes_dict[sheet]
-
-
-    # Send the intructions back
+    sheet_names = report.json_dict.keys()
+    for sheet_name in sheet_names:
+        form_data[sheet_name] = report.dataframes_dict[sheet_name]
+    
     return object_conversions.dataframes_dict_to_json_dict(form_data)
 
 
 def create_generated_report(user: str, report_name: str, form_data: str, output_type: str) -> int:
     form_data = object_conversions.json_dict_to_dataframes_dict(json.loads(form_data))
 
-    # Get the report json using the report_name
-    report_obj = GeneratedReport.objects.get(name=report_name, created_by=user)
+    report_to_filter = GeneratedReport.objects.get(name=report_name, created_by=user)
     
     active_report_obj = ActiveReport()
-    active_report_obj.load_generated_report(json.loads(report_obj.json_schema))
+    active_report_obj.load_generated_report(json.loads(report_to_filter.json_schema))
+    active_report_obj.filter_report(form_data)
 
-    active_report_obj.filter_report(form_data) # Active report good
+    # Don't think we need this
+    # save_single_report(generated_report_json, report_name, user, output_type)
 
-    generated_report_json = active_report_obj.return_json_report()  # Active report good
+    report_to_filter.json_schema = json.dumps(active_report_obj.return_json_report())
+    report_to_filter.save()
 
-    save_single_report(generated_report_json, report_name, user, output_type)
-
-    report_obj.json_schema = json.dumps(generated_report_json)
-    report_obj.save()
-
-    return report_obj.pk
+    return report_to_filter.pk
 
 def save_single_report(report_dict: dict, report_name: str, user: str, output_type: str) -> None:
     """
@@ -84,8 +81,6 @@ def save_json(report_dict: dict, output_file: str) -> None:
     """
     object_conversions.json_dict_to_json_file(report_dict, output_file)
 
-
-
 def save_xlsx(report_dict: dict, output_file: str):
     """
     Saves a dictionary as an Excel file to the given output file path.
@@ -103,7 +98,7 @@ def validate_create_report_request(request):
         keys_in_request = 'report_name' in data \
                         and 'form_data' in data \
                         and 'type' in data
-        
+
         if not keys_in_request:
             return False, 'Correct keys not in request body.'
 
@@ -118,8 +113,8 @@ def validate_create_report_request(request):
         if data['type'] not in acceptable_types:
             return False, 'File type is invalid.'
         
-        report_exists = GeneratedReport.objects.filter(created_by=request.user, name=data['report_name'])
-        if not report_exists:
+        matching_report = GeneratedReport.objects.filter(created_by=request.user, name=data['report_name'])
+        if not matching_report:
             return False, 'That report does not exist yet.'
 
         return (True, 'Valid.')
@@ -147,8 +142,8 @@ def validate_get_form_data_request(request):
             if not (year in acceptable_years):
                 return False, 'Year selected is not a valid year.'
 
-        name_exists = GeneratedReport.objects.filter(created_by=request.user, name=data['report_name'])
-        if name_exists:
+        matching_report = GeneratedReport.objects.filter(created_by=request.user, name=data['report_name'])
+        if matching_report:
             return False, 'That user has already created a report with that name.'
 
         return True, 'Valid.'
