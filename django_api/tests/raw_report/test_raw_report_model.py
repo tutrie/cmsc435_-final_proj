@@ -5,7 +5,7 @@ from datetime import date
 import json
 
 from company_schema.models import Company
-from ..models import RawReport, RawReportSerializer
+from report_schema.raw_report.models import RawReport, RawReportSerializer
 
 
 class RawReportTests(TestCase):
