@@ -6,8 +6,6 @@ from report_schema import object_conversions
 
 import json
 
-# for c in dataframe.columns
-#   dataframe[c].index.to_list
 
 def get_sheets_and_rows(user: str, report_name: str, company_name: str, cik: str, years: str) -> dict:
     year_list = years.split(',')
