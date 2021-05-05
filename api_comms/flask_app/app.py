@@ -163,7 +163,8 @@ def create_generated_report():
         with information for requesting a generated report.
     """
     if request.method == 'POST':
-        data = request.form
+        data = request.data
+        print(request)
         response_raw = requests.get('http://18.217.8.244:8000/api/generated-reports/create-report/',
                                     auth=(session.get('username'), session.get('password')), 
                                     data=data,
@@ -173,7 +174,7 @@ def create_generated_report():
         if response_raw.status_code == 200:
             report_id = response_raw.json()
             
-        return render_template('report_generation.html', title='Create Genrated Report',
+        return render_template('report_generation.html', title='Report Generation',
                                username=session.get('username'),
                                report_id=report_id)
 
