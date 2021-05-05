@@ -12,10 +12,10 @@ import sys
 
 if sys.platform.startswith('darwin') or sys.platform.startswith('linux'):
     file_path = dirname(realpath(__file__)).replace(
-        'report_schema/raw_report/tests', 'downloaded_reports/')
+        'tests/raw_report', 'downloaded_reports/')
 elif sys.platform.startswith('win32') or sys.platform.startswith('cygwin'):
     file_path = dirname(realpath(__file__)).replace(
-        r'report_schema\raw_report\tests', 'downloaded_reports\\')
+        r'tests\raw_report', 'downloaded_reports\\')
 
 file_path += '10-K-20.xlsx'
 

@@ -84,11 +84,10 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             Response: Returns a response object with a status code and a json body representing the created object.
         """
         user = request.user
-        request.data._mutable = True
-        request.data['created_by'] = user.id
-        request.data._mutable = False
+        data = request.data.copy()
+        data['created_by'] = user.id
 
-        report_serializer = GeneratedReportSerializer(data=request.data)
+        report_serializer = GeneratedReportSerializer(data=data)
         if report_serializer.is_valid():
             report_serializer.save()
             return Response(report_serializer.data, status=status.HTTP_201_CREATED)
@@ -163,14 +162,14 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
 
     @action(methods=['POST'], detail=False, url_path='get-form-data', url_name='get-form-data')
     def get_form_data(self, request):
-        from report_schema.generated_report.utils import get_sheets_and_rows
+        from report_schema.generated_report.utils import get_sheets_and_rows, validate_get_form_data_request
     
-        valid_request, msg = self.validate_request_get_form(request)
+        valid_request, msg = validate_get_form_data_request(request)
         if not valid_request:
             return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
 
         data = request.data
-        form_data = get_sheets_and_rows(
+        form_data = utils.get_sheets_and_rows(
             request.user,
             data['report_name'],
             data['company'],
@@ -185,10 +184,9 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
 
     @action(methods=['POST'], detail=False, url_path='create-report', url_name='create-report')
     def create_report(self, request):
-        from report_schema.generated_report.utils import create_generated_report
+        from report_schema.generated_report.utils import create_generated_report, validate_create_report_request
 
-        valid_request, msg = self.validate_request_create_report(request)
-        
+        valid_request, msg = validate_create_report_request(request)
         if not valid_request:
             return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
         
@@ -202,59 +200,3 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         )
 
         return Response({'id': gen_report_id}, status.HTTP_200_OK)
-
-    def validate_request_create_report(self, request):
-        data = request.data
-        keys_in_request = 'report_name' in data \
-                        and 'form_data' in data \
-                        and 'type' in data
-        
-        if not keys_in_request:
-            return False, 'Correct keys not in request body.'
-
-        correct_types = isinstance(data['report_name'], str) and \
-                        isinstance(data['form_data'], str) and \
-                        isinstance(data['type'], str)
-
-        if not correct_types:
-            return False, 'Key values not the right type in the request body.'
-
-        acceptable_types = {'json', 'xlsx'}
-        if data['type'] not in acceptable_types:
-            return False, 'File type is invalid.'
-        
-        report_exists = GeneratedReport.objects.filter(created_by=request.user, name=data['report_name'])
-        if not report_exists:
-            return False, 'That report does not exist yet.'
-
-        return (True, 'Valid.')
-
-    def validate_request_get_form(self, request):
-        data = request.data
-        keys_in_request = 'report_name' in data \
-                        and 'company' in data \
-                        and 'cik' in data \
-                        and 'years' in data
-        
-        if not keys_in_request:
-            return False, 'Correct keys not in request body.'
-
-        correct_types = isinstance(data['report_name'], str) and \
-                        isinstance(data['company'], str) and \
-                        isinstance(data['cik'], str) and \
-                        isinstance(data['years'], str)
-        
-        if not correct_types:
-            return False, 'Key values not the right type in the request body.'
-
-        acceptable_years = {'2016', '2017', '2018', '2019', '2020', '2021'}
-        for year in data['years'].split(','):
-            if not (year in acceptable_years):
-                return False, 'Year selected is not a valid year.'
-
-        name_exists = GeneratedReport.objects.filter(created_by=request.user, name=data['report_name'])
-        if name_exists:
-            return False, 'That user has already created a report with that name.'
-
-        return True, 'Valid.'
-
