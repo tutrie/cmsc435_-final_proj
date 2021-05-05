@@ -1,5 +1,7 @@
 import os
+import json
 import requests
+from ast import literal_eval
 from flask import Flask, session, redirect, url_for, request, render_template
 
 """
@@ -141,16 +143,76 @@ def generated_report():
         with information of the current user's generated reports and the username.
     """
     username = session.get('username')
-    report = None
+    reports = None
     if username:
         response_generated = requests.get(
             'http://18.217.8.244:8000/api/generated-reports/',
             auth=(session.get('username'), session.get('password')), timeout=15)
         if response_generated.status_code == 200:
-            report = response_generated.json()
+            reports = response_generated.json()
     return render_template('generated_report.html', title='Generated Report',
-                           generated_report=report, username=username)
+                           generated_reports=reports, username=username)
 
+
+@app.route('/reorganize_report')
+def reorganize_report():
+    """
+    Returns:
+        Rendered HTML page that shows the generated report.
+    """
+    report = literal_eval(request.args.get("report"))
+
+    report_name = report['name']
+    report_id = report['id']
+
+    sheets = []
+
+    report_json = json.loads(report['json_schema'])
+
+    for sheet_name, sheet in report_json.items():
+        new_sheet = {
+            'name': sheet_name,
+            'headers': ['Index'],
+            'rows': {}
+        }
+        for header, records in sheet.items():
+            new_sheet['headers'].append(header)
+            for row_name, value in records.items():
+                if not new_sheet['rows'].get(row_name):
+                    new_sheet['rows'][row_name] = [value]
+                else:
+                    new_sheet['rows'][row_name].append(value)
+        sheets.append(new_sheet)
+
+    return redirect(
+        url_for(
+            'view_generated_report',
+            report_name=report_name,
+            report_id=report_id,
+            sheets=json.dumps(sheets)
+        )
+    )
+
+
+@app.route('/generated_report/<report_name>-<report_id>')
+def view_generated_report(report_name: str, report_id: int):
+    """
+    Args:
+        report_name: A string representing the name of the report that should
+            be viewed.
+
+        report_id: A integer string representing the id of the report that
+            should be viewed.
+
+    Returns:
+        Rendered HTML page that shows the generated report.
+    """
+    return render_template(
+        'analysis.html',
+        report_name=report_name,
+        report_id=report_id,
+        sheets=literal_eval(request.args.get('sheets'))
+    ), 200
 
 @app.route('/generated_report/analysis/<report_id>')
 def analysis(report_id: str):
@@ -158,7 +220,7 @@ def analysis(report_id: str):
     Returns:
         Rendered analysis.html template
     """
-
+    
     username = session.get('username')
 
     if username:
@@ -169,9 +231,9 @@ def analysis(report_id: str):
             timeout=15)
 
         if response.status_code == 200:
-            return render_template('analysis.html', title='Report Analysis',
-                                   report=response.json(),
-                                   username=username), 200
+            return redirect(
+                url_for('reorganize_report', report=response.json())
+            ), 200
 
         if response.status_code == 404:
             return render_template('not_found.html', title='Report Not '
