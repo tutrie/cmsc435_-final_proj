@@ -1,6 +1,5 @@
 from report_schema.generated_report.models import GeneratedReport
 from report_schema.generated_report.active_report import ActiveReport
-from report_schema import object_conversions
 from report_schema.raw_report import utils as raw_rep_utils
 from report_schema import object_conversions
 
