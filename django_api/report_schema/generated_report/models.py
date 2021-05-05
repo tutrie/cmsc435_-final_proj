@@ -169,7 +169,7 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
 
         data = request.data
-        form_data = utils.get_sheets_and_rows(
+        form_data = get_sheets_and_rows(
             request.user,
             data['report_name'],
             data['company'],
