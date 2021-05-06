@@ -54,7 +54,7 @@ def register():
         request to the registration API.
     """
     if request.method == 'POST':
-        data = request.data
+        data = request.form
 
         response = requests.post(
             'http://18.217.8.244:8000/api/users/create-user/',
