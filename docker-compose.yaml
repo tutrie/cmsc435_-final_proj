@@ -19,11 +19,7 @@ services:
         image: django-server:latest
         command: ["wait-for-it.sh", "postgres-db:5432", "-t", "20", "--", "python3", "manage.py", "runserver", "0.0.0.0:8000"]
         volumes:
-<<<<<<< HEAD
-            - django-data:/django_api
-=======
             - django-data:/code
->>>>>>> docker-updates
         env_file:
             - ./.env/django.env
         ports:
@@ -39,11 +35,7 @@ services:
         image: flask-server:latest
         command: ["wait-for-it.sh", "django-server:8000", "-t", "40", "--", "python3", "app.py"]
         volumes:
-<<<<<<< HEAD
-            - flask-data:/api_comms
-=======
             - flask-data:/code
->>>>>>> docker-updates
         env_file:
             - ./.env/flask.env
         ports:
