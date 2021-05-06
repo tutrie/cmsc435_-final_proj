@@ -19,7 +19,7 @@ services:
         image: django-server:latest
         command: python3 manage.py runserver 0.0.0.0:8000
         volumes:
-            - django-data:/django_api/code
+            - django-data:/django_api
         env_file:
             - ./.env/django.env
         ports:
@@ -35,7 +35,7 @@ services:
         image: flask-server:latest
         command: python3 app.py
         volumes:
-            - flask-data:/api_comms/code
+            - flask-data:/api_comms
         env_file:
             - ./.env/flask.env
         ports:
