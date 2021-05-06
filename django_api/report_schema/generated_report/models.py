@@ -10,7 +10,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.request import Request
 
-from report_schema.generated_report.utils import min_max_avg
 from report_schema.generated_report.permissions import IsOwner
 
 
