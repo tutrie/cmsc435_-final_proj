@@ -25,15 +25,15 @@
                     <input type="text" placeholder="2021-04-02" name="report_date" class="form-control" required>
                 </div>
                 <br>
-                <button class="submit" type="submit">Submit Request</button>
-                <button class="submit" type="submit">Download Request</button>
-<!--                <input type="submit" name="submit_button" value="Download Request">-->
-                <input type="submit" name="submit_button" value="Do Something">
-                <input type="submit" name="submit_button" value="Do Something Else">
+<!--                <button class="submit" type="submit">Submit Request</button>-->
+                <button class="submit" type="submit" value="Download">Download Request</button>
             </form>
                 {% if excel_url %}
-                    <p id="response">Download Link: 
+                    <p id="response">Download Link:
                         <a href="{{excel_url}}" target="_blank">{{excel_url}}</a>
+
+<!--                        <form action="https://www.{{excel_url}}">-->
+<!--                        <input type="submit" value="Download" /></form>-->
                     </p>
                 {% endif %}
             {% else %}

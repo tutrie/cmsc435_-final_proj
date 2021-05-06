@@ -108,9 +108,6 @@ def raw_report():
         reports and the current username.
     """
     if request.method == 'POST':
-        # if request.form['submit'] == 'Download Report':
-        #     return redirect(url_for('login'))
-
         data = request.form
         response_raw = requests.get('http://18.217.8.244:8000/api/raw-reports/',
                                     timeout=15)
@@ -126,6 +123,9 @@ def raw_report():
                 if match:
                     excel_url = report['excel_url']
                     break
+        # excel_url = 'google.com'
+        if excel_url != 'Not Found':
+            return redirect(excel_url, code=302)
         return render_template('raw_report.html', title='Raw Report',
                                username=session.get('username'),
                                excel_url=excel_url)
