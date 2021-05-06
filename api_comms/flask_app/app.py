@@ -54,7 +54,7 @@ def register():
         request to the registration API.
     """
     if request.method == 'POST':
-        data = request.data
+        data = request.form
 
         response = requests.post(
             'http://18.217.8.244:8000/api/users/create-user/',
@@ -70,14 +70,26 @@ def register():
 def login():
     """
     A function called when there's either a GET or POST request to login route received.
-    For POST request, the username and password will be stored into session of the app.
+    For POST request, the username and password will authenticated. If the authentication successed the 
+    username and password will be stored into session of the app. If not a alert message will show up.
 
     Returns:
         Renders login.html template which shows the login page of the app with the username stored in the session.
     """
     if request.method == 'POST':
-        session['username'] = request.form['username']
-        session['password'] = request.form['password']
+        response = requests.get(
+            'http://18.217.8.244:8000/api/users/validate-user/',
+            auth=(request.form['username'], request.form['password']),
+            timeout=15)
+
+        if response.status_code == 201 or response.status_code == 200:
+            session['username'] = request.form['username']
+            session['password'] = request.form['password']
+            return render_template('login.html', title='Login',
+                           username=session.get('username'))
+        else:
+            return render_template('login.html', title='Login',
+                           invalid=True)
 
     return render_template('login.html', title='Login',
                            username=session.get('username'))

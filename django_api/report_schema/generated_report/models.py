@@ -169,18 +169,21 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
 
         data = request.data
-        form_data = get_sheets_and_rows(
-            request.user,
-            data['report_name'],
-            data['company'],
-            data['cik'],
-            data['years']
-        )
-        
+        try:
+            form_data = get_sheets_and_rows(
+                request.user,
+                data['report_name'],
+                data['company'],
+                data['cik'],
+                data['years']
+            )
+        except Exception:
+            return Response({'msg': 'Error getting form data.'}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         if form_data:
             return Response({'form_data': json.dumps(form_data)}, status.HTTP_200_OK)
         else:
-            return Response(status.HTTP_400_INVALID)
+            return Response(status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(methods=['POST'], detail=False, url_path='create-report', url_name='create-report')
     def create_report(self, request):
@@ -190,13 +193,18 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         if not valid_request:
             return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
         
-        # Expecting
         data = request.data
-        gen_report_id = create_generated_report(
-            request.user,
-            data['report_name'], # String
-            data['form_data'], # int list
-            data['type'] # string
-        )
+        try:
+            gen_report_id = create_generated_report(
+                request.user,
+                data['report_name'],
+                data['form_data'],
+                data['type']
+            )
+        except Exception:
+            return Response({'msg': 'Error filtering report.'}, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response({'id': gen_report_id}, status.HTTP_200_OK)
+        if gen_report_id:
+            return Response({'id': gen_report_id}, status.HTTP_201_CREATED)
+        else:
+            return Response(status.HTTP_500_INTERNAL_SERVER_ERROR)
