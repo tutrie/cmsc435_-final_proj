@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 import json
 
-from .models import Company, CompanySerializer
+from company_schema.models import Company, CompanySerializer
 
 
 class CompanyAPITest(TestCase):

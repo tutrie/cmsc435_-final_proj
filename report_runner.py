@@ -266,17 +266,6 @@ def save_single_report(report_dict: dict) -> None:
     print(f'\nSuccessfully saved file at {output_file}.\n')
 
 
-def save_multiple_reports_locally(report: dict) -> None:
-    """
-    Saves report to a local folder and returns the file location
-
-    Args:
-        report: A dictionary represntation of a report.
-    """
-    for year, report_dict in report.items():
-        save_single_report(report_dict)
-
-
 def is_error_response(response: object) -> bool:
     """
     Tests whether a response object returned a 200 OK status.
@@ -321,16 +310,6 @@ def query_raw_report_api() -> None:
             return response_json
 
 
-def retrieve_raw_reports() -> None:
-    """
-    Get the json object of the response, and if the request was successful,
-    save the reports to the local machine.
-    """
-    response_json = query_raw_report_api()
-    if response_json:
-        save_multiple_reports_locally(response_json['reports'])
-
-
 def choose_rows_in_sheet(sheet_name: str, sheet_values: dict) -> list:
     """
     Prompts user to choose specific rows in Excel sheets.
@@ -356,47 +335,6 @@ def choose_sheet_names(merged_report: ActiveReport) -> list:
     return [sheet_names[idx] for idx in sheet_idxs_to_keep]
 
 
-def generate_instructions(merged_report: ActiveReport) -> dict:
-    """
-    Generate instructions to filter report.
-
-    Returns:
-        Instructions dictionary with key being a sheet name and the values
-        being rows for that sheet to keep.
-    """
-    instructions = {}
-
-    sheets_to_keep = choose_sheet_names(merged_report)
-
-    for sheet in sheets_to_keep:
-        instructions[sheet] = choose_rows_in_sheet(sheet, merged_report.dataframes_dict[sheet])
-
-    return instructions
-
-
-def report_analysis(report: ActiveReport):
-    """
-    :param report: Will be used to call analysis function on the activereport object if requested
-    """
-    output = get_user_input("Do you want do min/max/avg analysis? y/n:")
-
-    yes_input = ['y']
-    no_input = ['n']
-
-    if output in yes_input:
-        print(f'\nDoing analysis please wait a moment\n')
-        report.min_max_avg()
-
-        # return generated_report_json
-
-    elif output in no_input:
-        print(f'\nOkay!\n')
-
-    else:
-        print(f'\nInvalid response ({output})! Please try again\n')
-        report_analysis(report)
-
-
 def create_generated_report() -> None:
     """
     Creates a generated report for the user, per user input.
@@ -407,7 +345,6 @@ def create_generated_report() -> None:
     merged_report = ActiveReport(response_json['reports'])
     instructions = generate_instructions(merged_report)
     merged_report.filter_report(instructions)
-    report_analysis(merged_report)
     generated_report_json = merged_report.return_json_report()
 
     print('Preparing to save generated report locally:\n')
@@ -429,44 +366,6 @@ def create_generated_report() -> None:
     else:
         print(f'Response returned with error code {response.status_code}')
         print(f'Full response: {response.json()}')
-
-
-def start_report_retrieval() -> None:
-    """
-    This function simply queries the user and ask them to choose one of three
-    options:
-        1. Retrieve a Raw Report
-        2. Retrieve a User Generated Report
-        3. Generate a new Report
-    """
-    welcome_string = '''Welcome! We will now ask you to input some information
-        in order to generate your custom report. Enter 'back' at any time to
-        return to a previous step in the current report retrieval cycle.\n
-    '''
-
-    print(welcome_string)
-
-    # ToDo add functionality for getting user_report
-    function_map = {'1': retrieve_raw_reports, '2': create_generated_report}
-
-    while True:
-        query_user_string = '''
-        Please choose one of the following options with its corresponding
-        number:
-            1. Retrieve a Raw Report
-            2. Generate a new Report
-            To exit enter 'done'
-        '''
-        option = get_user_input(query_user_string)
-
-        if option == 'done':
-            break
-
-        if option in function_map:
-            function_map[option]()
-        else:
-            print('Invalid response')
-
 
 if __name__ == '__main__':
     start_report_retrieval()

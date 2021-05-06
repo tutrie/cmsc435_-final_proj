@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from rest_framework import status
 import json
 
-from .models import GeneratedReport, GeneratedReportSerializer
+from report_schema.generated_report.models import GeneratedReport, GeneratedReportSerializer
 
 
 class GeneratedReportTests(TestCase):

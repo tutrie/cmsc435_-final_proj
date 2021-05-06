@@ -9,9 +9,9 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.request import Request
+import json
 
 from report_schema.generated_report.permissions import IsOwner
-
 
 class GeneratedReport(models.Model):
     """Defines the GeneratedReport model in our database
@@ -86,11 +86,10 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             Response: Returns a response object with a status code and a json body representing the created object.
         """
         user = request.user
-        request.data._mutable = True
-        request.data['created_by'] = user.id
-        request.data._mutable = False
+        data = request.data.copy()
+        data['created_by'] = user.id
 
-        report_serializer = GeneratedReportSerializer(data=request.data)
+        report_serializer = GeneratedReportSerializer(data=data)
         if report_serializer.is_valid():
             report_serializer.save()
             return Response(report_serializer.data, status=status.HTTP_201_CREATED)
@@ -180,3 +179,53 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         # ToDo save analysis as a new generated report
 
         return Response(analysis, status=status.HTTP_200_OK)
+
+
+    @action(methods=['POST'], detail=False, url_path='get-form-data', url_name='get-form-data')
+    def get_form_data(self, request):
+        from report_schema.generated_report.utils import get_sheets_and_rows, validate_get_form_data_request
+    
+        valid_request, msg = validate_get_form_data_request(request)
+        if not valid_request:
+            return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
+
+        data = request.data
+        try:
+            form_data = get_sheets_and_rows(
+                request.user,
+                data['report_name'],
+                data['company'],
+                data['cik'],
+                data['years']
+            )
+        except Exception:
+            return Response({'msg': 'Error getting form data.'}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        if form_data:
+            return Response({'form_data': json.dumps(form_data)}, status.HTTP_200_OK)
+        else:
+            return Response(status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(methods=['POST'], detail=False, url_path='create-report', url_name='create-report')
+    def create_report(self, request):
+        from report_schema.generated_report.utils import create_generated_report, validate_create_report_request
+
+        valid_request, msg = validate_create_report_request(request)
+        if not valid_request:
+            return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
+        
+        data = request.data
+        try:
+            gen_report_id = create_generated_report(
+                request.user,
+                data['report_name'],
+                data['form_data'],
+                data['type']
+            )
+        except Exception:
+            return Response({'msg': 'Error filtering report.'}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        if gen_report_id:
+            return Response({'id': gen_report_id}, status.HTTP_201_CREATED)
+        else:
+            return Response(status.HTTP_500_INTERNAL_SERVER_ERROR)
