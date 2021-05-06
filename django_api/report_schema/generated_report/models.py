@@ -154,10 +154,11 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
     @action(methods=['POST'], detail=False, url_path='analysis',
             url_name='report_analysis')
     def analysis(self, request):
+        from report_schema.generated_report.utils import min_max_avg
 
         # proxy
         if not request.user or not request.data or 'report_id' not in \
-                                                       request.data:
+                request.data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         # proxy
@@ -184,7 +185,7 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
     @action(methods=['POST'], detail=False, url_path='get-form-data', url_name='get-form-data')
     def get_form_data(self, request):
         from report_schema.generated_report.utils import get_sheets_and_rows, validate_get_form_data_request
-    
+
         valid_request, msg = validate_get_form_data_request(request)
         if not valid_request:
             return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
@@ -213,7 +214,7 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         valid_request, msg = validate_create_report_request(request)
         if not valid_request:
             return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
-        
+
         data = request.data
         try:
             gen_report_id = create_generated_report(
