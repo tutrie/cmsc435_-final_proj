@@ -10,3 +10,7 @@ a {
 .btn-group {
     margin-top: 10px;
 }
+
+.btn-group.d-flex > label {
+    margin: .5rem;
+}

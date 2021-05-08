@@ -50,12 +50,14 @@
                         </table>
                     </div>
                     {% endfor %}
-                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        {% for sheet in sheets %}
-                        <label class="btn btn-secondary sheet-changer-btn">
-                            <input type="radio" name="options" id="sheet-changer-{{ loop.index }}" value="{{ loop.index }}" autocomplete="off"> {{ sheet.name }}
-                        </label>
-                        {% endfor %}
+                    <div class="container" id="button-container">
+                        <div class="btn-group btn-group-toggle d-flex flex-wrap" data-toggle="buttons">
+                            {% for sheet in sheets %}
+                            <label class="btn btn-secondary sheet-changer-btn">
+                                <input type="radio" name="options" id="sheet-changer-{{ loop.index }}" value="{{ loop.index }}" autocomplete="off"> {{ sheet.name }}
+                            </label>
+                            {% endfor %}
+                        </div>
                     </div>
                 {% else %}
                     <h1>You have no generated reports!</h1>
