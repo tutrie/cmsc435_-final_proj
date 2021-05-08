@@ -35,9 +35,9 @@ def create_form_data(report: dict):
     form_data = {}
     sheet_names = report.json_dict.keys()
     for sheet_name in sheet_names:
-        form_data[sheet_name] = report.dataframes_dict[sheet_name]
+        form_data[sheet_name] = report.dataframes_dict[sheet_name].index.to_list()
 
-    return object_conversions.dataframes_dict_to_json_dict(form_data)
+    return form_data
 
 
 def create_generated_report(user: str, report_name: str, form_data: str, output_type: str) -> int:
@@ -57,40 +57,6 @@ def create_generated_report(user: str, report_name: str, form_data: str, output_
 
     return report_to_filter.pk
 
-def save_single_report(report_dict: dict, report_name: str, user: str, output_type: str) -> None:
-    """
-    Call functions to save a single report.
-
-    Args:
-        report_dict: A dictionary represntation of a report.
-    """
-    filename = f'C:\\Users\\bs404\\Downloads\\{report_name}-{user}.{output_type}'
-
-    save_function = {'json': save_json, 'xlsx': save_xlsx}
-    save_function[output_type](report_dict, filename)
-
-def save_json(report_dict: dict, output_file: str) -> None:
-    """
-    Saves a dictionary as a JSON file to the given output file path.
-
-    Args:
-        report_dict: A dictionary represntation of a report.
-
-        output_file: A full file path to where the report should be saved to.
-    """
-    object_conversions.json_dict_to_json_file(report_dict, output_file)
-
-def save_xlsx(report_dict: dict, output_file: str):
-    """
-    Saves a dictionary as an Excel file to the given output file path.
-
-    Args:
-        report_dict: A dictionary represntation of a report.
-
-        output_file: A full file path to where the report should be saved to.
-    """
-    dataframes_dict = object_conversions.json_dict_to_dataframes_dict(report_dict)
-    object_conversions.dataframes_dict_to_workbook(dataframes_dict, output_file)
 
 def validate_create_report_request(request):
         data = request.data
