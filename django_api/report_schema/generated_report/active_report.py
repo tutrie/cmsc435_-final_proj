@@ -49,7 +49,8 @@ def normalize_frames(report_dict: dict) -> dict:
                 ~report_dict[frame].columns.duplicated(), report_dict[frame].columns + ' dp_' + str(dup_count))
             dup_count += 1
 
-    return merge_duplicate_columns(report_dict)
+    x = merge_duplicate_columns(report_dict)
+    return x
 
 
 def merge_duplicate_columns(report_dict: dict) -> dict:
@@ -59,8 +60,6 @@ def merge_duplicate_columns(report_dict: dict) -> dict:
             for idx, columns in enumerate(report_dict[frame].columns):
                 for column_dup in report_dict[frame].columns.to_list():
                     if columns in column_dup and columns != column_dup:
-                        print(columns)
-                        print('column_dup', column_dup)
                         # columns will be from the most recent report, and not a dup, keep most recent values
                         find_differences = report_dict[frame][columns].isin(pd.Series(data=np.zeros(shape=report_dict[frame][columns].shape), index=report_dict[frame][columns].index))
                         report_dict[frame][column_dup].where(find_differences,
@@ -97,7 +96,7 @@ class ActiveReport:
         :param wbks_by_year: Given to us by the report_runner
         """
         self.dataframes_dict = join_pandas_dataframes(wbks_by_year)
-        self.json_dict = dataframes_dict_to_json_dict(self.dataframes_dict)
+        self.json_dict = object_conversions.dataframes_dict_to_json_dict(self.dataframes_dict)
         self.generated_report = self.dataframes_dict
 
     def filter_report(self, instructions: dict):
@@ -123,7 +122,7 @@ class ActiveReport:
         """
         :return: retruns the json dict object of the generated_report
         """
-        return dataframes_dict_to_json_dict(self.generated_report)
+        return object_conversions.dataframes_dict_to_json_dict(self.generated_report)
 
     def min_max_avg(self):
         """
