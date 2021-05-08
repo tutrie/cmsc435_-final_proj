@@ -86,10 +86,10 @@ def login():
             session['username'] = request.form['username']
             session['password'] = request.form['password']
             return render_template('login.html', title='Login',
-                           username=session.get('username'))
+                                   username=session.get('username'))
         else:
             return render_template('login.html', title='Login',
-                           invalid=True)
+                                   invalid=True)
 
     return render_template('login.html', title='Login',
                            username=session.get('username'))
@@ -129,12 +129,16 @@ def raw_report():
             reports = response_raw.json()
             for report in reports:
                 company = report['company']
-                match = company['name'] == data['name'] and company['cik'] == \
-                        data['cik'] and \
-                        report['report_date'] == data['report_date']
+                match = company['name'] == data['name'] and company['cik']
+                match = match == data['cik'] and report['report_date'] == data['report_date']
                 if match:
                     excel_url = report['excel_url']
                     break
+        # if a url is returned, the variable 'excel_url' should not be 'Not Found'
+        # therefore, redirect
+        # excel_url = 'https://www.sec.gov/Archives/edgar/data/1652044/000165204421000010/Financial_Report.xlsx'
+        if excel_url != 'Not Found':
+            return redirect(excel_url, code=302)
         return render_template('raw_report.html', title='Raw Report',
                                username=session.get('username'),
                                excel_url=excel_url)
@@ -253,7 +257,7 @@ def analysis(report_id: str):
     Returns:
         Rendered analysis.html template
     """
-    
+
     username = session.get('username')
 
     if username:
