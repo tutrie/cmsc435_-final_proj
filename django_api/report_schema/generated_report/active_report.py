@@ -23,10 +23,54 @@ def join_pandas_dataframes(report_dict: dict) -> dict:
 
     for keys in to_return:
         to_return[keys] = pd.concat(
-           to_return[keys], axis=1).fillna(value=0.0)
+           to_return[keys], axis=1).fillna(value=np.nan)
         to_return[keys].columns = to_return[keys].columns.astype(str)
 
-    return to_return
+    return normalize_frames(to_return)
+
+
+def normalize_frames(report_dict: dict) -> dict:
+    """
+    :param report_dict: takes a merged report dataframes dictionary
+    :return: a normalized report, where large empty strings are replaced with zeroes
+    """
+    skip_first = 0
+    for frame in report_dict:
+        if skip_first == 1:
+            report_dict[frame] = report_dict[frame].applymap(
+                lambda x: x.strip() if isinstance(x, str) else x).replace(to_replace='', value=0.0)
+            report_dict[frame] = report_dict[frame].fillna(value=0.0)
+        else:
+            skip_first = 1
+    for frame in report_dict:
+        dup_count = 1
+        while True in report_dict[frame].columns.duplicated():
+            report_dict[frame].columns = report_dict[frame].columns.where(
+                ~report_dict[frame].columns.duplicated(), report_dict[frame].columns + ' dp_' + str(dup_count))
+            dup_count += 1
+
+    return merge_duplicate_columns(report_dict)
+
+
+def merge_duplicate_columns(report_dict: dict) -> dict:
+    skip_first = 0
+    for frame in report_dict:
+        if skip_first == 1:
+            for idx, columns in enumerate(report_dict[frame].columns):
+                for column_dup in report_dict[frame].columns.to_list():
+                    if columns in column_dup and columns != column_dup:
+                        print(columns)
+                        print('column_dup', column_dup)
+                        # columns will be from the most recent report, and not a dup, keep most recent values
+                        find_differences = report_dict[frame][columns].isin(pd.Series(data=np.zeros(shape=report_dict[frame][columns].shape), index=report_dict[frame][columns].index))
+                        report_dict[frame][column_dup].where(find_differences,
+                                                                    report_dict[frame][columns], inplace=True)
+                        report_dict[frame][columns] = report_dict[frame][column_dup]
+                        report_dict[frame].drop(columns=column_dup, inplace=True)
+        else:
+            skip_first = 1
+
+    return report_dict
 
 
 class ActiveReport:
@@ -48,14 +92,13 @@ class ActiveReport:
             based on the inputs of the User.
     """
 
-    def __init__(self, wbks_by_year: dict = None):
+    def __init__(self, wbks_by_year: dict):
         """
         :param wbks_by_year: Given to us by the report_runner
         """
-        if wbks_by_year:
-            self.dataframes_dict = join_pandas_dataframes(wbks_by_year)
-            self.json_dict = object_conversions.dataframes_dict_to_json_dict(self.dataframes_dict)
-            self.generated_report = self.dataframes_dict
+        self.dataframes_dict = join_pandas_dataframes(wbks_by_year)
+        self.json_dict = dataframes_dict_to_json_dict(self.dataframes_dict)
+        self.generated_report = self.dataframes_dict
 
     def filter_report(self, instructions: dict):
         """
@@ -80,7 +123,7 @@ class ActiveReport:
         """
         :return: retruns the json dict object of the generated_report
         """
-        return object_conversions.dataframes_dict_to_json_dict(self.generated_report)
+        return dataframes_dict_to_json_dict(self.generated_report)
 
     def min_max_avg(self):
         """
@@ -89,8 +132,6 @@ class ActiveReport:
         skip_first = 0
         for frame in self.generated_report:
             if skip_first == 1:
-                self.generated_report[frame] = self.generated_report[frame].applymap(
-                    lambda x: x.strip() if isinstance(x, str) else x).replace(to_replace='', value=0.0)
                 analysis = self.generated_report[frame].astype(np.float64).select_dtypes(np.number)\
                     .stack().groupby(level=0).agg(['min', 'max', 'mean'])
             else:
@@ -98,7 +139,8 @@ class ActiveReport:
                 analysis = self.generated_report[frame].select_dtypes(np.number)\
                     .stack().groupby(level=0).agg(['min', 'max', 'mean'])
             self.generated_report[frame] = pd.concat([self.generated_report[frame], analysis], axis=1)
-    
+
+
     def load_generated_report(self, gen_report):
         self.dataframes_dict = object_conversions.json_dict_to_dataframes_dict(gen_report)
         self.json_dict = object_conversions.dataframes_dict_to_json_dict(self.dataframes_dict)

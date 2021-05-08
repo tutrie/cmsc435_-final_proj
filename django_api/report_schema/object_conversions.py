@@ -84,17 +84,32 @@ def dataframes_dict_to_workbook(dataframes_dict: dict, file_path: str):
     Returns:
         None
     """
+    wb = Workbook()
+
     names = {}
-    with pd.ExcelWriter(f'{file_path}') as writer:
-        for df_name, df in dataframes_dict.items():
-            if df_name[:31] in names:
-                names[df_name[:31]] += 1
-                df_name = df_name[:29] + '_' + str(names[df_name[:31]])
-                df.to_excel(writer, sheet_name=df_name, index=True)
-            else:
-                names[df_name[:31]] = 1
-                df.to_excel(writer, sheet_name=df_name, index=True)
-        writer.save()
+    for df_name, df in dataframes_dict.items():
+
+        if df_name[:31] in names:
+             names[df_name[:31]] += 1
+             sheet_name = df_name[:29] + '_' + str(names[df_name[:31]])
+        else:
+             names[df_name[:31]] = 1
+             sheet_name = df_name[:31]
+
+        ws = wb.create_sheet(title=sheet_name)
+        #ws = wb[sheet_name]
+
+        for r in dataframe_to_rows(df, index=True, header=True):
+            ws.append(r)
+
+        for cell in ws['A'] + ws[1]:
+            cell.style = 'Pandas'
+            #cell.value = df_name
+
+        ws['A1'] = df_name
+
+    wb.remove(wb['Sheet'])
+    wb.save(f'{file_path}')
 
 
 def json_dict_to_json_file(json_dict: dict, file_path: str):
