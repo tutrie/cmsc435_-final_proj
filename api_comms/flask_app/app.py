@@ -261,25 +261,19 @@ def report_generation():
         Renders report_generation.html template which shows the report_generation page of the app 
         with information for requesting a generated report.
     """
-    # Remember to delete
-    session['username'] = 'admin'
-    session['password'] = 'admin'
-
     if request.method == 'POST':
         data = request.form.to_dict()
         years = request.form.getlist('years')
         data['years'] = ','.join(years)
-        print(data)
 
         response = requests.post('http://localhost:8000/api/generated-reports/get-form-data/',
                                  auth=(session.get('username'), session.get('password')),
                                  data=data,
                                  timeout=15)
 
-        if response.status_code == 200:
+        if response.status_code == 200 or response.status_code == 201:
             form_data_str = response.json()['form_data']
             form_data = json.loads(form_data_str)
-
             session['form_data'] = form_data
             session['data'] = data
             return redirect(url_for('report_customization'))
@@ -301,10 +295,6 @@ def report_customization():
         Renders report_customization.html template which shows the report_customization page of the app 
         with information for requesting a generated report.
     """
-    # Remember to delete
-    session['username'] = 'admin'
-    session['password'] = 'admin'
-
     if request.method == 'POST':
         data = request.form.to_dict()
         form_data = {}
@@ -327,10 +317,10 @@ def report_customization():
                                  timeout=15)
 
         if response.status_code == 200 or response.status_code == 201:
+            session.pop('data', None)
+            session.pop('form_data', None)
             return redirect(url_for('generated_report'))
         else:
-            print(response.status_code)
-            print(response.reason)
             return render_template('report_customization.html', title='Report Generation',
                                    username=session.get('username'), data=session.get('data'),
                                    form_data=session.get('form_data'), invalid=True)

@@ -20,10 +20,15 @@ body {
 }
 .content h1 {
     font-size: 43px;
-    position: relative;  
+    position: relative;
+    font-weight: bold
 }
 #response {
     padding-top: 50px;
+}
+form {
+    padding-top: 50px;
+    width: 400px;
 }
 .form_group {
     padding-bottom: 20px;
@@ -37,4 +42,8 @@ body {
 }
 a {
     text-decoration: none;
+}
+#invalid-message {
+    margin: 10px, 0, 60px;
+    color: rgb(255, 70, 70);
 }

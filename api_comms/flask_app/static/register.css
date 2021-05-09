@@ -35,10 +35,10 @@ a {
 .logged-in h1 {
     font-size: 25px;
     position: relative;  
-  }
-  .logged-in p {
+ }
+.logged-in p {
     font-size: 15px;
     margin: 10px 0 20px 40px;
     line-height: 25px;
     color: rgba(255, 255, 255, 0.644);
-  }
+}

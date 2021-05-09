@@ -20,7 +20,9 @@ body {
 }
 .content h1 {
     font-size: 43px;
-    position: relative;  
+    position: relative;
+    font-weight: bold;
+    padding-bottom: 50px
 }
 #response {
     padding-top: 50px;
@@ -34,4 +36,8 @@ body {
     margin: 8px 0 40px 0;
     box-sizing: border-box;
     border-radius: 25px;
+}
+#invalid-message {
+  padding-top: 10px;
+  color: rgb(255, 70, 70);
 }
