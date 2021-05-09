@@ -335,7 +335,7 @@ def analysis(report_id: str):
     Returns:
         Rendered analysis.html template
     """
-
+    
     username = session.get('username')
 
     if username:
