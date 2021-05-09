@@ -183,7 +183,15 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
 
 
     @action(methods=['POST'], detail=False, url_path='get-form-data', url_name='get-form-data')
-    def get_form_data(self, request):
+    def get_form_data(self, request: Request) -> Response:
+        """Called by the frontend in the first stage of report creation.
+
+        Args:
+            request (Request): Request object with a json body.
+
+        Returns:
+            Response: A response object with either a 200, 400, or 500 status.
+        """
         from report_schema.generated_report.utils import get_sheets_and_rows, validate_get_form_data_request
 
         valid_request, msg = validate_get_form_data_request(request)
@@ -208,7 +216,15 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             return Response(status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(methods=['POST'], detail=False, url_path='create-report', url_name='create-report')
-    def create_report(self, request):
+    def create_report(self, request: Request) -> Response:
+        """Called by the frontend in the second stage of report creation.
+
+        Args:
+            request (Request): Request object with a json body.
+
+        Returns:
+            Response: A response object with either a 200, 400, or 500 status.
+        """
         from report_schema.generated_report.utils import create_generated_report, validate_create_report_request
 
         valid_request, msg = validate_create_report_request(request)
