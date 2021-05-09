@@ -1,7 +1,5 @@
 <html>
 <head>
-    <title>EDGAR Scraper</title>
-    <!-- <link rel= "stylesheet" href= "mainpage.css"> -->
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='header.css') }}">
 </head>
 <body>
@@ -10,8 +8,10 @@
             <li><a href="/" class="mainpage">Home</a></li>
             <li><a href="{{ url_for('raw_report') }}" class="raw-report">Raw Reports</a></li>
             <li><a href="{{ url_for('generated_report') }}" class="generated-report">Generated Reports</a></li>
+            <li><a href="{{ url_for('report_generation') }}" class="report_generation">Report Generation</a></li>
             <li><a href="{{ url_for('login')}}" class="login-btn"><span>Login</span></a></li>
             <li><a href="{{ url_for('register') }}" class="register-btn"><span>Register</span></a></li>
+
         </ul>
     </div>
 </body>

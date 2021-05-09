@@ -57,7 +57,7 @@ def register():
         data = request.form
 
         response = requests.post(
-            'http://18.217.8.244:8000/api/users/create-user/',
+            'http://localhost:8000/api/users/create-user/',
             data=data, timeout=15)
         if response.status_code == 201 or response.status_code == 200:
             return redirect(url_for('login'))
@@ -78,7 +78,7 @@ def login():
     """
     if request.method == 'POST':
         response = requests.get(
-            'http://18.217.8.244:8000/api/users/validate-user/',
+            'http://localhost:8000/api/users/validate-user/',
             auth=(request.form['username'], request.form['password']),
             timeout=15)
 
@@ -121,7 +121,7 @@ def raw_report():
     """
     if request.method == 'POST':
         data = request.form
-        response_raw = requests.get('http://18.217.8.244:8000/api/raw-reports/',
+        response_raw = requests.get('http://localhost:8000/api/raw-reports/',
                                     timeout=15)
 
         excel_url = 'Not Found'
@@ -150,7 +150,7 @@ def raw_report():
 @app.route('/generated_report')
 def generated_report():
     """
-    A function called when there's either a GET request to raw_report route received.
+    A function called when there's either a GET request to generated_report route received.
     It sends a request to the API to retrieve the generated report information, and add the json response
     to the parameter of the rendered template.
 
@@ -162,7 +162,7 @@ def generated_report():
     reports = None
     if username:
         response_generated = requests.get(
-            'http://18.217.8.244:8000/api/generated-reports/',
+            'http://localhost:8000/api/generated-reports/',
             auth=(session.get('username'), session.get('password')), timeout=15)
         if response_generated.status_code == 200:
             reports = response_generated.json()
@@ -251,6 +251,84 @@ def zoom_personal():
     return redirect('https://zoom.us/signin')
 
 
+@app.route('/report_generation', methods=['GET', 'POST'])
+def report_generation():
+    """
+    A function called when there's either a GET or POST request to report_generation route received.
+    
+
+    Returns:
+        Renders report_generation.html template which shows the report_generation page of the app 
+        with information for requesting a generated report.
+    """
+    if request.method == 'POST':
+        data = request.form.to_dict()
+        years = request.form.getlist('years')
+        data['years'] = ','.join(years)
+
+        response = requests.post('http://localhost:8000/api/generated-reports/get-form-data/',
+                                 auth=(session.get('username'), session.get('password')),
+                                 data=data,
+                                 timeout=15)
+
+        if response.status_code == 200 or response.status_code == 201:
+            form_data_str = response.json()['form_data']
+            form_data = json.loads(form_data_str)
+            session['form_data'] = form_data
+            session['data'] = data
+            return redirect(url_for('report_customization'))
+        else:
+            return render_template('report_generation.html', title='Report Generation',
+                                   invalid=True, username=session.get('username'))
+
+    return render_template('report_generation.html', title='Report Generation',
+                           username=session.get('username'))
+
+
+@app.route('/report_customization', methods=['GET', 'POST'])
+def report_customization():
+    """
+    A function called when there's either a GET or POST request to report_customization route received.
+    
+
+    Returns:
+        Renders report_customization.html template which shows the report_customization page of the app 
+        with information for requesting a generated report.
+    """
+    if request.method == 'POST':
+        data = request.form.to_dict()
+        form_data = {}
+
+        for sheet in data:
+            str_rows = request.form.getlist(sheet)
+            rows = list(map(int, str_rows))
+            form_data[sheet] = rows
+
+        data_2 = {
+            'report_name': session['data']['report_name'],
+            'form_data': json.dumps(form_data),
+            'type': session['data']['type']
+        }
+        print(data_2)
+
+        response = requests.post('http://localhost:8000/api/generated-reports/create-report/',
+                                 data=data_2,
+                                 auth=(session.get('username'), session.get('password')),
+                                 timeout=15)
+
+        if response.status_code == 200 or response.status_code == 201:
+            session.pop('data', None)
+            session.pop('form_data', None)
+            return redirect(url_for('generated_report'))
+        else:
+            return render_template('report_customization.html', title='Report Generation',
+                                   username=session.get('username'), data=session.get('data'),
+                                   form_data=session.get('form_data'), invalid=True)
+
+    return render_template('report_customization.html', title='Report Generation',
+                           username=session.get('username'), data=session.get('data'), form_data=session.get('form_data'))
+
+
 @app.route('/generated_report/analysis/<report_id>')
 def analysis(report_id: str):
     """
@@ -262,7 +340,7 @@ def analysis(report_id: str):
 
     if username:
         response = requests.post(
-            f'http://18.217.8.244:8000/api/generated-reports/analysis/',
+            f'http://localhost:8000/api/generated-reports/analysis/',
             auth=(session.get('username'), session.get('password')),
             data={"report_id": report_id},
             timeout=15)
