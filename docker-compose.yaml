@@ -17,8 +17,8 @@ services:
         container_name: django-server
         build: ./django_api
         image: django-server:latest
-        command: # ["wait-for-it.sh", "postgres-db:5432", "-t", "20", "--",
-                   ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+        command:  ["wait-for-it.sh", "postgres-db:5432", "-t", "20", "--",
+                  "python3", "manage.py", "runserver", "0.0.0.0:8000"]
         volumes:
             - django-data:/code
         environment:
