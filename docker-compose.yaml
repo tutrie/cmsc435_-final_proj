@@ -21,8 +21,13 @@ services:
                    ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
         volumes:
             - django-data:/code
-        env_file:
-            - ./.env/django.env
+        environment:
+            - SQL_ENGINE=django.db.backends.postgresql_psycopg2
+            - SQL_DATABASE=postgres
+            - SQL_USER=postgres
+            - SQL_PASSWORD=postgres
+            - SQL_HOST=postgres-db
+            - SQL_PORT=5432
         ports:
             - "8000:8000"
         depends_on:
