@@ -4,6 +4,8 @@ from report_schema.raw_report import utils as raw_rep_utils
 from report_schema import object_conversions
 
 import json
+import pandas as pd
+import numpy as np
 
 
 def get_sheets_and_rows(user: str, report_name: str, company_name: str, cik: str, years: str) -> dict:
@@ -15,7 +17,7 @@ def get_sheets_and_rows(user: str, report_name: str, company_name: str, cik: str
         'years': year_list
     }
     response = raw_rep_utils.retrieve_raw_reports_response(args)
-    
+
     merged_report = ActiveReport(response['reports'])
 
     GeneratedReport.objects.create(
@@ -33,16 +35,16 @@ def create_form_data(report: dict):
     form_data = {}
     sheet_names = report.json_dict.keys()
     for sheet_name in sheet_names:
-        form_data[sheet_name] = report.dataframes_dict[sheet_name]
-    
-    return object_conversions.dataframes_dict_to_json_dict(form_data)
+        form_data[sheet_name] = report.dataframes_dict[sheet_name].index.to_list()
+
+    return form_data
 
 
 def create_generated_report(user: str, report_name: str, form_data: str, output_type: str) -> int:
     form_data = object_conversions.json_dict_to_dataframes_dict(json.loads(form_data))
 
     report_to_filter = GeneratedReport.objects.get(name=report_name, created_by=user)
-    
+
     active_report_obj = ActiveReport()
     active_report_obj.load_generated_report(json.loads(report_to_filter.json_schema))
     active_report_obj.filter_report(form_data)
@@ -55,40 +57,6 @@ def create_generated_report(user: str, report_name: str, form_data: str, output_
 
     return report_to_filter.pk
 
-def save_single_report(report_dict: dict, report_name: str, user: str, output_type: str) -> None:
-    """
-    Call functions to save a single report.
-
-    Args:
-        report_dict: A dictionary represntation of a report.
-    """
-    filename = f'C:\\Users\\bs404\\Downloads\\{report_name}-{user}.{output_type}'
-
-    save_function = {'json': save_json, 'xlsx': save_xlsx}
-    save_function[output_type](report_dict, filename)
-
-def save_json(report_dict: dict, output_file: str) -> None:
-    """
-    Saves a dictionary as a JSON file to the given output file path.
-
-    Args:
-        report_dict: A dictionary represntation of a report.
-
-        output_file: A full file path to where the report should be saved to.
-    """
-    object_conversions.json_dict_to_json_file(report_dict, output_file)
-
-def save_xlsx(report_dict: dict, output_file: str):
-    """
-    Saves a dictionary as an Excel file to the given output file path.
-
-    Args:
-        report_dict: A dictionary represntation of a report.
-
-        output_file: A full file path to where the report should be saved to.
-    """
-    dataframes_dict = object_conversions.json_dict_to_dataframes_dict(report_dict)
-    object_conversions.dataframes_dict_to_workbook(dataframes_dict, output_file)
 
 def validate_create_report_request(request):
         data = request.data
@@ -109,7 +77,7 @@ def validate_create_report_request(request):
         acceptable_types = {'json', 'xlsx'}
         if data['type'] not in acceptable_types:
             return False, 'File type is invalid.'
-        
+
         matching_report = GeneratedReport.objects.filter(created_by=request.user, name=data['report_name'])
         if not matching_report:
             return False, 'That report does not exist yet.'
@@ -122,7 +90,7 @@ def validate_get_form_data_request(request):
                         and 'company' in data \
                         and 'cik' in data \
                         and 'years' in data
-        
+
         if not keys_in_request:
             return False, 'Correct keys not in request body.'
 
@@ -130,7 +98,7 @@ def validate_get_form_data_request(request):
                         isinstance(data['company'], str) and \
                         isinstance(data['cik'], str) and \
                         isinstance(data['years'], str)
-        
+
         if not correct_types:
             return False, 'Key values not the right type in the request body.'
 
@@ -144,3 +112,31 @@ def validate_get_form_data_request(request):
             return False, 'That user has already created a report with that name.'
 
         return True, 'Valid.'
+
+def min_max_avg(generated_report: dict) -> dict:
+    """
+    :return: does min/max/avg analysis on self.generate_report object. Adds the columns to each sheet
+    """
+    skip_first = 0
+
+    generated_report = object_conversions.json_dict_to_dataframes_dict(
+        generated_report)
+
+    for frame in generated_report:
+        if skip_first == 1:
+            generated_report[frame] = generated_report[
+                frame].applymap(
+                lambda x: x.strip() if isinstance(x, str) else x).replace(
+                to_replace='', value=0.0)
+            analysis = generated_report[frame].astype(
+                np.float64).select_dtypes(np.number) \
+                .stack().groupby(level=0).agg(['min', 'max', 'mean'])
+        else:
+            skip_first = 1
+            analysis = generated_report[frame].select_dtypes(np.number) \
+                .stack().groupby(level=0).agg(['min', 'max', 'mean'])
+
+        generated_report[frame] = pd.concat(
+            [generated_report[frame], analysis], axis=1)
+
+    return generated_report
