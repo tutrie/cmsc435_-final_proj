@@ -1,9 +1,8 @@
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.contrib.auth.models import User
-from rest_framework import status
 import json
 
-from report_schema.generated_report.models import GeneratedReport, GeneratedReportSerializer
+from report_schema.generated_report.models import GeneratedReport
 from report_schema.generated_report import utils
 from tests.mocks import MockedRequest
 
@@ -230,4 +229,80 @@ class GenReportUtilTests(TestCase):
 
         self.assertFalse(res)
 
-    
+    def test_get_sheets_and_rows_returns_form_data(self):
+        form_data = utils.get_sheets_and_rows(
+            User.objects.get(username='developer1'),
+            'test report',
+            'Bassett', # Bassett not in the database yet
+            '0000010329',
+            '2016' # Call with just a single year
+        )
+
+        self.assertTrue(len(form_data))
+        self.assertTrue(GeneratedReport.objects.filter(name='test report'))
+
+        form_data = utils.get_sheets_and_rows(
+            User.objects.get(username='developer2'),
+            'test report 2',
+            'Bassett',
+            '0000010329',
+            '2016,2017,2018' # Call with multiple concurrent years
+        )
+
+        self.assertTrue(len(form_data))
+        self.assertTrue(GeneratedReport.objects.filter(name='test report 2'))
+
+        form_data = utils.get_sheets_and_rows(
+            User.objects.get(username='developer2'),
+            'test report 3',
+            'Facebook',
+            '1326801',
+            '2018,2020' # Call with multiple non concurrent years
+        )
+
+        self.assertTrue(len(form_data))
+        self.assertTrue(GeneratedReport.objects.filter(name='test report 3'))
+
+    def test_create_generated_report_1(self):
+        utils.get_sheets_and_rows(
+            User.objects.get(username='developer1'),
+            'test report',
+            'Bassett',
+            '0000010329',
+            '2016'
+        )
+
+        report_id = utils.create_generated_report(
+            User.objects.get(username='developer1'),
+            'test report',
+            json.dumps({'Document And Entity Information': [0, 1]}),
+            'json'
+        )
+
+        self.assertTrue(report_id)
+        self.assertEqual(
+            {'Document And Entity Information': {'Nov. 28, 2015 - 12 Months Ended': {'Entity Registrant Name': 'BASSETT FURNITURE INDUSTRIES INC'}, 'Jan. 08, 2016': {'Entity Registrant Name': None}, 'May. 30, 2015': {'Entity Registrant Name': None}}},
+            json.loads(GeneratedReport.objects.get(name='test report').json_schema)
+        )
+
+    def test_create_generated_report_2(self):
+        utils.get_sheets_and_rows(
+            User.objects.get(username='developer2'),
+            'test report',
+            'Facebook',
+            '1326801',
+            '2016,2017'
+        )
+
+        report_id = utils.create_generated_report(
+            User.objects.get(username='developer2'),
+            'test report',
+            json.dumps({'CONSOLIDATED STATEMENTS OF INCOME': [0, 1, 2]}),
+            'xlsx'
+        )
+
+        self.assertTrue(report_id)
+        self.assertEqual(
+            {'CONSOLIDATED STATEMENTS OF INCOME': {'Dec. 31, 2016 - 12 Months Ended': {'Revenue': 27638000000.0}, 'Dec. 31, 2015 - 12 Months Ended': {'Revenue': 17928000000.0}, 'Dec. 31, 2014 - 12 Months Ended': {'Revenue': 12466000000.0}, 'Dec. 31, 2013 - 12 Months Ended': {'Revenue': 7872000000.0}}},
+            json.loads(GeneratedReport.objects.get(name='test report').json_schema)
+        )
