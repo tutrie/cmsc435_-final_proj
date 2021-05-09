@@ -38,7 +38,7 @@
                 {% for sheet, rows in form_data.items() %}
                     <div class="row-select">
                         <label>{{sheet}}:</label><br>
-                        <select name={{sheet}} multiple="multiple">
+                        <select name="{{sheet}}" multiple="multiple">
                             {% for row in rows %}
                                 <option name={{loop.index0}} value={{loop.index0}}>{{row}}</option>
                             {% endfor %}
@@ -53,7 +53,7 @@
                 {% endif %}
                 {% if excel_url %}
                     <div id="response"></div>
-                        <p>Report ID: <a href={{report_id}} target="_blank">{{report_id}}</a> </p>
+                        <p>Report ID: <a href="{{report_id}}" target="_blank">{{report_id}}</a> </p>
                         <p>Click <a href="generated_report">HERE</a> to view the generated report.</p>
                 {% endif %}
             {% else %}
