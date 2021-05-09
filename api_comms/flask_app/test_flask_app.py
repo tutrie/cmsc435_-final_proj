@@ -83,7 +83,16 @@ class AppTests(unittest.TestCase):
         report = {
             "name": "report_name",
             "id": -1,
-            "json_schema": "{\"Document And Entity Information\": {\"Nov. 26, 2016 - 12 Months Ended\": {\"Document Information [Line Items] - CATEGORY\": 0.0}, \"Jan. 06, 2017\": {\"Document Information [Line Items] - CATEGORY\": 0.0}, \"May 28, 2016\": {\"Document Information [Line Items] - CATEGORY\": 0.0}, \"Nov. 28, 2015 - 12 Months Ended\": {\"Document Information [Line Items] - CATEGORY\": 0.0}, \"Jan. 08, 2016\": {\"Document Information [Line Items] - CATEGORY\": 0.0}, \"May. 30, 2015\": {\"Document Information [Line Items] - CATEGORY\": 0.0}}, \"Consolidated Balance Sheets\": {\"2016-11-26\": {\"Current assets - CATEGORY\": 0.0}, \"2015-11-28\": {\"Current assets - CATEGORY\": 0.0}, \"2015-11-28 dp_1\": {\"Current assets - CATEGORY\": 0.0}, \"2014-11-29\": {\"Current assets - CATEGORY\": 0.0}}}"
+            "json_schema": "{\"Document And Entity Information\": {\"Nov. 26, 2016 - 12 Months Ended\": {\"Document "
+                           "Information [Line Items] - CATEGORY\": 0.0}, \"Jan. 06, 2017\": {\"Document Information ["
+                           "Line Items] - CATEGORY\": 0.0}, \"May 28, 2016\": {\"Document Information [Line Items] - "
+                           "CATEGORY\": 0.0}, \"Nov. 28, 2015 - 12 Months Ended\": {\"Document Information [Line "
+                           "Items] - CATEGORY\": 0.0}, \"Jan. 08, 2016\": {\"Document Information [Line Items] - "
+                           "CATEGORY\": 0.0}, \"May. 30, 2015\": {\"Document Information [Line Items] - CATEGORY\": "
+                           "0.0}}, \"Consolidated Balance Sheets\": {\"2016-11-26\": {\"Current assets - CATEGORY\": "
+                           "0.0}, \"2015-11-28\": {\"Current assets - CATEGORY\": 0.0}, \"2015-11-28 dp_1\": {"
+                           "\"Current assets - CATEGORY\": 0.0}, \"2014-11-29\": {\"Current assets - CATEGORY\": "
+                           "0.0}}} "
         }
 
         response = self.app.get('/reorganize_report',

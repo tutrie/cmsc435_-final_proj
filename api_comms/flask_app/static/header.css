@@ -2,9 +2,15 @@
     margin: 0;
     padding: 0;
     font-family: sans-serif;
-    background: #acacace7;
+    /* background: #acacace7; */
+}
+body {
+    height: 100%;
+    overflow: auto;
+    background-color: #acacace7;
 }
 .menu {
+    /* background: #acacace7; */
     border-bottom: 2px solid;
     border-color: #fff
 }
@@ -19,6 +25,10 @@
 }
 .menu a {
     text-decoration: none;
+}
+.menu a:hover {
+    color: #0056b3;
+    /* text-decoration: none; */
 }
 .login-btn {
     top: 40px;

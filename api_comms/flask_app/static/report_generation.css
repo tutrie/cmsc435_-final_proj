@@ -1,0 +1,49 @@
+body {
+    height: 100%;
+    overflow: auto;
+    background-color: #acacace7;
+}
+
+.report_generation {
+    color: #fff !important;
+}
+.raw-report, .mainpage, .generated-report {
+    color: #5a5a5a;
+}
+.content {
+    height: 70%;
+    top: 23%;
+    left: 80px;
+    position: absolute;
+    color: #fff;
+    margin-left: 40px;
+}
+.content h1 {
+    font-size: 43px;
+    position: relative;
+    font-weight: bold
+}
+#response {
+    padding-top: 50px;
+}
+form {
+    padding-top: 50px;
+    width: 400px;
+}
+.form_group {
+    padding-bottom: 20px;
+}
+.submit {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border-radius: 25px;
+}
+a {
+    text-decoration: none;
+}
+#invalid-message {
+    margin: 10px, 0, 60px;
+    color: rgb(255, 70, 70);
+}

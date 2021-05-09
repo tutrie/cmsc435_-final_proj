@@ -99,7 +99,7 @@ def validate_get_form_data_request(request):
         if not correct_types:
             return False, 'Key values not the right type in the request body.'
 
-        acceptable_years = {'2016', '2017', '2018', '2019', '2020', '2021'}
+        acceptable_years = {'2015', '2016', '2017', '2018', '2019', '2020', '2021'}
         for year in data['years'].split(','):
             if not (year in acceptable_years):
                 return False, 'Year selected is not a valid year.'
