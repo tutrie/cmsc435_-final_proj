@@ -26,6 +26,10 @@ body {
 .menu a {
     text-decoration: none;
 }
+.menu a:hover {
+    color: #0056b3;
+    /* text-decoration: none; */
+}
 .login-btn {
     top: 40px;
     right: 220px;

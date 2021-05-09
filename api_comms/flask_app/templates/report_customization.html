@@ -12,11 +12,10 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#year').multiselect({
-                enableClickableOptGroups: true,
-                enableCollapsibleOptGroups: true,
-                enableFiltering: false,
-                includeSelectAllOption: true
+            $('select').multiselect({
+                buttonWidth: '300px',
+                includeSelectAllOption: true,
+                maxHeight: 200
             });
         });
     </script>
@@ -28,33 +27,24 @@
         
         <div class="content">
             {% if username %}
-            <h1>Report Generation</h1>
+            <h1>Row Selection</h1>
             <form action="" method="post">
-                <div class="form-group1">
-                    <label>Report Name: </label>
-                    <input type="text" placeholder="Report Name" name="report_name" class="form-control" required>
-                </div>
-                <div class="form-group1">
-                    <label>Company Name: </label>
-                    <input type="text" placeholder="Walmart" name="company" class="form-control" required>
-                </div>
-                <br>
-                <div class="form-group1">
-                    <label>CIK Number: </label>
-                    <input type="text" placeholder="12345678" name="cik" class="form-control" required>
-                </div>
-                <br>
-
-                <label>Years: </label>
-                <select name="years" id="year" multiple="multiple">
-                    <option name="2021" value="2021">2021</option>
-                    <option name="2020" value="2020">2020</option>
-                    <option name="2019" value="2019">2019</option>
-                    <option name="2018" value="2018">2018</option>
-                    <option name="2017" value="2017">2017</option>
-                    <option name="2016" value="2016">2016</option>
-                    <option name="2015" value="2015">2015</option>
-                </select>
+                <p>Report Name: {{data.report_name}}</p>
+                <p>Company Name: {{data.company}}</p>
+                <p>CIK Number: {{data.cik}}</p>
+                <p>Form Type: {{data.type}}</p>
+                <p>Years: {{data.years}}</p>
+                
+                {% for sheet, rows in form_data.items() %}
+                    <div class="row-select">
+                        <label>{{sheet}}:</label><br>
+                        <select name={{sheet}} multiple="multiple">
+                            {% for row in rows %}
+                                <option name={{loop.index0}} value={{loop.index0}}>{{row}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endfor %}
                 
                 <button class="submit" type="submit">Submit Request</button>
             </form>
@@ -63,7 +53,7 @@
                 {% endif %}
                 {% if excel_url %}
                     <div id="response"></div>
-                        <p>Report ID: <a href="{{report_id}}" target="_blank">{{report_id}}</a> </p>
+                        <p>Report ID: <a href={{report_id}} target="_blank">{{report_id}}</a> </p>
                         <p>Click <a href="generated_report">HERE</a> to view the generated report.</p>
                 {% endif %}
             {% else %}
