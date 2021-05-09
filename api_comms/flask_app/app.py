@@ -21,6 +21,7 @@ app.config[
 UI_PORT = os.getenv('UI_PORT')
 
 
+
 @app.route('/')
 def main_page():
     """
@@ -247,8 +248,8 @@ def zoom_personal():
     return redirect('https://zoom.us/signin')
 
 
-@app.route('/create_generated_report', methods=['GET', 'POST'])
-def create_generated_report():
+@app.route('/report_generation', methods=['GET', 'POST'])
+def report_generation():
     """
     A function called when there's either a GET or POST request to create_generated_report route received.
     
@@ -257,17 +258,53 @@ def create_generated_report():
         Renders create_generated_report.html template which shows the create_generated_report page of the app 
         with information for requesting a generated report.
     """
+    # Remember to delete
+    session['username'] = 'admin'
+    session['password'] = 'admin'
+
     if request.method == 'POST':
-        data = request.data
-        print(request)
-        response_raw = requests.get('http://18.217.8.244:8000/api/generated-reports/create-report/',
+        data = request.form.to_dict()
+        years = request.form.getlist('years')
+        data['years'] = ','.join(years)
+        print(data)
+
+        response = requests.post('http://18.217.8.244:8000/api/generated-reports/get-form-data/',
                                     auth=(session.get('username'), session.get('password')), 
                                     data=data,
                                     timeout=15)
 
         report_id = '-1'
-        if response_raw.status_code == 200:
-            report_id = response_raw.json()
+        print(response.status_code)
+        if response.status_code == 200:
+            form_data_str = response.json()['form_data']
+            form_data = json.loads(form_data_str)
+
+            return redirect(
+                url_for('report_customization', report=response.json())
+            ), 200
+            render_template('report_generation.html', title='Login', form_data=form_data,
+                           invalid=True)
+            # for sheet in form_data:
+            #     print(sheet)
+            #     print(form_data[sheet].keys())
+            #     form_data[sheet] = [0, 1, 2, 3]
+
+            # data_2 = {
+            #     'report_name': report_name,
+            #     'form_data': json.dumps(form_data),
+            #     'type': 'json'
+            # }
+
+            # response = requests.post('http://18.217.8.244:8000/api/generated-reports/create-report/', 
+            #                             username='admin',
+            #                             invalid=True,
+            #                             data=data_2)
+
+            # print(response.json())
+        else:
+            return render_template('report_generation.html', title='Login',
+                           invalid=True)
+            
             
         return render_template('report_generation.html', title='Report Generation',
                                username=session.get('username'),
