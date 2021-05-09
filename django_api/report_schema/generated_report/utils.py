@@ -6,15 +6,15 @@ from report_schema import object_conversions
 import json
 import pandas as pd
 import numpy as np
-
+from rest_framework.request import Request
 
 def get_sheets_and_rows(user: str, report_name: str, company_name: str, cik: str, years: str) -> dict:
     """Called by the frontend to get data to populate the filtering form.
     Retrieves the needed raw reports to create a merged report if they don't exist.
 
     Args:
-        user (str): User that used the endpoint
-        report_name (str): What the user wants to name the report
+        user (str): User that used the endpoint.
+        report_name (str): What the user wants to name the report.
         company_name (str): The company to create the report for.
         cik (str): The cik of the company to create the report for.
         years (str): The years to merge together.
@@ -63,16 +63,17 @@ def create_form_data(report: dict) -> dict:
 
 
 def create_generated_report(user: str, report_name: str, form_data: str, output_type: str) -> int:
-    """[summary]
+    """Called by the frontend to finish the report creation process. 
 
     Args:
-        user (str): [description]
-        report_name (str): [description]
-        form_data (str): [description]
-        output_type (str): [description]
+        user (str): User that used the endpoint
+        report_name (str): What the user wants to name the report.
+        form_data (str): A dictionary that contains the sheet names the user wants in their report as keys
+        and an array of integers that represent the indices of the rows that they want for that sheet as the key value.
+        output_type (str): ouput type of the file that is downloaded when a user selects to download the report later.
 
     Returns:
-        int: [description]
+        int: ID of the created report in the database.
     """
     form_data = json.loads(form_data)
 
@@ -88,7 +89,15 @@ def create_generated_report(user: str, report_name: str, form_data: str, output_
     return report_to_filter.pk
 
 
-def validate_create_report_request(request):
+def validate_create_report_request(request: Request) -> bool, str:
+    """Validates a request to the create report endpoint.
+
+    Args:
+        request (Request): A request object that contains a user and data field.
+
+    Returns:
+        bool, str: Returns true if the data is valid and false if it is invalid along with a message.
+    """
         data = request.data
         keys_in_request = 'report_name' in data \
                         and 'form_data' in data \
@@ -114,7 +123,15 @@ def validate_create_report_request(request):
 
         return (True, 'Valid.')
 
-def validate_get_form_data_request(request):
+def validate_get_form_data_request(request: Request) -> bool, str:
+    """Validates a request to the get form data endpoint.
+
+    Args:
+        request (Request): A request object with user and data fields.
+
+    Returns:
+        bool, str: Returns true if the data is valid and false if it is invalid along with a message.
+    """
         data = request.data
         keys_in_request = 'report_name' in data \
                         and 'company' in data \
