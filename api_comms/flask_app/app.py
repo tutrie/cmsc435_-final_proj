@@ -255,11 +255,10 @@ def zoom_personal():
 def report_generation():
     """
     A function called when there's either a GET or POST request to report_generation route received.
-    
 
     Returns:
         Renders report_generation.html template which shows the report_generation page of the app 
-        with information for requesting a generated report.
+        with information for requesting to create a generated report.
     """
     if request.method == 'POST':
         data = request.form.to_dict()
@@ -268,8 +267,7 @@ def report_generation():
 
         response = requests.post('http://localhost:8000/api/generated-reports/get-form-data/',
                                  auth=(session.get('username'), session.get('password')),
-                                 data=data,
-                                 timeout=15)
+                                 data=data, timeout=15)
 
         if response.status_code == 200 or response.status_code == 201:
             form_data_str = response.json()['form_data']
@@ -289,11 +287,10 @@ def report_generation():
 def report_customization():
     """
     A function called when there's either a GET or POST request to report_customization route received.
-    
 
     Returns:
-        Renders report_customization.html template which shows the report_customization page of the app 
-        with information for requesting a generated report.
+        Renders report_customization.html template which shows the report_customization page of the app
+        with information for row selections in a generated report.
     """
     if request.method == 'POST':
         data = request.form.to_dict()
@@ -309,12 +306,10 @@ def report_customization():
             'form_data': json.dumps(form_data),
             'type': session['data']['type']
         }
-        print(data_2)
 
         response = requests.post('http://localhost:8000/api/generated-reports/create-report/',
-                                 data=data_2,
                                  auth=(session.get('username'), session.get('password')),
-                                 timeout=15)
+                                 data=data_2, timeout=15)
 
         if response.status_code == 200 or response.status_code == 201:
             session.pop('data', None)
@@ -326,7 +321,8 @@ def report_customization():
                                    form_data=session.get('form_data'), invalid=True)
 
     return render_template('report_customization.html', title='Report Generation',
-                           username=session.get('username'), data=session.get('data'), form_data=session.get('form_data'))
+                           username=session.get('username'), data=session.get('data'),
+                           form_data=session.get('form_data'))
 
 
 @app.route('/generated_report/analysis/<report_id>')
