@@ -39,8 +39,8 @@ services:
         container_name: flask-server
         build: ./api_comms
         image: flask-server:latest
-        command: # ["wait-for-it.sh", "django-server:8000", "-t", "40", "--",
-                ["python3", "app.py"]
+        command: ["wait-for-it.sh", "django-server:8000", "-t", "40", "--",
+                 "python3", "app.py"]
         volumes:
             - flask-data:/code
         env_file:
