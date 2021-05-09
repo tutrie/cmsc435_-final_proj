@@ -49,9 +49,6 @@ def create_generated_report(user: str, report_name: str, form_data: str, output_
     active_report_obj.load_generated_report(json.loads(report_to_filter.json_schema))
     active_report_obj.filter_report(form_data)
 
-    # Don't think we need this
-    # save_single_report(generated_report_json, report_name, user, output_type)
-
     report_to_filter.json_schema = json.dumps(active_report_obj.return_json_report())
     report_to_filter.save()
 

@@ -8,16 +8,6 @@ from unittest.mock import patch
 
 
 @patch(qry.__name__ + '.input', create=True)
-class TestGetUserInput(TestCase):
-    def test_get_user_input(self, mocked_input):
-        mocked_input.side_effect = ['input']
-
-        value = qry.get_user_input('enter: ')
-
-        self.assertEqual('input', value)
-
-
-@patch(qry.__name__ + '.input', create=True)
 class TestGetUserInputAsList(TestCase):
     def test_get_user_input_list_single_value(self, mocked_input):
         mocked_input.side_effect = ['1']
