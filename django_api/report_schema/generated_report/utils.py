@@ -74,7 +74,7 @@ def create_generated_report(user: str, report_name: str, form_data: str, output_
     Returns:
         int: [description]
     """
-    form_data = object_conversions.json_dict_to_dataframes_dict(json.loads(form_data))
+    form_data = json.loads(form_data)
 
     report_to_filter = GeneratedReport.objects.get(name=report_name, created_by=user)
 
