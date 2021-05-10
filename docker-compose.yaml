@@ -35,7 +35,8 @@ services:
         ports:
             - "8000:8000"
         depends_on:
-            - postgres-db
+            postgres-db:
+                condition: service_healthy
         restart: always
         networks:
             - main
@@ -45,20 +46,20 @@ services:
         container_name: flask-server
         build: ./api_comms
         image: flask-server:latest
-        command: ["wait-for-it.sh", "django-server:8000", "-t", "40", "--",
+        command: ["wait-for-it.sh", "django-server:8000", "-t", "20", "--",
                  "python3", "app.py"]
         volumes:
             - flask-data:/code
         environment:
             - UI_PORT=5000
             - API_PORT=8000
-            - DB_PORT=5432
-            - IP_ADDRESS=18.217.8.244
         ports:
             - "5000:5000"
         depends_on:
-            - postgres-db
-            - django-server
+            postgres-db:
+                condition: service_healthy
+            django-server:
+                condition: service_healthy
         restart: always
         networks:
             - main

@@ -7,12 +7,9 @@ ENV PYTHONDONTWRITEBYTECODE 1
 COPY wait-for-it.sh /usr/bin/
 RUN chmod u+x /usr/bin/wait-for-it.sh
 
-RUN mkdir /code
-WORKDIR /code
-
 RUN pip install --upgrade pip
 
-COPY ./requirements.txt /code/requirements.txt
-RUN pip install --upgrade -r /code/requirements.txt
+COPY ./requirements.txt .
+RUN pip install --upgrade -r requirements.txt
 
-COPY . ./
+COPY . .
