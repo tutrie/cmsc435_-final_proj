@@ -89,7 +89,7 @@ def create_generated_report(user: str, report_name: str, form_data: str, output_
     return report_to_filter.pk
 
 
-def validate_create_report_request(request: Request) -> bool, str:
+def validate_create_report_request(request: Request) -> bool:
     """Validates a request to the create report endpoint.
 
     Args:
@@ -123,7 +123,7 @@ def validate_create_report_request(request: Request) -> bool, str:
 
         return (True, 'Valid.')
 
-def validate_get_form_data_request(request: Request) -> bool, str:
+def validate_get_form_data_request(request: Request) -> bool:
     """Validates a request to the get form data endpoint.
 
     Args:
