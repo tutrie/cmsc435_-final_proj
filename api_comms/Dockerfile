@@ -4,17 +4,19 @@ FROM python:3
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
-RUN mkdir /code
-WORKDIR /code
+# Prevents pip cache to reduce image size
+ENV PIP_NO_CACHE_DIR 1
 
 RUN pip install --upgrade pip
-COPY ./requirements.txt /code/requirements.txt
-
-RUN pip install --upgrade -r requirements.txt
-
-COPY . /code/
 
 COPY wait-for-it.sh /usr/bin/
 RUN chmod u+x /usr/bin/wait-for-it.sh
 
-WORKDIR /code/flask_app
+WORKDIR /code
+
+# Cache installed dependencies between builds
+COPY requirements.txt /code/
+RUN pip install --upgrade -r requirements.txt
+
+# Mounts the application code to the image
+COPY . /code/
