@@ -1,7 +1,6 @@
 import os
 import json
 import requests
-from ast import literal_eval
 from flask import Flask, session, redirect, url_for, request, render_template
 
 """
@@ -169,65 +168,73 @@ def generated_report():
                            generated_reports=reports, username=username)
 
 
-@app.route('/reorganize_report')
-def reorganize_report():
+def reorganize_report(report: dict) -> list:
     """
+    Reorganize a report so that it is easier to display it within a template.
+
+    Args:
+        report: A dictionary representing the generated report from the
+            database.
     Returns:
-        Rendered HTML page that shows the generated report.
+        List of dictionaries representing sheets of a generated report.
     """
-    report = literal_eval(request.args.get("report"))
-
-    report_name = report['name']
-    report_id = report['id']
-
     sheets = []
 
-    report_json = json.loads(report['json_schema'])
-
-    for sheet_name, sheet in report_json.items():
+    for sheet_name, sheet in report.items():
         new_sheet = {
             'name': sheet_name,
-            'headers': ['Index'],
+            'headers': ['Index', 'Name'],
             'rows': {}
         }
         for header, records in sheet.items():
             new_sheet['headers'].append(header)
-            for row_name, value in records.items():
-                if not new_sheet['rows'].get(row_name):
-                    new_sheet['rows'][row_name] = [value]
+            for idx, (row_name, value) in enumerate(records.items()):
+                if not new_sheet['rows'].get(idx):
+                    new_sheet['rows'][idx] = [idx, row_name, value]
                 else:
-                    new_sheet['rows'][row_name].append(value)
+                    new_sheet['rows'][idx].append(value)
         sheets.append(new_sheet)
 
-    return redirect(
-        url_for(
-            'view_generated_report',
-            report_name=report_name,
-            report_id=report_id,
-            sheets=json.dumps(sheets)
-        )
-    )
+    return sheets
 
 
-@app.route('/generated_report/<report_name>-<report_id>')
-def view_generated_report(report_name: str, report_id: int):
+@app.route('/generated_report/<report_id>')
+def view_generated_report(report_id: int):
     """
     Args:
-        report_name: A string representing the name of the report that should
-            be viewed.
-
         report_id: A integer string representing the id of the report that
             should be viewed.
 
     Returns:
         Rendered HTML page that shows the generated report.
     """
-    return render_template(
-        'analysis.html',
-        report_name=report_name,
-        report_id=report_id,
-        sheets=literal_eval(request.args.get('sheets'))
-    ), 200
+    if session.get('username'):
+        response = requests.get(
+                f'http://18.217.8.244:8000/api/generated-reports/{report_id}',
+                auth=(session.get('username'), session.get('password')),
+                timeout=15
+        )
+
+        if response.status_code == 200:
+            report_json = response.json()
+            return render_template(
+                'analysis.html',
+                report_name=report_json['name'],
+                report_id=report_json['id'],
+                sheets=reorganize_report(json.loads(report_json['json_schema']))
+            ), 200
+
+        if response.status_code == 404:
+            return render_template('not_found.html', title='Report Not '
+                                                        'Found'), 404
+
+        if response.status_code == 403:
+            return render_template('forbidden.html', title='Forbidden'), 403
+
+        return render_template('server_error.html', title='Server Error'), \
+            response.status_code
+    else:
+        return redirect(url_for('login')), 403
 
 
 @app.route('/zoom_link')
@@ -338,7 +345,7 @@ def analysis(report_id: str):
     Returns:
         Rendered analysis.html template
     """
-    
+
     username = session.get('username')
 
     if username:
