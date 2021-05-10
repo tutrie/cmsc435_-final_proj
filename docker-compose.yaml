@@ -63,9 +63,6 @@ services:
 
 volumes:
     pgdata:
-    django-data:
-    flask-data:
-    
 
 networks:
     main:
