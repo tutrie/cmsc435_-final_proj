@@ -57,16 +57,6 @@ test-flask-ui:
       - runner_system_failure
       - stuck_or_timeout_failure
 
-test-middleware:
-  stage: test
-  script:
-    - pytest middleware/query_engine/tests_query_engine/test_report_runner.py
-  retry:
-    max: 2
-    when:
-      - runner_system_failure
-      - stuck_or_timeout_failure
-
 flake8:
   stage: Static Analysis
   script:
@@ -82,7 +72,6 @@ coverage:
   script:
     - coverage run --omit venv/*,*/migrations*,*test* --source django_api/company_schema/,django_api/report_schema django_api/manage.py test
     - coverage run --omit venv/*,*test* -m pytest api_comms/flask_app/test_flask_app.py
-    - coverage run --omit venv/*,*test* -m pytest middleware/
     - coverage report
     - coverage erase
   retry:
