@@ -20,8 +20,8 @@ services:
     django-server:
         container_name: django-server
         build: ./django_api
-        command:  # ["./wait-for-it.sh", "postgres-db:5432", "-t", "20", "--",
-                  ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+        command:  ["./wait-for-it.sh", "postgres-db:5432", "-t", "20", "--",
+                  "python3", "manage.py", "runserver", "0.0.0.0:8000"]
         volumes:
             - ./django_api:/code
         environment:
@@ -43,8 +43,8 @@ services:
     flask-server:
         container_name: flask-server
         build: ./api_comms
-        command: # ["./wait-for-it.sh", "django-server:8000", "-t", "40", "--",
-                 ["python3", "flask_app/app.py"]
+        command: ["./wait-for-it.sh", "django-server:8000", "-t", "40", "--",
+                 "python3", "flask_app/app.py"]
         volumes:
             - ./api_comms:/code
         environment:
