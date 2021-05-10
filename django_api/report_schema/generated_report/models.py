@@ -156,28 +156,20 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
     def analysis(self, request):
         from report_schema.generated_report.utils import min_max_avg
 
-        # proxy
         if not request.user or not request.data or 'report_id' not in \
                 request.data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        # proxy
         try:
             report = GeneratedReport.objects.get(id=request.data['report_id'])
         except GeneratedReport.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         report_data = json.loads(report.json_schema)
-
-        # using jason's code
-        # active_report = ActiveReport({})
-        # active_report.generated_report = report_data
-        # active_report.min_max_avg()
-
-        # using util version
         analysis = min_max_avg(report_data)
 
-        # ToDo save analysis as a new generated report
+        report.json_schema = json.dumps(analysis)
+        report.save()
 
         return Response(analysis, status=status.HTTP_200_OK)
 
