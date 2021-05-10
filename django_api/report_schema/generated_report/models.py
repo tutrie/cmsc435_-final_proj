@@ -153,7 +153,17 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
 
     @action(methods=['POST'], detail=False, url_path='analysis',
             url_name='report_analysis')
-    def analysis(self, request):
+    def analysis(self, request) -> Response:
+        """
+        Takes a report_id in a request and then if valid, runs min_max_avg
+        analysis on json_schema for a report with pk=report_id.
+
+        Args:
+            request: {report_id: str or int}
+
+        Returns:
+            Response with pk of the report analysis was run on
+        """
         from report_schema.generated_report.utils import validate_analysis_request, run_analysis
 
         valid_request, msg = validate_analysis_request(request)

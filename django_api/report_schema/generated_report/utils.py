@@ -165,12 +165,13 @@ def validate_get_form_data_request(request: Request) -> Tuple[bool, str]:
 
 def validate_analysis_request(request: dict) -> Tuple[bool, str]:
     """
+    Validates a request for analysis
 
     Args:
-        request:
+        request: {report_id: int}
 
     Returns:
-
+        Tuple with boolean, message
     """
     if not request.user:
         return False, "User not specified"
@@ -191,15 +192,20 @@ def validate_analysis_request(request: dict) -> Tuple[bool, str]:
 
 def run_analysis(user: str, report_id: int) -> int:
     """
+    Run analysis on a report and saves the updated report to database
+
     Args:
-        report_id:
-        user:
+        report_id: int which is the id/pk for a report
+        user: user running the analysis
 
     Returns:
+        report.pk on success
+
+    Raises:
+        exception is raised when a report is not found
     """
 
     report = GeneratedReport.objects.get(pk=report_id)
-
     report_data = json.loads(report.json_schema)
 
     if analysis_already_ran(report_data):
@@ -212,20 +218,29 @@ def run_analysis(user: str, report_id: int) -> int:
     return report.pk
 
 
-def analysis_already_ran(report: dict) -> bool:
+def analysis_already_ran(json_schema: dict) -> bool:
     """
+    Checks if a report has min, max, or avg in the report
+
     Args:
-        report:
+        json_schema: json_schema for a report
 
     Returns:
-
+        True if "min", "max", or "avg" exists in report json_schema
     """
-    return "min" in report or "max" in report
+    return "min" in json_schema or "max" in json_schema or "avg" in json_schema
 
 
 def min_max_avg(generated_report: dict) -> dict:
     """
-    :return: does min/max/avg analysis on self.generate_report object. Adds the columns to each sheet
+    Does min/max/avg analysis on a generated report and adds the columns to
+    each sheet
+
+    Args:
+        generated_report: json_schema from a generated report
+
+    Returns:
+        dict representing the report after analysis with new columns added
     """
     skip_first = 0
 
