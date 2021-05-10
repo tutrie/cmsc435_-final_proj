@@ -154,33 +154,28 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
     @action(methods=['POST'], detail=False, url_path='analysis',
             url_name='report_analysis')
     def analysis(self, request):
-        from report_schema.generated_report.utils import min_max_avg
+        from report_schema.generated_report.utils import validate_analysis_request, run_analysis
 
-        if not request.user or not request.data or 'report_id' not in \
-                request.data:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        valid_request, msg = validate_analysis_request(request)
 
-        user = request.user
+
+        if not valid_request:
+            print(msg, request.data)
+            return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
 
         try:
-            report = GeneratedReport.objects.get(id=int(request.data[
-                'report_id']))
-        except GeneratedReport.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            gen_report_id = run_analysis(
+                report_id=request.data["report_id"],
+                user=request.user
+            )
+        except Exception:
+            return Response({'msg': 'Error filtering report.'},
+                            status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        report_data = json.loads(report.json_schema)
-
-        if "min" in report_data:
-            data = {'name': report.name,
-                    'created_by': user.id,
-                    'json_schema': report.json_schema}
-            # we don't need to run analysis
-
-        analysis = min_max_avg(report_data)
-        report.json_schema = json.dumps(analysis)
-        report.save()
-
-        return Response({'id': gen_report_id}, status=status.HTTP_200_OK)
+        if gen_report_id:
+            return Response({'id': gen_report_id}, status.HTTP_200_OK)
+        else:
+            return Response(status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
     @action(methods=['POST'], detail=False, url_path='get-form-data', url_name='get-form-data')

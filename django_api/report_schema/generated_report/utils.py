@@ -118,7 +118,7 @@ def validate_create_report_request(request: Request) -> Tuple[bool, str]:
     acceptable_types = {'json', 'xlsx'}
     if data['type'] not in acceptable_types:
         return False, 'File type is invalid.'
-    
+
     matching_report = GeneratedReport.objects.filter(created_by=request.user, name=data['report_name'])
     if not matching_report:
         return False, 'That report does not exist yet.'
@@ -162,13 +162,65 @@ def validate_get_form_data_request(request: Request) -> Tuple[bool, str]:
 
     return True, 'Valid.'
 
-def validate_analysis_request(request: dict) -> Tuple[str, bool]:
+
+def validate_analysis_request(request: dict) -> Tuple[bool, str]:
+    """
+
+    Args:
+        request:
+
+    Returns:
+
+    """
     if not request.user:
+        return False, "User not specified"
 
     if not request.data:
+        return False, "Data not specified"
 
-    if not 'report_id' not in request.data:
-        return
+    if 'report_id' not in request.data:
+        return False, "Report ID Missing"
+
+    try:
+        int(request.data['report_id'])
+    except ValueError:
+        return False, "Report ID was not a number"
+
+    return True, "ok"
+
+
+def run_analysis(user: str, report_id: int) -> int:
+    """
+    Args:
+        report_id:
+        user:
+
+    Returns:
+    """
+
+    report = GeneratedReport.objects.get(pk=report_id)
+
+    report_data = json.loads(report.json_schema)
+
+    if analysis_already_ran(report_data):
+        return report.pk
+
+    analysis = min_max_avg(report_data)
+    report.json_schema = json.dumps(analysis)
+    report.save()
+
+    return report.pk
+
+
+def analysis_already_ran(report: dict) -> bool:
+    """
+    Args:
+        report:
+
+    Returns:
+
+    """
+    return "min" in report or "max" in report
 
 
 def min_max_avg(generated_report: dict) -> dict:
