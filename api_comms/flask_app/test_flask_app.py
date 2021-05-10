@@ -1,3 +1,4 @@
+import json
 import unittest
 from app import app
 
@@ -76,6 +77,82 @@ class AppTests(unittest.TestCase):
         data = {}
         response = self.app.get('/analysis/report', data=data,
                                 follow_redirects=True)
+        self.assertTrue(response is not None)
+
+    def test_reorganize_reports(self):
+        report = {
+            "name": "report_name",
+            "id": -1,
+            "json_schema": "{\"Document And Entity Information\": {\"Nov. 26, 2016 - 12 Months Ended\": {\"Document "
+                           "Information [Line Items] - CATEGORY\": 0.0}, \"Jan. 06, 2017\": {\"Document Information ["
+                           "Line Items] - CATEGORY\": 0.0}, \"May 28, 2016\": {\"Document Information [Line Items] - "
+                           "CATEGORY\": 0.0}, \"Nov. 28, 2015 - 12 Months Ended\": {\"Document Information [Line "
+                           "Items] - CATEGORY\": 0.0}, \"Jan. 08, 2016\": {\"Document Information [Line Items] - "
+                           "CATEGORY\": 0.0}, \"May. 30, 2015\": {\"Document Information [Line Items] - CATEGORY\": "
+                           "0.0}}, \"Consolidated Balance Sheets\": {\"2016-11-26\": {\"Current assets - CATEGORY\": "
+                           "0.0}, \"2015-11-28\": {\"Current assets - CATEGORY\": 0.0}, \"2015-11-28 dp_1\": {"
+                           "\"Current assets - CATEGORY\": 0.0}, \"2014-11-29\": {\"Current assets - CATEGORY\": "
+                           "0.0}}} "
+        }
+
+        response = self.app.get('/reorganize_report',
+                                query_string={'report': report},
+                                follow_redirects=True)
+        self.assertTrue(response is not None)
+
+    def test_view_generated_report(self):
+        sheets = [
+            {
+                'name': 'Document And Entity Information',
+                'headers': [
+                    'Index',
+                    'Nov. 26, 2016 - 12 Months Ended',
+                    'Jan. 06, 2017',
+                    'May 28, 2016',
+                    'Nov. 28, 2015 - 12 Months Ended',
+                    'Jan. 08, 2016',
+                    'May. 30, 2015'
+                ],
+                'rows': {
+                    'Document Information [Line Items] - CATEGORY': [
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+                    ]
+                }
+            },
+            {
+                'name': 'Consolidated Balance Sheets',
+                'headers': [
+                    'Index',
+                    '2016-11-26',
+                    '2015-11-28',
+                    '2015-11-28 dp_1',
+                    '2014-11-29'
+                ],
+                'rows': {
+                    'Current assets - CATEGORY': [0.0, 0.0, 0.0, 0.0]
+                }
+            }
+        ]
+
+        response = self.app.get('/generated_report/test-11',
+                                data={'report_name': 'test', 'report_id': 11},
+                                query_string={'sheets': json.dumps(sheets)},
+                                follow_redirects=True)
+        self.assertTrue(response is not None)
+
+    def test_report_generation_get(self):
+        response = self.app.get('/report_generation',
+                                follow_redirects=True)
+        self.assertTrue(response is not None)
+
+    def test_report_generation_post(self):
+        data = {'report_name': 'report_name', 'company': 'Bassett', 'cik': '0000010329',
+                'years': '2021,2020,2019,2018', 'type': 'json'}
+
+        response = self.app.post(
+            '/report_generation',
+            data=data
+        )
         self.assertTrue(response is not None)
 
 

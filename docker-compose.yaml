@@ -6,22 +6,31 @@ services:
         container_name: postgres-db
         volumes:
           - pgdata:/var/lib/postgresql/data
-        env_file:
-            - ./.env/postgres.env
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=postgres
         restart: always
         ports:
             - "5432:5432"
         networks:
             - main
+        healthcheck:
+            test: "exit 0"
     django-server:
         container_name: django-server
         build: ./django_api
-        image: django-server:latest
-        command: python3 manage.py runserver 0.0.0.0:8000
+        command:  ["./wait-for-it.sh", "postgres-db:5432", "-t", "20", "--",
+                  "python3", "manage.py", "runserver", "0.0.0.0:8000"]
         volumes:
-            - django-data:/django_api/code
-        env_file:
-            - ./.env/django.env
+            - ./django_api:/code
+        environment:
+            - SQL_ENGINE=django.db.backends.postgresql
+            - SQL_DATABASE=postgres
+            - SQL_USER=postgres
+            - SQL_PASSWORD=postgres
+            - SQL_HOST=postgres-db
+            - SQL_PORT=5432
         ports:
             - "8000:8000"
         depends_on:
@@ -29,15 +38,18 @@ services:
         restart: always
         networks:
             - main
+        healthcheck:
+            test: "exit 0"
     flask-server:
         container_name: flask-server
         build: ./api_comms
-        image: flask-server:latest
-        command: python3 app.py
+        command: ["./wait-for-it.sh", "django-server:8000", "-t", "40", "--",
+                 "python3", "flask_app/app.py"]
         volumes:
-            - flask-data:/api_comms/code
-        env_file:
-            - ./.env/flask.env
+            - ./api_comms:/code
+        environment:
+            - UI_PORT=5000
+            - API_PORT=8000
         ports:
             - "5000:5000"
         depends_on:
@@ -46,13 +58,11 @@ services:
         restart: always
         networks:
             - main
+        healthcheck:
+            test: "exit 0"
 
 volumes:
     pgdata:
-    django-data:
-    flask-data:
-    report-data:
-    
 
 networks:
     main:

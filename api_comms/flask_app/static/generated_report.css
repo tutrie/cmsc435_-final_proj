@@ -1,21 +1,26 @@
 .generated-report {
-    color: #fff !important;
+    color: rgb(0, 0, 0) !important;
 }
-.raw-report, .mainpage {
+.raw-report, .mainpage, .report_generation {
     color: #5a5a5a;
 }
+
 .content {
-    height: 70%;
-    top: 23%;
+    height: 0;
+    top: 20%;
     left: 80px;
-    position: absolute;
-    color: #fff;
+    right: 80px;
+    position: initial;
+    color: rgb(0, 0, 0);
     margin-left: 40px;
+    margin-right: 40px;
 }
+
 .content h1 {
     font-size: 43px;
-    position: relative;  
+    position: relative;
 }
+
 #response {
     padding-top: 50px;
 }

@@ -1,4 +1,4 @@
-.generated-report, .raw-report, .mainpage {
+.generated-report, .raw-report, .mainpage, .report_generation {
   color: #5a5a5a;
 }
 .content {
@@ -42,4 +42,8 @@ a {
   margin: 10px 0 20px 40px;
   line-height: 25px;
   color: rgba(255, 255, 255, 0.644);
+}
+#invalid-message {
+  padding-top: 10px;
+  color: rgb(255, 70, 70);
 }

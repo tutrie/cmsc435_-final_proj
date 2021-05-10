@@ -19,7 +19,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
 
-    @action(methods=['POST'], detail=False, url_path='create_user', url_name='create_user')
+    @action(methods=['POST'], detail=False, url_path='create-user', url_name='create-user')
     def create_user(self, request: Request) -> Response:
         """Endpoint that accepts a POST request to create a new user in the database. No authentication is neccessary.
 
@@ -49,3 +49,12 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(serialized_request_data.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serialized_request_data._errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['GET'], detail=False, url_path='validate-user', url_name='validate-user')
+    def validate_user(self, request: Request) -> Response:
+        if request.user and request.user.is_authenticated:
+            status_to_return = status.HTTP_200_OK
+        else:
+            status_to_return = status.HTTP_403_FORBIDDEN
+
+        return Response(status=status_to_return)

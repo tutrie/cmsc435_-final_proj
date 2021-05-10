@@ -1,88 +1,5 @@
 # User Documentation
-
-### Accessing Sphinx Documentation
-* the following commands will create an index.html file in docs/build/html/index.html
-```bash
-  cd docs
-  make.bat html
-```
-
-### Setting up the Docker Container
-* cd into the middleware directory.
-  ```bash
-  cd middleware
-  ```
-* Build the Docker image.
-  ```bash
-  docker build -t report-runner .
-  ```
-
-* Starting the Docker container.
-  
-  **Windows:**
-  ```bash
-  docker run -it -v %cd%:/code report-runner bash
-  ```
-  
-  **Linux:** 
-  
-  ```bash
-  docker run -it -v $(pwd):/code report-runner bash
-  ```
-
-* Once the container terminal starts, run the following command:
-
-  ```bash
-  python middleware/query_engine/report_runner.py
-  ```
-
-* Once the program starts, you will be prompted to choose an option.
- * Enter - 1 to Retrieve a Raw Report
- * Enter - 2 to Generate a new Report
- * Enter "done" to stop the program
-
-To pull other reports go to https://www.sec.gov/edgar/searchedgar/companysearch.html and enter the correct CIK number.
-It will always be 10 digits long.
-
-For retrieving a Raw Report, enter the following when prompted
-* COMPANY: Bassett
-* CIK: 0000010329
-* YEARS: 2020 (or any year from 2016-2021)
-
-
-Once you are prompted to save the file, enter to save as json (will be prompted multiple times for multiple years):
-* C:\Users\<user>\Downloads
-* test
-* json
-
-to save as xlsx workbook enter (will be prompted multiple times for multiple years): 
-* C:\Users\<user>\Downloads
-* test
-* xlsx
-
-Generating a New Report:
-* COMPANY: Bassett
-* CIK: 0000010329
-* YEARS: 2020 (or any year from 2016-2021)
-* SHEETS: Document And Entity Information (as an integer, can choose other sheets as well)
-* ROWS: 1 (can choose multiple rows from each sheet)
-
-Once you are prompted to save the file, enter to save as json:
-* C:\Users\<user>\Downloads
-* test
-* json
-
-to save as xlsx workbook enter: 
-* C:\Users\<user>\Downloads
-* test
-* xlsx
-
-to save to Amazon Webserver workbook enter: 
-* test
-* Username: admin (or the account you created on the frontend UI)
-* Password: admin (or the account you created on the frontend UI)
-
-### Usage of the Frontend UI
+### Usage 
 * Visit http://18.217.8.244:5000/ to access the frontend UI.
 * There are five tabs at the top of the page:
   
@@ -92,6 +9,18 @@ to save to Amazon Webserver workbook enter:
 * To get a raw report of a company's 10K documentation, go to ```Raw Reports```, fill in the information and submit request.
 * To get the existing generated report in the current account, go to ```Generated Reports```.
 
+we need to explain all of things a user can do on the frontend.
+
+### Sphinx Documentation
+The following commands will create an index.html file in docs/build/html/index.html
+```bash
+  cd docs
+  make.bat html
+```
+
+# Developer Documentation
+### Setting up the Docker Containers
+Patrick please put all the steps you'd take to set up the docker containers from scratch
 
 ### Accessing Cloud Instance
 * Download the scraper.pem security key
@@ -102,28 +31,14 @@ to save to Amazon Webserver workbook enter:
     ssh -i "scraper.pem" ec2-user@ec2-18-217-8-244.us-east-2.compute.amazonaws.com
     ```
 
-## Running Tests
-### Django Tests
-* Run the following command in the terminal to run the tests.
-```bash
-  cd django_api
-  python manage.py migrate
-  python manage.py test
-```
-### Query Engine Tests
-* Run the following command in the terminal to run the tests.
-  ```bash
-  python middleware/query_engine/tests_query_engine/test_report_runner.py
-  ```
+### Running Tests
+#### Backend Tests
+Should be how to run the tests from a docker container
+#### Frontend Tests
+Should be how to run the tests from a docker container
 
-### Frontend Flask Tests
-* Run the following command in the terminal to run the tests.
-    ```bash
-    python api_comms/flask_app/test_flask_app.py
-    ```
-
-## System Architecture
-### Flask Frontend Routes
+### System Architecture
+#### Flask Frontend Routes
 
 * ```/```
   
@@ -131,7 +46,7 @@ to save to Amazon Webserver workbook enter:
 
 * ```/register```
   
-  The register route, which takes in a username, password, and email address from the user's input and sends a POST request to http://18.217.8.244:8000/api/users/create_user/.  Assuming a successful response is received(ie no duplicate users or network connectivity issues), there will be a user created with the given credentials and email ready for a login.
+  The register route, which takes in a username, password, and email address from the user's input and sends a POST request to http://18.217.8.244:8000/api/users/create-user/.  Assuming a successful response is received(ie no duplicate users or network connectivity issues), there will be a user created with the given credentials and email ready for a login.
 
 * ```/login```
 
@@ -151,8 +66,11 @@ to save to Amazon Webserver workbook enter:
 
 Note:  Timeout errors will be the result of network and internet speeds dropping.
 
+#### Django API Endpoints
+describe what the various endpoints do
 
-# Contributions, Sprint 1
+# Contributions
+### Sprint 1
 - Brady Snelson - 15% - Added authentication to generated-reports endpoint. Updated GET/POST/PUT routes to only allow requests from the owner of each report. Created EC2 cloud instance and set up dockerized django container to run on it.
 - Jason Hipkins - 15% - Worked on filtering and cleaning excel raw reports. worked on merging reports together, lot of research on accounting methods and line item names.
 - Preston Thomson - 15% - Set up the CI-CD pipeline for automatic building, testing, linting, and code coverage checks.
@@ -163,7 +81,7 @@ Note:  Timeout errors will be the result of network and internet speeds dropping
 
 
 
-# Contributions, Sprint 2
+### Sprint 2
 - Brady Snelson - 15% -  Added authentication to generated-reports endpoint. Updated GET/POST/PUT routes to only allow requests from the owner of each report. Created EC2 cloud instance and set up dockerized django container to run on it.
 - Jason Hipkins - 15% - got generated report working and saving locally, fixed bugs in josh's code, merged and fixed bugs, got filtering working and merging reports fully functional, almost did code coverage for all of report_runner but it works on console.
 - Preston Thomson - 15% - 
@@ -171,3 +89,6 @@ Note:  Timeout errors will be the result of network and internet speeds dropping
 - Gilbert Garczynski - 15% - Created frontend server for the User Interface.  Implemented login, registration, logout, and viewing of reports along with HTML for each.
 - Siyao Li - 15% - Worked on designing frontend UI pages and navigation. Wrote tests for frontend flask app.py. Implemented the feature of storing user's login state. Formatted the README.md file.
 - Patrick Donnelly - 15% - Reviewed/approved merge requests. Improved CI/CD pipeline build times by using caching. Updated CI/CD to get all of the tests and coverage. Created Sphinx documentation. Created Dockerfiles for flask_ui and added a service to the docker-compose file. Also created a dockerfile for the report_runner.py so the can be ran from any os. Coded the proxy and helped debug errors.
+
+### Sprint 3
+- Brady Snelson - 15% - Refactored/transferred the functionality that existed within the report runner file (the core of report generation) into endpoints on the django backed. Rewrote tests for all of said functionality. Engineered a new solution to creating a report through a from instead of prompting for user input. Added an authentication endpoint to the user model.
