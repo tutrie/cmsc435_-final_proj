@@ -57,7 +57,7 @@ def register():
         data = request.form
 
         response = requests.post(
-            'http://localhost:8000/api/users/create-user/',
+            'http://18.217.8.244:8000/api/users/create-user/',
             data=data, timeout=15)
         if response.status_code == 201 or response.status_code == 200:
             return redirect(url_for('login'))
@@ -78,9 +78,8 @@ def login():
     """
     if request.method == 'POST':
         response = requests.get(
-            'http://localhost:8000/api/users/validate-user/',
-            auth=(request.form['username'], request.form['password']),
-            timeout=15)
+            'http://18.217.8.244:8000/api/users/validate-user/',
+            auth=(request.form['username'], request.form['password']))
 
         if response.status_code == 201 or response.status_code == 200:
             session['username'] = request.form['username']
@@ -121,7 +120,7 @@ def raw_report():
     """
     if request.method == 'POST':
         data = request.form
-        response_raw = requests.get('http://localhost:8000/api/raw-reports/',
+        response_raw = requests.get('http://18.217.8.244:8000/api/raw-reports/',
                                     timeout=15)
 
         excel_url = 'Not Found'
@@ -162,7 +161,7 @@ def generated_report():
     reports = None
     if username:
         response_generated = requests.get(
-            'http://localhost:8000/api/generated-reports/',
+            'http://18.217.8.244:8000/api/generated-reports/',
             auth=(session.get('username'), session.get('password')), timeout=15)
         if response_generated.status_code == 200:
             reports = response_generated.json()
@@ -284,8 +283,8 @@ def __general_information(data: dict):
     """
     years = request.form.getlist('years')
     data['years'] = ','.join(years)
-    response = requests.post('http://localhost:8000/api/generated-reports/get-form-data/',
-                             auth=(session.get('username'), session.get('password')), data=data, timeout=15)
+    response = requests.post('http://18.217.8.244:8000/api/generated-reports/get-form-data/',
+                             auth=(session.get('username'), session.get('password')), data=data)
 
     if response.status_code == 200 or response.status_code == 201:
         form_data_str = response.json()['form_data']
@@ -322,8 +321,8 @@ def __row_selection(data: dict):
         'form_data': json.dumps(form_data),
         'type': session['data']['type']
     }
-    response = requests.post('http://localhost:8000/api/generated-reports/create-report/',
-                             auth=(session.get('username'), session.get('password')), data=data_2, timeout=15)
+    response = requests.post('http://18.217.8.244:8000/api/generated-reports/create-report/',
+                             auth=(session.get('username'), session.get('password')), data=data_2)
 
     if response.status_code == 200 or response.status_code == 201:
         return redirect(url_for('generated_report'))
@@ -344,7 +343,7 @@ def analysis(report_id: str):
 
     if username:
         response = requests.post(
-            f'http://localhost:8000/api/generated-reports/analysis/',
+            f'http://18.217.8.244:8000/api/generated-reports/analysis/',
             auth=(session.get('username'), session.get('password')),
             data={"report_id": report_id},
             timeout=15)
