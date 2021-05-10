@@ -164,13 +164,15 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
         Returns:
             Response with pk of the report analysis was run on
         """
-        from report_schema.generated_report.utils import validate_analysis_request, run_analysis
+        from report_schema.generated_report.utils import \
+            validate_analysis_request, run_analysis
 
         valid_request, msg = validate_analysis_request(request)
 
         if not valid_request:
             print(msg, request.data)
-            return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
+            return Response({'msg': f'Invalid request: {msg}'},
+                            status.HTTP_400_BAD_REQUEST)
 
         report_id = request.data["report_id"]
 
