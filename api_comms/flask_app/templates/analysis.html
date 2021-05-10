@@ -38,9 +38,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for row_name, row_data in sheet.rows.items() %}
+                                {% for row_data in sheet.rows.values() %}
                                 <tr>
-                                    <td>{{ row_name }}</td>
                                 {% for row_item in row_data %}
                                     <td>{{ row_item }}</td>
                                 {% endfor %}
