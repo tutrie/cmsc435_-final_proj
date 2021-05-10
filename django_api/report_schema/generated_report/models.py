@@ -168,17 +168,24 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
 
         valid_request, msg = validate_analysis_request(request)
 
-
         if not valid_request:
             print(msg, request.data)
             return Response({'msg': f'Invalid request: {msg}'}, status.HTTP_400_BAD_REQUEST)
 
+        report_id = request.data["report_id"]
+
         try:
             gen_report_id = run_analysis(
-                report_id=request.data["report_id"],
+                report_id=report_id,
                 user=request.user
             )
-        except Exception:
+        except GeneratedReport.DoesNotExist:
+            return Response({'msg': f'Report with id={report_id} does not '
+                                    'exist'},
+                            status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            print(e)
             return Response({'msg': 'Error filtering report.'},
                             status.HTTP_500_INTERNAL_SERVER_ERROR)
 

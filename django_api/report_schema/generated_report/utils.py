@@ -202,7 +202,7 @@ def run_analysis(user: str, report_id: int) -> int:
         report.pk on success
 
     Raises:
-        exception is raised when a report is not found
+        GeneratedReport.DoesNotExist: is raised when a report is not found
     """
 
     report = GeneratedReport.objects.get(pk=report_id)
