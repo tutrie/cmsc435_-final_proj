@@ -140,6 +140,21 @@ class AppTests(unittest.TestCase):
                                 follow_redirects=True)
         self.assertTrue(response is not None)
 
+    def test_report_generation_get(self):
+        response = self.app.get('/report_generation',
+                                follow_redirects=True)
+        self.assertTrue(response is not None)
+
+    def test_report_generation_post(self):
+        data = {'report_name': 'report_name', 'company': 'Bassett', 'cik': '0000010329',
+                'years': '2021,2020,2019,2018', 'type': 'json'}
+
+        response = self.app.post(
+            '/report_generation',
+            data=data
+        )
+        self.assertTrue(response is not None)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -91,6 +91,7 @@ def create_generated_report(user: str, report_name: str, form_data: str, output_
 
 
 def validate_create_report_request(request: Request) -> Tuple[bool, str]:
+
     """Validates a request to the create report endpoint.
 
     Args:
