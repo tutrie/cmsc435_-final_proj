@@ -27,7 +27,7 @@
                         <tr>
                             <td>{{ report.id }}</td>
                             <td>
-                                <a href="{{ url_for('reorganize_report', report=report) }}">{{ report.name }}</a>
+                                <a href="{{ url_for('view_generated_report', report_id=report.id) }}">{{ report.name }}</a>
                             </td>
                         </tr>
                         {% endfor %}
