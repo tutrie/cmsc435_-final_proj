@@ -160,18 +160,27 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
                 request.data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+        user = request.user
+
         try:
-            report = GeneratedReport.objects.get(id=request.data['report_id'])
+            report = GeneratedReport.objects.get(id=int(request.data[
+                'report_id']))
         except GeneratedReport.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         report_data = json.loads(report.json_schema)
-        analysis = min_max_avg(report_data)
 
+        if "min" in report_data:
+            data = {'name': report.name,
+                    'created_by': user.id,
+                    'json_schema': report.json_schema}
+            # we don't need to run analysis
+
+        analysis = min_max_avg(report_data)
         report.json_schema = json.dumps(analysis)
         report.save()
 
-        return Response(analysis, status=status.HTTP_200_OK)
+        return Response({'id': gen_report_id}, status=status.HTTP_200_OK)
 
 
     @action(methods=['POST'], detail=False, url_path='get-form-data', url_name='get-form-data')

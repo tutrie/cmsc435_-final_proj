@@ -160,6 +160,15 @@ def validate_get_form_data_request(request: Request) -> bool, str:
 
         return True, 'Valid.'
 
+def validate_analysis_request(request: dict) -> Tuple[str, bool]:
+    if not request.user:
+
+    if not request.data:
+
+    if not 'report_id' not in request.data:
+        return
+
+
 def min_max_avg(generated_report: dict) -> dict:
     """
     :return: does min/max/avg analysis on self.generate_report object. Adds the columns to each sheet
@@ -186,4 +195,4 @@ def min_max_avg(generated_report: dict) -> dict:
         generated_report[frame] = pd.concat(
             [generated_report[frame], analysis], axis=1)
 
-    return generated_report
+    return object_conversions.dataframes_dict_to_json_dict(generated_report)
