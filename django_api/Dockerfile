@@ -4,12 +4,16 @@ FROM python:3
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
-COPY wait-for-it.sh /usr/bin/
-RUN chmod u+x /usr/bin/wait-for-it.sh
+# Prevents pip cache to reduce image size
+ENV PIP_NO_CACHE_DIR 1
 
 RUN pip install --upgrade pip
 
-COPY ./requirements.txt .
+COPY wait-for-it.sh /usr/bin/
+RUN chmod u+x /usr/bin/wait-for-it.sh
+
+COPY requirements.txt requirements.txt
 RUN pip install --upgrade -r requirements.txt
 
-COPY . .
+COPY . code
+WORKDIR /code
