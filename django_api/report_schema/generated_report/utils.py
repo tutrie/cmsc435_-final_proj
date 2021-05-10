@@ -41,6 +41,7 @@ def create_form_data(report: dict):
 
 
 def create_generated_report(user: str, report_name: str, form_data: str, output_type: str) -> int:
+    form_data = json.loads(form_data)
     form_data = object_conversions.json_dict_to_dataframes_dict(json.loads(form_data))
 
     report_to_filter = GeneratedReport.objects.get(name=report_name, created_by=user)
@@ -74,7 +75,7 @@ def validate_create_report_request(request):
         acceptable_types = {'json', 'xlsx'}
         if data['type'] not in acceptable_types:
             return False, 'File type is invalid.'
-
+        
         matching_report = GeneratedReport.objects.filter(created_by=request.user, name=data['report_name'])
         if not matching_report:
             return False, 'That report does not exist yet.'
