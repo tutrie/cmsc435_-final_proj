@@ -141,7 +141,12 @@ class ActiveReport:
             self.generated_report[frame] = pd.concat([self.generated_report[frame], analysis], axis=1)
 
 
-    def load_generated_report(self, gen_report):
+    def load_generated_report(self, gen_report: dict) -> None:
+        """Loads in a saved report that is currently in its json form into the active report object
+
+        Args:
+            gen_report (dict): dictionary representation of the report to load in
+        """
         self.dataframes_dict = object_conversions.json_dict_to_dataframes_dict(gen_report)
         self.json_dict = object_conversions.dataframes_dict_to_json_dict(self.dataframes_dict)
         self.generated_report = self.dataframes_dict
