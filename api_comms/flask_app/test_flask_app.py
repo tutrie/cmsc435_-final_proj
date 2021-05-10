@@ -145,7 +145,7 @@ class AppTests(unittest.TestCase):
                                 follow_redirects=True)
         self.assertTrue(response is not None)
 
-    def test_report_generation_post(self):
+    def test_report_generation_post_general_information(self):
         data = {'report_name': 'report_name', 'company': 'Bassett', 'cik': '0000010329',
                 'years': '2021,2020,2019,2018', 'type': 'json'}
 
@@ -155,22 +155,15 @@ class AppTests(unittest.TestCase):
         )
         self.assertTrue(response is not None)
 
-    def test_report_customization_get(self):
+    def test_report_generation_post_row_selection(self):
         data = {'report_name': 'report_name', 'company': 'Bassett', 'cik': '0000010329',
                 'years': '2021,2020,2019,2018', 'type': 'json'}
 
-        self.app.post(
+        response = self.app.post(
             '/report_generation',
             data=data
         )
-        response = self.app.get('/report_generation',
-                                follow_redirects=True)
         self.assertTrue(response is not None)
-
-    def test_report_customization_post(self):
-        response = self.app.post('/report_generation')
-        self.assertTrue(response is not None)
-
 
 if __name__ == "__main__":
     unittest.main()

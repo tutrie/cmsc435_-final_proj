@@ -294,6 +294,7 @@ def __general_information(data: dict):
         return render_template('report_customization.html', title='Report Generation',
                                username=session.get('username'), data=data, form_data=form_data)
     else:
+        print(response.reason)
         return render_template('report_generation.html', title='Report Generation',
                                invalid=True, username=session.get('username'))
 
@@ -310,6 +311,7 @@ def __row_selection(data: dict):
             Redirects to the generated_report page when the request to server is successful, otherwise renders
             report_generation.html with error message displayed.
         """
+    print(data)
     form_data = {}
     for sheet in data:
         str_rows = request.form.getlist(sheet)
@@ -326,6 +328,7 @@ def __row_selection(data: dict):
     if response.status_code == 200 or response.status_code == 201:
         return redirect(url_for('generated_report'))
     else:
+        print(response.reason)
         return render_template('report_generation.html', title='Report Generation',
                                invalid=True, username=session.get('username'))
 
