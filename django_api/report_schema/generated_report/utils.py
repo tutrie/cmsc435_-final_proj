@@ -89,7 +89,7 @@ def create_generated_report(user: str, report_name: str, form_data: str, output_
     return report_to_filter.pk
 
 
-def validate_create_report_request(request: Request) -> bool, str:
+def validate_create_report_request(request: Request):
     """Validates a request to the create report endpoint.
 
     Args:
@@ -98,32 +98,32 @@ def validate_create_report_request(request: Request) -> bool, str:
     Returns:
         bool, str: Returns true if the data is valid and false if it is invalid along with a message.
     """
-        data = request.data
-        keys_in_request = 'report_name' in data \
-                        and 'form_data' in data \
-                        and 'type' in data
+    data = request.data
+    keys_in_request = 'report_name' in data \
+                    and 'form_data' in data \
+                    and 'type' in data
 
-        if not keys_in_request:
-            return False, 'Correct keys not in request body.'
+    if not keys_in_request:
+        return False, 'Correct keys not in request body.'
 
-        correct_types = isinstance(data['report_name'], str) and \
-                        isinstance(data['form_data'], str) and \
-                        isinstance(data['type'], str)
+    correct_types = isinstance(data['report_name'], str) and \
+                    isinstance(data['form_data'], str) and \
+                    isinstance(data['type'], str)
 
-        if not correct_types:
-            return False, 'Key values not the right type in the request body.'
+    if not correct_types:
+        return False, 'Key values not the right type in the request body.'
 
-        acceptable_types = {'json', 'xlsx'}
-        if data['type'] not in acceptable_types:
-            return False, 'File type is invalid.'
+    acceptable_types = {'json', 'xlsx'}
+    if data['type'] not in acceptable_types:
+        return False, 'File type is invalid.'
 
-        matching_report = GeneratedReport.objects.filter(created_by=request.user, name=data['report_name'])
-        if not matching_report:
-            return False, 'That report does not exist yet.'
+    matching_report = GeneratedReport.objects.filter(created_by=request.user, name=data['report_name'])
+    if not matching_report:
+        return False, 'That report does not exist yet.'
 
-        return (True, 'Valid.')
+    return (True, 'Valid.')
 
-def validate_get_form_data_request(request: Request) -> bool, str:
+def validate_get_form_data_request(request: Request):
     """Validates a request to the get form data endpoint.
 
     Args:
@@ -132,33 +132,33 @@ def validate_get_form_data_request(request: Request) -> bool, str:
     Returns:
         bool, str: Returns true if the data is valid and false if it is invalid along with a message.
     """
-        data = request.data
-        keys_in_request = 'report_name' in data \
-                        and 'company' in data \
-                        and 'cik' in data \
-                        and 'years' in data
+    data = request.data
+    keys_in_request = 'report_name' in data \
+                    and 'company' in data \
+                    and 'cik' in data \
+                    and 'years' in data
 
-        if not keys_in_request:
-            return False, 'Correct keys not in request body.'
+    if not keys_in_request:
+        return False, 'Correct keys not in request body.'
 
-        correct_types = isinstance(data['report_name'], str) and \
-                        isinstance(data['company'], str) and \
-                        isinstance(data['cik'], str) and \
-                        isinstance(data['years'], str)
+    correct_types = isinstance(data['report_name'], str) and \
+                    isinstance(data['company'], str) and \
+                    isinstance(data['cik'], str) and \
+                    isinstance(data['years'], str)
 
-        if not correct_types:
-            return False, 'Key values not the right type in the request body.'
+    if not correct_types:
+        return False, 'Key values not the right type in the request body.'
 
-        acceptable_years = {'2015', '2016', '2017', '2018', '2019', '2020', '2021'}
-        for year in data['years'].split(','):
-            if not (year in acceptable_years):
-                return False, 'Year selected is not a valid year.'
+    acceptable_years = {'2015', '2016', '2017', '2018', '2019', '2020', '2021'}
+    for year in data['years'].split(','):
+        if not (year in acceptable_years):
+            return False, 'Year selected is not a valid year.'
 
-        matching_report = GeneratedReport.objects.filter(created_by=request.user, name=data['report_name'])
-        if matching_report:
-            return False, 'That user has already created a report with that name.'
+    matching_report = GeneratedReport.objects.filter(created_by=request.user, name=data['report_name'])
+    if matching_report:
+        return False, 'That user has already created a report with that name.'
 
-        return True, 'Valid.'
+    return True, 'Valid.'
 
 def min_max_avg(generated_report: dict) -> dict:
     """
