@@ -84,17 +84,17 @@ WSGI_APPLICATION = 'main_app.wsgi.application'
 DATABASES = {
     "default": {
         # Add the docker environment SQL_ENGINE variable or for local development use sqlite3 engine
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
         # Add the docker environment SQL_DATABASE variable or use the local sqlite database soruce
-        "NAME": "postgres",
+        "NAME": os.environ.get("SQL_DATABASE", os.path.join(BASE_DIR, "db.sqlite3")),
         # Add the docker SQL_USER environment variable or on need password for sqlite3
-        "USER": "postgres",
+        "USER": os.environ.get("SQL_USER", ""),
         # Add the docker SQL_PASSWORD environment variable or on need password for sqlite3
-        "PASSWORD": "postgres",
+        "PASSWORD": os.environ.get("SQL_PASSWORD", ""),
         # Add the docker SQL_HOST environment variable or on need host for sqlite3
-        "HOST": "postgres-db",
+        "HOST": os.environ.get("SQL_HOST", ""),
         # Add the docker SQL_HOST environment variable or on need port for sqlite3
-        "PORT": "5432",
+        "PORT": os.environ.get("SQL_PORT", ""),
     }
 }
 
