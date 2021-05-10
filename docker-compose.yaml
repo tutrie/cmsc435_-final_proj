@@ -59,7 +59,7 @@ services:
             postgres-db:
                 condition: service_healthy
             django-server:
-                condition: service_healthy
+                condition: service_started
         restart: always
         networks:
             - main
