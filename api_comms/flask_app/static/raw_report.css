@@ -1,7 +1,7 @@
 .raw-report {
     color: #fff !important;
 }
-.generated-report, .mainpage {
+.generated-report, .mainpage, .report_generation {
     color: #5a5a5a;
 }
 .content{
@@ -19,7 +19,6 @@
 form {
     padding-top: 50px;
     width: 400px;
-    /* background-color: aliceblue; */
 }
 .form-group {
     padding:12px; 

@@ -11,7 +11,7 @@
 .mainpage {
     color: #fff !important;
 }
-.raw-report, .generated-report {
+.raw-report, .generated-report, .report_generation {
     color: #5a5a5a;
 }
 .content{

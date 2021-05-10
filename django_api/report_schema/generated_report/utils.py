@@ -6,9 +6,23 @@ from report_schema import object_conversions
 import json
 import pandas as pd
 import numpy as np
-
+from rest_framework.request import Request
 
 def get_sheets_and_rows(user: str, report_name: str, company_name: str, cik: str, years: str) -> dict:
+    """Called by the frontend to get data to populate the filtering form.
+    Retrieves the needed raw reports to create a merged report if they don't exist.
+
+    Args:
+        user (str): User that used the endpoint.
+        report_name (str): What the user wants to name the report.
+        company_name (str): The company to create the report for.
+        cik (str): The cik of the company to create the report for.
+        years (str): The years to merge together.
+
+    Returns:
+        dict: A dictionary that contains the sheet names as keys
+        and an array of row names as the values for each sheet name.
+    """
     year_list = years.split(',')
 
     args = {
@@ -31,7 +45,15 @@ def get_sheets_and_rows(user: str, report_name: str, company_name: str, cik: str
     return form_data
 
 
-def create_form_data(report: dict):
+def create_form_data(report: dict) -> dict:
+    """Helper function that goes into the data frame object and retrieves the form data.
+
+    Args:
+        report (dict): Dictionary representation of the merged report.
+
+    Returns:
+        dict: returns a dictionary of sheet names and row values.
+    """
     form_data = {}
     sheet_names = report.json_dict.keys()
     for sheet_name in sheet_names:
@@ -41,7 +63,19 @@ def create_form_data(report: dict):
 
 
 def create_generated_report(user: str, report_name: str, form_data: str, output_type: str) -> int:
-    form_data = object_conversions.json_dict_to_dataframes_dict(json.loads(form_data))
+    """Called by the frontend to finish the report creation process. 
+
+    Args:
+        user (str): User that used the endpoint
+        report_name (str): What the user wants to name the report.
+        form_data (str): A dictionary that contains the sheet names the user wants in their report as keys
+        and an array of integers that represent the indices of the rows that they want for that sheet as the key value.
+        output_type (str): ouput type of the file that is downloaded when a user selects to download the report later.
+
+    Returns:
+        int: ID of the created report in the database.
+    """
+    form_data = json.loads(form_data)
 
     report_to_filter = GeneratedReport.objects.get(name=report_name, created_by=user)
 
@@ -55,7 +89,15 @@ def create_generated_report(user: str, report_name: str, form_data: str, output_
     return report_to_filter.pk
 
 
-def validate_create_report_request(request):
+def validate_create_report_request(request: Request) -> bool, str:
+    """Validates a request to the create report endpoint.
+
+    Args:
+        request (Request): A request object that contains a user and data field.
+
+    Returns:
+        bool, str: Returns true if the data is valid and false if it is invalid along with a message.
+    """
         data = request.data
         keys_in_request = 'report_name' in data \
                         and 'form_data' in data \
@@ -81,7 +123,15 @@ def validate_create_report_request(request):
 
         return (True, 'Valid.')
 
-def validate_get_form_data_request(request):
+def validate_get_form_data_request(request: Request) -> bool, str:
+    """Validates a request to the get form data endpoint.
+
+    Args:
+        request (Request): A request object with user and data fields.
+
+    Returns:
+        bool, str: Returns true if the data is valid and false if it is invalid along with a message.
+    """
         data = request.data
         keys_in_request = 'report_name' in data \
                         and 'company' in data \
@@ -99,7 +149,7 @@ def validate_get_form_data_request(request):
         if not correct_types:
             return False, 'Key values not the right type in the request body.'
 
-        acceptable_years = {'2016', '2017', '2018', '2019', '2020', '2021'}
+        acceptable_years = {'2015', '2016', '2017', '2018', '2019', '2020', '2021'}
         for year in data['years'].split(','):
             if not (year in acceptable_years):
                 return False, 'Year selected is not a valid year.'
