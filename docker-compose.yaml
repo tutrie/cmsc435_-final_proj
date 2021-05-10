@@ -28,8 +28,8 @@ services:
         environment:
             - SQL_ENGINE=django.db.backends.postgresql
             - SQL_DATABASE=postgres
-            - SQL_USER=django
-            - SQL_PASSWORD=django
+            - SQL_USER=postgres
+            - SQL_PASSWORD=postgres
             - SQL_HOST=postgres-db
             - SQL_PORT=5432
         ports:
