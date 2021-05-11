@@ -282,7 +282,7 @@ class GenReportUtilTests(TestCase):
 
         self.assertTrue(report_id)
         self.assertEqual(
-            {'Document And Entity Information': {'Nov. 28, 2015 - 12 Months Ended': {'Entity Registrant Name': 'BASSETT FURNITURE INDUSTRIES INC'}, 'Jan. 08, 2016': {'Entity Registrant Name': None}, 'May. 30, 2015': {'Entity Registrant Name': None}}},
+            {'Document And Entity Information': {'Nov. 28, 2015 - 12 Months Ended': {'Entity Registrant Name': 'BASSETT FURNITURE INDUSTRIES INC', 'Entity Central Index Key': 10329}, 'Jan. 08, 2016': {'Entity Registrant Name': None, 'Entity Central Index Key': None}, 'May. 30, 2015': {'Entity Registrant Name': None, 'Entity Central Index Key': None}}},
             json.loads(GeneratedReport.objects.get(name='test report').json_schema)
         )
 
@@ -304,7 +304,7 @@ class GenReportUtilTests(TestCase):
 
         self.assertTrue(report_id)
         self.assertEqual(
-            {'CONSOLIDATED STATEMENTS OF INCOME': {'Dec. 31, 2016 - 12 Months Ended': {'Revenue': 27638000000.0}, 'Dec. 31, 2015 - 12 Months Ended': {'Revenue': 17928000000.0}, 'Dec. 31, 2014 - 12 Months Ended': {'Revenue': 12466000000.0}, 'Dec. 31, 2013 - 12 Months Ended': {'Revenue': 7872000000.0}}},
+            {'CONSOLIDATED STATEMENTS OF INCOME': {'Dec. 31, 2016 - 12 Months Ended': {'Revenue': 27638000000.0, 'Costs and expenses: - CATEGORY': 0.0, 'Cost of revenue': 3789000000.0}, 'Dec. 31, 2015 - 12 Months Ended': {'Revenue': 17928000000.0, 'Costs and expenses: - CATEGORY': 0.0, 'Cost of revenue': 2867000000.0}, 'Dec. 31, 2014 - 12 Months Ended': {'Revenue': 12466000000.0, 'Costs and expenses: - CATEGORY': 0.0, 'Cost of revenue': 2153000000.0}, 'Dec. 31, 2013 - 12 Months Ended': {'Revenue': 7872000000.0, 'Costs and expenses: - CATEGORY': 0.0, 'Cost of revenue': 1875000000.0}}},
             json.loads(GeneratedReport.objects.get(name='test report').json_schema)
         )
 
