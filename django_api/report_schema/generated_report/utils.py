@@ -228,7 +228,11 @@ def analysis_already_ran(json_schema: dict) -> bool:
     Returns:
         True if "min", "max", or "avg" exists in report json_schema
     """
-    return "min" in json_schema or "max" in json_schema or "avg" in json_schema
+
+    first_key = next(iter(json_schema))
+
+    return "min" in json_schema[first_key] or "max" in json_schema[first_key] \
+           or "mean" in json_schema[first_key]
 
 
 def min_max_avg(generated_report: dict) -> dict:
@@ -258,6 +262,7 @@ def min_max_avg(generated_report: dict) -> dict:
                 .stack().groupby(level=0).agg(['min', 'max', 'mean'])
         else:
             skip_first = 1
+
             analysis = generated_report[frame].select_dtypes(np.number) \
                 .stack().groupby(level=0).agg(['min', 'max', 'mean'])
 

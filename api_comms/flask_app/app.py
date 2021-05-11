@@ -357,8 +357,8 @@ def analysis(report_id: str):
 
         if response.status_code == 200:
             return redirect(
-                url_for('reorganize_report', report=response.json())
-            ), 200
+                url_for('view_generated_report', report_id=report_id)
+            )
 
         if response.status_code == 404:
             return render_template('not_found.html', title='Report Not '
