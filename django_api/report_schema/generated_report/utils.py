@@ -9,6 +9,7 @@ import numpy as np
 from typing import Tuple
 from rest_framework.request import Request
 
+
 def get_sheets_and_rows(user: str, report_name: str, company_name: str, cik: str, years: str) -> dict:
     """Called by the frontend to get data to populate the filtering form.
     Retrieves the needed raw reports to create a merged report if they don't exist.
@@ -91,7 +92,6 @@ def create_generated_report(user: str, report_name: str, form_data: str, output_
 
 
 def validate_create_report_request(request: Request) -> Tuple[bool, str]:
-
     """Validates a request to the create report endpoint.
 
     Args:
@@ -101,16 +101,13 @@ def validate_create_report_request(request: Request) -> Tuple[bool, str]:
         bool, str: Returns true if the data is valid and false if it is invalid along with a message.
     """
     data = request.data
-    keys_in_request = 'report_name' in data \
-                    and 'form_data' in data \
-                    and 'type' in data
+    keys_in_request = 'report_name' in data and 'form_data' in data and 'type' in data
 
     if not keys_in_request:
         return False, 'Correct keys not in request body.'
 
-    correct_types = isinstance(data['report_name'], str) and \
-                    isinstance(data['form_data'], str) and \
-                    isinstance(data['type'], str)
+    correct_types = isinstance(data['report_name'], str) and isinstance(data['form_data'], str) and isinstance(
+        data['type'], str)
 
     if not correct_types:
         return False, 'Key values not the right type in the request body.'
@@ -125,6 +122,7 @@ def validate_create_report_request(request: Request) -> Tuple[bool, str]:
 
     return (True, 'Valid.')
 
+
 def validate_get_form_data_request(request: Request) -> Tuple[bool, str]:
     """Validates a request to the get form data endpoint.
 
@@ -135,18 +133,13 @@ def validate_get_form_data_request(request: Request) -> Tuple[bool, str]:
         bool, str: Returns true if the data is valid and false if it is invalid along with a message.
     """
     data = request.data
-    keys_in_request = 'report_name' in data \
-                    and 'company' in data \
-                    and 'cik' in data \
-                    and 'years' in data
+    keys_in_request = 'report_name' in data and 'company' in data and 'cik' in data and 'years' in data
 
     if not keys_in_request:
         return False, 'Correct keys not in request body.'
 
-    correct_types = isinstance(data['report_name'], str) and \
-                    isinstance(data['company'], str) and \
-                    isinstance(data['cik'], str) and \
-                    isinstance(data['years'], str)
+    correct_types = isinstance(data['report_name'], str) and isinstance(data['company'], str) and isinstance(
+        data['cik'], str) and isinstance(data['years'], str)
 
     if not correct_types:
         return False, 'Key values not the right type in the request body.'

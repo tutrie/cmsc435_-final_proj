@@ -92,3 +92,4 @@ describe what the various endpoints do
 
 ### Sprint 3
 - Brady Snelson - 15% - Refactored/transferred the functionality that existed within the report runner file (the core of report generation) into endpoints on the django backed. Rewrote tests for all of said functionality. Engineered a new solution to creating a report through a from instead of prompting for user input. Added an authentication endpoint to the user model.
+- Jason Hipkins - 15% - Fixed an issue with excel spreadsheets not saving correclty. Assisted in refactoring functionality of report runner and manually merging active report and object conversions to the backend. Added backend coding for converting reports from database json to downloadable excel files. Added more functionality to active_report.py by removing duplicated columns and information. 

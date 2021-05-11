@@ -2,22 +2,6 @@ import pandas as pd
 import json
 import openpyxl as pyxl
 
-# def workbook_to_dataframes_dict(excel_report: pyxl.Workbook) -> dict:
-#     """
-#     Args:
-#         excel_report: openpyxl Workbook object
-#
-#     Returns:
-#         Dictionary of dataframes for each sheet in excel workbook.
-#     """
-#     dataframes_dict = {}
-#     for sheet in excel_report.worksheets:
-#         data = sheet.values
-#         cols = next(data)  # Headers (First Row)
-#         data = list(data)  # Second until Last rows
-#         dataframes_dict[sheet.title] = (pd.DataFrame(data, columns=cols))
-#     return dataframes_dict
-#
 
 # def json_file_to_json_dict(json_file_path: str) -> dict:
 #     """
@@ -84,27 +68,25 @@ def dataframes_dict_to_workbook(dataframes_dict: dict, file_path: str):
     Returns:
         None
     """
-    wb = Workbook()
+    wb = pyxl.Workbook()
 
     names = {}
     for df_name, df in dataframes_dict.items():
 
         if df_name[:31] in names:
-             names[df_name[:31]] += 1
-             sheet_name = df_name[:29] + '_' + str(names[df_name[:31]])
+            names[df_name[:31]] += 1
+            sheet_name = df_name[:29] + '_' + str(names[df_name[:31]])
         else:
-             names[df_name[:31]] = 1
-             sheet_name = df_name[:31]
+            names[df_name[:31]] = 1
+            sheet_name = df_name[:31]
 
         ws = wb.create_sheet(title=sheet_name)
-        #ws = wb[sheet_name]
 
-        for r in dataframe_to_rows(df, index=True, header=True):
+        for r in pyxl.dataframe_to_rows(df, index=True, header=True):
             ws.append(r)
 
         for cell in ws['A'] + ws[1]:
             cell.style = 'Pandas'
-            #cell.value = df_name
 
         ws['A1'] = df_name
 
@@ -131,6 +113,7 @@ def json_dict_to_json_file(json_dict: dict, file_path: str):
     with open(f'{file_path}', 'w') as jsonFile:
         json.dump(json_dict, jsonFile)
 
+
 def dataframe_to_dict(dataframe: object) -> dict:
     """
     Args:
@@ -146,6 +129,7 @@ def dataframe_to_dict(dataframe: object) -> dict:
         dup_count += 1
 
     return json.loads(dataframe.to_json(force_ascii=False))
+
 
 def dict_to_dataframe(json_dict: dict) -> object:
     """

@@ -44,16 +44,22 @@ def normalize_frames(report_dict: dict) -> dict:
             skip_first = 1
     for frame in report_dict:
         dup_count = 1
+        # Rename columns that are duplicated to be able to track them for merging
         while True in report_dict[frame].columns.duplicated():
             report_dict[frame].columns = report_dict[frame].columns.where(
                 ~report_dict[frame].columns.duplicated(), report_dict[frame].columns + ' dp_' + str(dup_count))
             dup_count += 1
 
-    x = merge_duplicate_columns(report_dict)
-    return x
+    return merge_duplicate_columns(report_dict)
 
 
 def merge_duplicate_columns(report_dict: dict) -> dict:
+    """
+    :param report_dict: takes the same report_dict as the above functions.
+    :return: A new report_dict where duplicated columns are removed and information between different formats from year
+    to year is merged correctly. Choses the most recent year for values which differ from past years. (only really
+    affects amortization values)
+    """
     skip_first = 0
     for frame in report_dict:
         if skip_first == 1:
@@ -61,9 +67,10 @@ def merge_duplicate_columns(report_dict: dict) -> dict:
                 for column_dup in report_dict[frame].columns.to_list():
                     if columns in column_dup and columns != column_dup:
                         # columns will be from the most recent report, and not a dup, keep most recent values
-                        find_differences = report_dict[frame][columns].isin(pd.Series(data=np.zeros(shape=report_dict[frame][columns].shape), index=report_dict[frame][columns].index))
-                        report_dict[frame][column_dup].where(find_differences,
-                                                                    report_dict[frame][columns], inplace=True)
+                        find_differences = report_dict[frame][columns].isin(pd.Series(data=np.zeros(
+                            shape=report_dict[frame][columns].shape), index=report_dict[frame][columns].index))
+                        report_dict[frame][column_dup].where(find_differences, report_dict[frame][columns],
+                                                             inplace=True)
                         report_dict[frame][columns] = report_dict[frame][column_dup]
                         report_dict[frame].drop(columns=column_dup, inplace=True)
         else:
@@ -91,9 +98,9 @@ class ActiveReport:
             based on the inputs of the User.
     """
 
-    def __init__(self, wbks_by_year: dict=None):
+    def __init__(self, wbks_by_year: dict = None):
         """
-        :param wbks_by_year: Given to us by the report_runner
+        :param wbks_by_year: Given to us by the API. It is dict of keys as raw reports years, values as json from Django
         """
         if wbks_by_year:
             self.dataframes_dict = join_pandas_dataframes(wbks_by_year)
@@ -139,7 +146,6 @@ class ActiveReport:
                 analysis = self.generated_report[frame].select_dtypes(np.number)\
                     .stack().groupby(level=0).agg(['min', 'max', 'mean'])
             self.generated_report[frame] = pd.concat([self.generated_report[frame], analysis], axis=1)
-
 
     def load_generated_report(self, gen_report: dict) -> None:
         """Loads in a saved report that is currently in its json form into the active report object
