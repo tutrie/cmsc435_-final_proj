@@ -163,7 +163,10 @@ def validate_get_form_data_request(request: Request) -> Tuple[bool, str]:
     return True, 'Valid.'
 
 
-def validate_analysis_request(request: dict) -> Tuple[bool, str]:
+"""" ANALYSIS """
+
+
+def validate_analysis_request(request: Request) -> Tuple[bool, str]:
     """
     Validates a request for analysis
 
@@ -179,18 +182,29 @@ def validate_analysis_request(request: dict) -> Tuple[bool, str]:
     if not request.data:
         return False, "Data not specified"
 
-    if 'report_id' not in request.data:
+    if len(request.data) == 0:
+        return False, "Empty Request"
+
+    if 'json_schema' not in request.data:
+        return False, "Report JSON missing"
+
+    if len(request.data['json_schema']) == 0:
+        return False, "Report JSON empty"
+
+    if 'report_id' not in request.data or request.data["report_id"] is None:
         return False, "Report ID Missing"
 
     try:
         int(request.data['report_id'])
+    except TypeError:
+        return False, "Report ID is invalid type"
     except ValueError:
-        return False, "Report ID was not a number"
+        return False, "Report ID is invalid value"
 
     return True, "ok"
 
 
-def run_analysis(user: str, report_id: int) -> int:
+def run_analysis(user, report_id: int) -> int:
     """
     Run analysis on a report and saves the updated report to database
 
@@ -205,7 +219,7 @@ def run_analysis(user: str, report_id: int) -> int:
         GeneratedReport.DoesNotExist: is raised when a report is not found
     """
 
-    report = GeneratedReport.objects.get(pk=report_id)
+    report = GeneratedReport.objects.get(pk=report_id, created_by=user)
     report_data = json.loads(report.json_schema)
 
     if analysis_already_ran(report_data):

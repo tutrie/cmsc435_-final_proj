@@ -152,7 +152,7 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             return Response(report_serializer._errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['POST'], detail=False, url_path='analysis',
-            url_name='report_analysis')
+            url_name='analysis')
     def analysis(self, request) -> Response:
         """
         Takes a report_id in a request and then if valid, runs min_max_avg
