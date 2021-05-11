@@ -152,34 +152,49 @@ class GeneratedReportViewSet(viewsets.ModelViewSet):
             return Response(report_serializer._errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['POST'], detail=False, url_path='analysis',
-            url_name='report_analysis')
-    def analysis(self, request):
-        from report_schema.generated_report.utils import min_max_avg
+            url_name='analysis')
+    def analysis(self, request) -> Response:
+        """
+        Takes a report_id in a request and then if valid, runs min_max_avg
+        analysis on json_schema for a report with pk=report_id.
 
-        # proxy
-        if not request.user or not request.data or 'report_id' not in \
-                request.data:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        Args:
+            request: {report_id: str or int}
 
-        # proxy
+        Returns:
+            Response with pk of the report analysis was run on
+        """
+        from report_schema.generated_report.utils import \
+            validate_analysis_request, run_analysis
+
+        valid_request, msg = validate_analysis_request(request)
+
+        if not valid_request:
+            print(msg, request.data)
+            return Response({'msg': f'Invalid request: {msg}'},
+                            status.HTTP_400_BAD_REQUEST)
+
+        report_id = request.data["report_id"]
+
         try:
-            report = GeneratedReport.objects.get(id=request.data['report_id'])
+            gen_report_id = run_analysis(
+                report_id=report_id,
+                user=request.user
+            )
         except GeneratedReport.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response({'msg': f'Report with id={report_id} does not '
+                                    'exist'},
+                            status.HTTP_404_NOT_FOUND)
 
-        report_data = json.loads(report.json_schema)
+        except Exception as e:
+            print(e)
+            return Response({'msg': 'Error filtering report.'},
+                            status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # using jason's code
-        # active_report = ActiveReport({})
-        # active_report.generated_report = report_data
-        # active_report.min_max_avg()
-
-        # using util version
-        analysis = min_max_avg(report_data)
-
-        # ToDo save analysis as a new generated report
-
-        return Response(analysis, status=status.HTTP_200_OK)
+        if gen_report_id:
+            return Response({'id': gen_report_id}, status.HTTP_200_OK)
+        else:
+            return Response(status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
     @action(methods=['POST'], detail=False, url_path='get-form-data', url_name='get-form-data')

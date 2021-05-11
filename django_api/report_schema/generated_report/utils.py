@@ -118,7 +118,7 @@ def validate_create_report_request(request: Request) -> Tuple[bool, str]:
     acceptable_types = {'json', 'xlsx'}
     if data['type'] not in acceptable_types:
         return False, 'File type is invalid.'
-    
+
     matching_report = GeneratedReport.objects.filter(created_by=request.user, name=data['report_name'])
     if not matching_report:
         return False, 'That report does not exist yet.'
@@ -162,9 +162,103 @@ def validate_get_form_data_request(request: Request) -> Tuple[bool, str]:
 
     return True, 'Valid.'
 
+
+"""" ANALYSIS """
+
+
+def validate_analysis_request(request: Request) -> Tuple[bool, str]:
+    """
+    Validates a request for analysis
+
+    Args:
+        request: {report_id: int}
+
+    Returns:
+        Tuple with boolean, message
+    """
+    if not request.user:
+        return False, "User not specified"
+
+    if not request.data:
+        return False, "Data not specified"
+
+    if len(request.data) == 0:
+        return False, "Empty Request"
+
+    if 'json_schema' not in request.data:
+        return False, "Report JSON missing"
+
+    if len(request.data['json_schema']) == 0:
+        return False, "Report JSON empty"
+
+    if 'report_id' not in request.data or request.data["report_id"] is None:
+        return False, "Report ID Missing"
+
+    try:
+        int(request.data['report_id'])
+    except TypeError:
+        return False, "Report ID is invalid type"
+    except ValueError:
+        return False, "Report ID is invalid value"
+
+    return True, "ok"
+
+
+def run_analysis(user, report_id: int) -> int:
+    """
+    Run analysis on a report and saves the updated report to database
+
+    Args:
+        report_id: int which is the id/pk for a report
+        user: user running the analysis
+
+    Returns:
+        report.pk on success
+
+    Raises:
+        GeneratedReport.DoesNotExist: is raised when a report is not found
+    """
+
+    report = GeneratedReport.objects.get(pk=report_id, created_by=user)
+    report_data = json.loads(report.json_schema)
+
+    if analysis_already_ran(report_data):
+        return report.pk
+
+    analysis = min_max_avg(report_data)
+    report.json_schema = json.dumps(analysis)
+    report.save()
+
+    return report.pk
+
+
+def analysis_already_ran(json_schema: dict) -> bool:
+    """
+    Checks if a report has min, max, or avg in the report
+
+    Args:
+        json_schema: json_schema for a report
+
+    Returns:
+        True if "min", "max", or "avg" exists in report json_schema
+    """
+
+    first_key = next(iter(json_schema))
+
+    return "min" in json_schema[first_key] or "max" in json_schema[first_key] \
+           or "mean" in json_schema[first_key]
+
+
 def min_max_avg(generated_report: dict) -> dict:
     """
-    :return: does min/max/avg analysis on self.generate_report object. Adds the columns to each sheet
+    Does min/max/avg analysis on a generated report and adds the columns to
+    each sheet
+
+    Args:
+        generated_report: json_schema from a generated report
+
+    Returns:
+        dict representing the report after analysis with new columns added
     """
     skip_first = 0
 
@@ -182,10 +276,11 @@ def min_max_avg(generated_report: dict) -> dict:
                 .stack().groupby(level=0).agg(['min', 'max', 'mean'])
         else:
             skip_first = 1
+
             analysis = generated_report[frame].select_dtypes(np.number) \
                 .stack().groupby(level=0).agg(['min', 'max', 'mean'])
 
         generated_report[frame] = pd.concat(
             [generated_report[frame], analysis], axis=1)
 
-    return generated_report
+    return object_conversions.dataframes_dict_to_json_dict(generated_report)

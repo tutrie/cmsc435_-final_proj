@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
 from django.contrib.auth.models import User
 import json
@@ -306,3 +307,250 @@ class GenReportUtilTests(TestCase):
             {'CONSOLIDATED STATEMENTS OF INCOME': {'Dec. 31, 2016 - 12 Months Ended': {'Revenue': 27638000000.0}, 'Dec. 31, 2015 - 12 Months Ended': {'Revenue': 17928000000.0}, 'Dec. 31, 2014 - 12 Months Ended': {'Revenue': 12466000000.0}, 'Dec. 31, 2013 - 12 Months Ended': {'Revenue': 7872000000.0}}},
             json.loads(GeneratedReport.objects.get(name='test report').json_schema)
         )
+
+
+class TestValidateAnalysisRequest(TestCase):
+    def setUp(self):
+        User.objects.create_user('developer1', 'developer1@example.com',
+                                 'developerpassword123')
+        User.objects.create_user('developer2', 'developer2@example.com',
+                                 'developerpassword456')
+        User.objects.create_user('admin', 'admin@example.com', 'admin')
+
+        admin = User.objects.get(username='admin')
+        admin.is_superuser = True
+        admin.save()
+
+        utils.get_sheets_and_rows(
+            User.objects.get(username='developer2'),
+            'test report',
+            'Facebook',
+            '1326801',
+            '2016,2017'
+        )
+
+        utils.create_generated_report(
+            User.objects.get(username='developer2'),
+            'test report',
+            json.dumps({'CONSOLIDATED STATEMENTS OF INCOME': [0, 1, 2]}),
+            'json'
+        )
+
+    def test_validate_request_valid_input(self):
+        request_simple = MockedRequest(
+            User.objects.get(username='developer1'),
+            {
+                'report_id': 1,
+                'json_schema': json.dumps({
+                    'sheet1': ['row1', 'row2']
+                })
+            }
+        )
+
+        request_id_is_int_string = MockedRequest(
+            User.objects.get(username='developer1'),
+            {
+                'report_id': '1',
+                'json_schema': json.dumps({
+                    'sheet1': ['row1', 'row2']
+                })
+            }
+        )
+
+        self.assertTrue(utils.validate_analysis_request(request_simple))
+        self.assertTrue(utils.validate_analysis_request(request_id_is_int_string))
+
+    def test_validate_request_invalid_user(self):
+        user_is_none = MockedRequest(
+            None,
+            {
+                'report_id': 1,
+                'json_schema': json.dumps({
+                    'sheet1': ['row1', 'row2']
+                })
+            }
+        )
+
+        self.assertFalse(utils.validate_analysis_request(user_is_none)[0])
+
+    def test_validate_request_invalid_report_id(self):
+
+        id_is_dict = MockedRequest(
+            User.objects.get(username='developer1'),
+            {
+                'report_id': {},
+                'json_schema': json.dumps({
+                    'sheet1': ['row1', 'row2']
+                })
+            }
+        )
+
+        id_is_list = MockedRequest(
+            User.objects.get(username='developer1'),
+            {
+                'report_id': [],
+                'json_schema': json.dumps({
+                    'sheet1': ['row1', 'row2']
+                })
+            }
+        )
+
+        id_is_none = MockedRequest(
+            User.objects.get(username='developer1'),
+            {
+                'report_id': None,
+                'json_schema': json.dumps({
+                    'sheet1': ['row1', 'row2']
+                })
+            }
+        )
+
+        id_is_string_not_int = MockedRequest(
+            User.objects.get(username='developer1'),
+            {
+                'report_id': "string",
+                'json_schema': json.dumps({
+                    'sheet1': ['row1', 'row2']
+                })
+            }
+        )
+
+        id_is_float_string = MockedRequest(
+            User.objects.get(username='developer1'),
+            {
+                'report_id': "1.5",
+                'json_schema': json.dumps({
+                    'sheet1': ['row1', 'row2']
+                })
+            }
+        )
+
+        id_is_tuple = MockedRequest(
+            User.objects.get(username='developer1'),
+            {
+                'report_id': (1, 1),
+                'json_schema': json.dumps({
+                    'sheet1': ['row1', 'row2']
+                })
+            }
+        )
+
+        self.assertFalse(utils.validate_analysis_request(id_is_none)[0])
+        self.assertFalse(utils.validate_analysis_request(id_is_dict)[0])
+        self.assertFalse(utils.validate_analysis_request(id_is_list)[0])
+        self.assertFalse(utils.validate_analysis_request(id_is_string_not_int)[0])
+        self.assertFalse(utils.validate_analysis_request(id_is_float_string)[0])
+        self.assertFalse(utils.validate_analysis_request(id_is_tuple)[0])
+
+    def test_validate_request_invalid_json_schema(self):
+        schema_is_missing = MockedRequest(
+            User.objects.get(username='developer1'),
+            {
+                'report_id': 1
+            }
+        )
+
+        schema_is_empty = MockedRequest(
+            User.objects.get(username='developer1'),
+            {
+                'report_id': 1,
+                'json_schema': {}
+            }
+        )
+
+        self.assertFalse(utils.validate_analysis_request(schema_is_empty)[0])
+        self.assertFalse(utils.validate_analysis_request(schema_is_missing)[0])
+
+    def test_validate_request_invalid_request_data(self):
+        data_is_empty = MockedRequest(
+            User.objects.get(username='developer1'),
+            {}
+        )
+
+        data_is_missing_report_id = MockedRequest(
+            User.objects.get(username='developer1'),
+            {
+                'json_schema': json.dumps({
+                    'sheet1': ['row1', 'row2']
+                })
+            }
+        )
+
+        data_is_missing_report_json_schema = MockedRequest(
+            User.objects.get(username='developer1'),
+            {
+                'report_id': '1'
+            }
+        )
+
+        self.assertFalse(utils.validate_analysis_request(data_is_empty)[0])
+        self.assertFalse(utils.validate_analysis_request(data_is_missing_report_id)[0])
+        self.assertFalse(utils.validate_analysis_request(data_is_missing_report_json_schema)[0])
+
+
+class TestRunAnalysisTests(TestCase):
+    def setUp(self):
+        User.objects.create_user('developer1', 'developer1@example.com',
+                                 'developerpassword123')
+        User.objects.create_user('developer2', 'developer2@example.com',
+                                 'developerpassword456')
+        User.objects.create_user('admin', 'admin@example.com', 'admin')
+
+        admin = User.objects.get(username='admin')
+        admin.is_superuser = True
+        admin.save()
+
+        utils.get_sheets_and_rows(
+            User.objects.get(username='developer1'),
+            'test report',
+            'Facebook',
+            '1326801',
+            '2016,2017'
+        )
+
+        utils.create_generated_report(
+            User.objects.get(username='developer1'),
+            'test report',
+            json.dumps({'CONSOLIDATED STATEMENTS OF INCOME': [0, 1, 2]}),
+            'json'
+        )
+
+    def test_run_analysis_valid(self):
+        report_id = utils.run_analysis(
+            user=User.objects.get(username='developer1'),
+            report_id=1
+        )
+
+        self.assertEqual(1, report_id)
+
+    def test_run_analysis_incorrect_user(self):
+        self.assertRaises(ObjectDoesNotExist,
+                          utils.run_analysis,
+                          user=User.objects.get(username='developer2'),
+                          report_id=1)
+
+    def test_run_analysis_incorrect_report_id(self):
+        self.assertRaises(ObjectDoesNotExist,
+                          utils.run_analysis,
+                          user=User.objects.get(username='developer1'),
+                          report_id=3)
+
+    def test_run_analysis_already_ran_false(self):
+        user = User.objects.get(username='developer1')
+        report_id = 1
+
+        report = GeneratedReport.objects.get(pk=report_id, created_by=user)
+        report_data = json.loads(report.json_schema)
+
+        self.assertFalse(utils.analysis_already_ran(report_data))
+
+    def test_run_analysis_already_ran_true(self):
+        user = User.objects.get(username='developer1')
+        report_id = 1
+
+        utils.run_analysis(user, report_id)
+
+        report = GeneratedReport.objects.get(pk=report_id, created_by=user)
+        report_data = json.loads(report.json_schema)
+
+        self.assertTrue(utils.analysis_already_ran(report_data))
