@@ -1,0 +1,69 @@
+version: '3.9'
+
+services:
+    postgres-test-db:
+        image: postgres:latest
+        container_name: postgres-test-db
+        volumes:
+          - pgtestdata:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=postgres
+        restart: always
+        ports:
+            - "5432:5432"
+        networks:
+            - test
+        healthcheck:
+            test: "exit 0"
+    django-test-server:
+        stdin_open: true
+        tty: true
+        container_name: django-test-server
+        build: ./django_api
+        volumes:
+            - ./django_api:/code
+        command:
+            ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+        environment:
+            - SQL_ENGINE=django.db.backends.postgresql
+            - SQL_DATABASE=postgres
+            - SQL_USER=postgres
+            - SQL_PASSWORD=postgres
+            - SQL_HOST=postgres-test-db
+            - SQL_PORT=5432
+        ports:
+            - "8000:8000"
+        depends_on:
+            - postgres-test-db
+        networks:
+            - test
+        healthcheck:
+            test: "exit 0"
+    flask-test-server:
+        stdin_open: true
+        tty: true
+        container_name: flask-test-server
+        build: ./api_comms
+        volumes:
+            - ./api_comms:/code
+        environment:
+            - UI_PORT=5000
+            - DJANGO_URL=django-test-server
+            - DEBUG=False
+        ports:
+            - "5000:5000"
+        depends_on:
+            - postgres-test-db
+            - django-test-server
+        networks:
+            - test
+        healthcheck:
+            test: "exit 0"
+
+volumes:
+    pgtestdata:
+
+networks:
+    test:

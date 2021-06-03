@@ -1,0 +1,10 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+*.sqlite3
+.idea/workspace.xml
+__pycache__
+.idea/
+.coverage
+/docs/build/
+.pytest_cache/
