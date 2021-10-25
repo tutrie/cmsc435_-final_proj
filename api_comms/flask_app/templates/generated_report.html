@@ -1,0 +1,58 @@
+<html>
+<head>
+    <title>EDGAR Scraper</title>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='generated_report.css') }}">
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+
+    <!-- Keep this after jquery.dataTables.css to overwrite styles -->
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='dataTables_scheme.css') }}">
+</head>
+<body>
+    {% include 'header.html' %}
+    <div class="container">
+        <div class="content">
+            {% if username %}
+            <h1>Generated Report Information</h1>
+                {% if generated_reports %}
+                <table id="dataTable" class="dataTable compact hover cell-border row-border">
+                    <thead>
+                        <tr style="background-color: #ffffff">
+                            <th>ID</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in generated_reports %}
+                        <tr>
+                            <td>{{ report.id }}</td>
+                            <td>
+                                <a href="{{ url_for('view_generated_report', report_id=report.id) }}">{{ report.name }}</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                    <p id="response">No generated report yet.</p>
+                {% endif %}
+            {% else %}
+            <h1>You have not logged in yet</h1>
+            {% endif %}
+
+        </div>
+        
+    </div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+<script>
+    $(document).ready( function () {
+    $('table.dataTable').DataTable();
+} );
+</script>
+
+</html>

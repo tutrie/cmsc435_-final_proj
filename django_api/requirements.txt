@@ -1,0 +1,8 @@
+Django
+djangorestframework
+psycopg2-binary
+lxml==4.6.1
+pandas
+openpyxl
+numpy
+requests==2.24.0

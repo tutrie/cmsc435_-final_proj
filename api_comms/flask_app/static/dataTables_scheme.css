@@ -1,0 +1,17 @@
+.dataTables_wrapper .dataTables_filter input {
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    padding: 5px;
+    background-color: #fefefe;
+}
+
+table.dataTable.display tbody tr.odd > .sorting_1, 
+table.dataTable.order-column.stripe tbody tr.odd > .sorting_1 {
+    background-color: #949494;
+    }
+
+.dataTables_wrapper .dataTables_length select {
+    border: 1px solid black;
+    background-color: #fefefe;
+
+}

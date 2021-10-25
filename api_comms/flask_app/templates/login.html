@@ -1,0 +1,44 @@
+<html>
+<head>
+	<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='login.css') }}">
+
+</head>
+<body>
+    {% include 'header.html' %}
+    <div class="container">
+        <div class="content">
+            {% if not username %}
+                <form action="" method="post">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="username" placeholder="Enter Username" name="username" class="form-control" required>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" placeholder="Enter Password" name="password" class="form-control" required>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <input type="submit" name="submit" class="btn" value="Login">
+                    </div>
+                    <p> Don't have an account?
+                    <a href="register">Register Here</a>
+                    </p>
+                </form>
+                {% if invalid %}
+                    <p id="invalid-message">Invalid Username or Password</p>
+                {% endif %}
+            {% else %}
+                <div class="logged-in">
+                    <h1 >You are logged in as <b>{{ username }}</b></h1>
+                    <p> Click <a href="logout"> here</a> to log out</p>
+                    <p> Click to download <a href="zoom_link"> Zoom Link </a> for your colleagues</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
+
