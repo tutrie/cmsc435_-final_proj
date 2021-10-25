@@ -1,0 +1,498 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Middleware - Active Report &mdash; XRBL Scraper V1.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Django API - Company Schema" href="django_api.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> XRBL Scraper
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="flask_ui.html">Flask UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="django_api.html">Django API - Company Schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="django_api.html#module-django_api.report_schema.generated_report">Django API - Report Schema - Generated Report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="django_api.html#module-django_api.report_schema.raw_report">Django API - Report Schema - Raw Report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="django_api.html#django-api-report-schema-user">Django API - Report Schema - User</a></li>
+<li class="toctree-l1"><a class="reference internal" href="django_api.html#django-api-proxy">Django API - Proxy</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Middleware - Active Report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#module-middleware.query_engine.report_runner">Middleware - Report Runner</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">XRBL Scraper</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Middleware - Active Report</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/middleware.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-middleware.report_generator.src.active_report">
+<span id="middleware-active-report"></span><h1>Middleware - Active Report<a class="headerlink" href="#module-middleware.report_generator.src.active_report" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="middleware.report_generator.src.active_report.ActiveReport">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">middleware.report_generator.src.active_report.</span></code><code class="sig-name descname"><span class="pre">ActiveReport</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wbks_by_year</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#middleware.report_generator.src.active_report.ActiveReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class representing the current report being requested the User.</p>
+<dl class="simple">
+<dt>Fields:</dt><dd><dl class="simple">
+<dt>self.json: The dictionary equivalent of the JSON file the report</dt><dd><p>corresponds to.</p>
+</dd>
+<dt>self.dataframes: A dictionary of Pandas dataframes where key is the</dt><dd><p>sheet name of the dataframe while the value is the inner dictionary
+corresponding to the dataframe itself.</p>
+</dd>
+<dt>self.generated_report: A dictionary of Pandas dataframes where key is</dt><dd><p>the sheet name of the dataframe while the value is the inner
+dictionary corresponding to the dataframe itself. This will only be
+created when ActiveReport object is filtered to generate a report
+based on the inputs of the User.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="middleware.report_generator.src.active_report.ActiveReport.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wbks_by_year</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#middleware.report_generator.src.active_report.ActiveReport.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wbks_by_year</strong> – Given to us by the report_runner</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="middleware.report_generator.src.active_report.ActiveReport.filter_report">
+<code class="sig-name descname"><span class="pre">filter_report</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#middleware.report_generator.src.active_report.ActiveReport.filter_report" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>instructions: A dictionary of integer lists when the keys are the</dt><dd><p>sheet names to pull data from while the values are rows from
+said sheets to retrieve the data from.</p>
+</dd>
+</dl>
+</dd>
+<dt>Sets:</dt><dd><p>self.generated_report</p>
+</dd>
+<dt>Returns:</dt><dd><p>self.generated_report</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.report_generator.src.active_report.join_pandas_dataframes">
+<code class="sig-prename descclassname"><span class="pre">middleware.report_generator.src.active_report.</span></code><code class="sig-name descname"><span class="pre">join_pandas_dataframes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="headerlink" href="#middleware.report_generator.src.active_report.join_pandas_dataframes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>report_dict</strong> – a dictionary of dictionaries</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>It breaks them all up sheet by sheet and merges the dataframes together, returns merged report</p>
+</dd>
+</dl>
+<p>stored as dictionary of dataframes</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-middleware.query_engine.report_runner">
+<span id="middleware-report-runner"></span><h1>Middleware - Report Runner<a class="headerlink" href="#module-middleware.query_engine.report_runner" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.basic_request">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">basic_request</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="headerlink" href="#middleware.query_engine.report_runner.basic_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call functions to prompt user for basic report information.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>A request to be sent to the back-end to retrieve reports.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.can_save_to_location">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">can_save_to_location</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#middleware.query_engine.report_runner.can_save_to_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks to see whether a given file path exists already and if so, prompts
+the user and asks whether it is okay to overwrite a existing file.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>file_path: A valid file path of the User’s choice to the possibly</dt><dd><p>existing file.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>True if User is allowed/allows the file to be saved to the specified
+file path; False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.choose_json_or_xlsx">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">choose_json_or_xlsx</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#middleware.query_engine.report_runner.choose_json_or_xlsx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Promps the user to choose to save a file in either as a json or xlsx file
+format.</p>
+<p>Args:</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>‘json’ or ‘xlsx’, whatever the user chooses.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.choose_rows_in_sheet">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">choose_rows_in_sheet</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sheet_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheet_values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="headerlink" href="#middleware.query_engine.report_runner.choose_rows_in_sheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prompts user to choose specific rows in Excel sheets.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>A list of indices corresponding to the selected rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.choose_sheet_names">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">choose_sheet_names</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">merged_report</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#middleware.report_generator.src.active_report.ActiveReport" title="middleware.report_generator.src.active_report.ActiveReport"><span class="pre">middleware.report_generator.src.active_report.ActiveReport</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="headerlink" href="#middleware.query_engine.report_runner.choose_sheet_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prompts user to choose specific sheets from a workbook.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>A list of indices corresponding to the selected sheets.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.create_generated_report">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">create_generated_report</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#middleware.query_engine.report_runner.create_generated_report" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a generated report for the user, per user input.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.generate_instructions">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">generate_instructions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">merged_report</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#middleware.report_generator.src.active_report.ActiveReport" title="middleware.report_generator.src.active_report.ActiveReport"><span class="pre">middleware.report_generator.src.active_report.ActiveReport</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="headerlink" href="#middleware.query_engine.report_runner.generate_instructions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate instructions to filter report.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>Instructions dictionary with key being a sheet name and the values
+being rows for that sheet to keep.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.get_user_folder_path">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">get_user_folder_path</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#middleware.query_engine.report_runner.get_user_folder_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prompts the user for a valid folder path.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>A valid folder path.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.get_user_input">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">get_user_input</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#middleware.query_engine.report_runner.get_user_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prompts a user for input.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>prompt: A prompt to the user.</p>
+</dd>
+<dt>Returns:</dt><dd><p>A user inputted string stripped of whitespaces at each end.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.get_user_input_as_list">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">get_user_input_as_list</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="headerlink" href="#middleware.query_engine.report_runner.get_user_input_as_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Promps user for a list of inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>prompt: A prompt to the user.</p>
+</dd>
+<dt>Returns:</dt><dd><p>The input into a list after seperating by commas.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.get_user_int_list">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">get_user_int_list</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="headerlink" href="#middleware.query_engine.report_runner.get_user_int_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prompts user for a list of integers.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>target_list: A list corresponding to items that the User may want to</dt><dd><p>pull information from.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>list: A list corresponding to the indices of items within target_list</dt><dd><p>that the User wants to pull information from.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.get_valid_file_name">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">get_valid_file_name</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#middleware.query_engine.report_runner.get_valid_file_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prompts the user for a valid file name.</p>
+<p>Args:</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>A valid file name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.is_error_response">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">is_error_response</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#middleware.query_engine.report_runner.is_error_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests whether a response object returned a 200 OK status.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>True if response.status_code != 200; False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.query_raw_report_api">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">query_raw_report_api</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#middleware.query_engine.report_runner.query_raw_report_api" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the request library to send a request to the API and receive a
+response from the API to process further.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.retrieve_raw_reports">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">retrieve_raw_reports</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#middleware.query_engine.report_runner.retrieve_raw_reports" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the json object of the response, and if the request was successful,
+save the reports to the local machine.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.save_json">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">save_json</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#middleware.query_engine.report_runner.save_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves a dictionary as a JSON file to the given output file path.</p>
+<dl>
+<dt>Args:</dt><dd><p>report_dict: A dictionary represntation of a report.</p>
+<p>output_file: A full file path to where the report should be saved to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.save_multiple_reports_locally">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">save_multiple_reports_locally</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#middleware.query_engine.report_runner.save_multiple_reports_locally" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves report to a local folder and returns the file location</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>report: A dictionary represntation of a report.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.save_single_report">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">save_single_report</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#middleware.query_engine.report_runner.save_single_report" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call functions to save a single report.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>report_dict: A dictionary represntation of a report.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.save_xlsx">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">save_xlsx</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#middleware.query_engine.report_runner.save_xlsx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves a dictionary as an Excel file to the given output file path.</p>
+<dl>
+<dt>Args:</dt><dd><p>report_dict: A dictionary represntation of a report.</p>
+<p>output_file: A full file path to where the report should be saved to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="middleware.query_engine.report_runner.start_report_retrieval">
+<code class="sig-prename descclassname"><span class="pre">middleware.query_engine.report_runner.</span></code><code class="sig-name descname"><span class="pre">start_report_retrieval</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#middleware.query_engine.report_runner.start_report_retrieval" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function simply queries the user and ask them to choose one of three
+options:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Retrieve a Raw Report</p></li>
+<li><p>Retrieve a User Generated Report</p></li>
+<li><p>Generate a new Report</p></li>
+</ol>
+</div></blockquote>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="django_api.html" class="btn btn-neutral float-left" title="Django API - Company Schema" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Patrick Donnelly, Brady Snelson, Gilbert Garczynski, Jason Hipkins, Joshua Helperin, Preston Thomson, Siyao Li .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
